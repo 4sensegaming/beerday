@@ -1,0 +1,23 @@
+jednoduchá
+střední
+těžká
+nejtěžší
+automatická hra
+nekonečná hra
+nekonečná automatická hra
+pomocníci
+hardcore
+bez pomocníků
+bez chyb při obsluze
+bez praštění zákazníka
+bez odchodu zákazníka
+bez chyb při chůzi
+bez chyb s nepořádkem
+bez praštění hráče
+síň slávy
+jukebox
+televize
+upgrady snižující obtížnost (fotbálek, kulečník, pinball a/nebo automaty)
+dezinfekce (automaticky při smrti hráče doplní zdraví na 100, při jedné transakci se přičte 5 použití k celku)
+dokupování rozbitých půllitrů, když není dost na spuštění hry na danou obtížnost, a sudů, když pro danou hru není ani jeden daného pití
+Finanční odměna v den svátku, narozenin a Vánoc

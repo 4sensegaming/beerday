@@ -1,0 +1,301 @@
+class barrel:item
+{
+int8 kind;
+double amount;
+
+barrel()
+{
+reset();
+}
+
+void reset()
+{
+item::reset();
+y=bottom;
+do
+x=random (left_edge+step_size, right_edge);
+while (barrel_here (x, y) !is null or (!allow_fallen and x == stairs));
+kind=-1;
+uint8 b=beers.length();
+for (uint8 i=0; i<b; i++)
+if (count_barrels (i) == 0)
+{
+kind=i;
+break;
+}
+if (kind == -1) kind=random (0, b-1);
+amount=full_mug*beer_count;
+voice="barrel";
+start=random(0, 330);
+vol=barrelloop_vol;
+}
+
+void act()
+{
+item::act();
+if (falling > 0) state_falling();
+}
+
+void fall (bool dropped=false)
+{
+if (x == stairs and y>bottom) dropped=false;
+if (dropped and check()) return;
+if (@owner != null)
+{
+owner.frames=0;
+owner.frozen=1;
+@owner.has_barrel=null;
+if (owner.state == emptiing and !owner.is_player) say ("Pomocník odložil prázdný sud.", false);
+else if (owner.is_roaming or owner.state==led)
+{
+string db;
+if (owner.is_roaming)
+{
+db="Ožralovi upadl";
+if (beers[kind] == "Stella" or beers[kind] == "Polièka" or beers[kind] == "Plzeò" or beers[kind] == "Litovel" or beers[kind]=="Domácí limonáda" or beers[kind]=="Kofola" or beers[kind]=="Malinovka" or beers[kind]=="Cola" or beers[kind]=="Voda" or beers[kind]=="Citrónka" or beers[kind]=="Zonka" or beers[kind]=="Žlutá" or beers[kind]=="Corona") db+="a";
+else if (beers[kind] == "Daèice" or beers[kind] == "Svijany") db+="y";
+else if (beers[kind]=="Kafe") db+="o";
+db+=" "+beers[kind]+".";
+}
+else db="Vyvádìný zákazník odložil sud "+beers4[kind]+".";
+say (db, false);
+}
+else if (owner.state==barreling and !owner.is_player and amount>0) say ("Pomocník odložil sud "+beers4[kind]+".", false);
+}
+@owner=null;
+if (!dropped or (allow_fallen and random(0,1)==1))
+{
+if (playing()) clean();
+if (x==stairs and y!=bottom)
+{
+falling=1;
+slot=play ("fall", false, true);
+}
+else if (amount>0)
+{
+play ("fall");
+destroy();
+}
+else play ("down");
+return;
+}
+if (amount > 0 and x != stairs and (y == bottom or y==0) and falling == 0)
+{
+uint8 chance=random (0, 2);
+if (chance == 2)
+{
+int8 old_x=x;
+while (old_x==x)
+{
+fall_sideways();
+if (check()) x=old_x;
+}
+}
+}
+play ("down");
+act();
+}
+
+void destroy (bool was_used=false)
+{
+int f=barrels.find (this);
+if (f>-1) barrels.remove_at (f);
+if (@owner != null) @owner.has_barrel=null;
+@owner=null;
+if (amount == 0 and faucet.amounts[kind] == 0 and x==faucet.x and y==faucet.y) faucet.amounts[kind]=-1;
+if (!was_used)
+{
+item::destroy (0);
+if (amount>0)
+{
+if (y==0 or y==bottom)
+{
+double left=round (x-(beer_count/2), 0), right=round (x+(beer_count/2), 0);
+if (left<left_edge) left=left_edge;
+if (right>right_edge) right=right_edge;
+double current=left;
+for (uint8 times=0; times<=beer_count; times++)
+{
+if (current>right) current=left;
+x=current;
+generate_mess (2, false, times==beer_count&&y==0);
+current++;
+}
+}
+fallen_nonempty++;
+}
+fallen++;
+if (get_distance (y, player.y)>absolute (bottom/2))
+{
+if (!barrels.is_empty())
+{
+string rep="Rozbil se ";
+if (amount==0) rep+="prázdný ";
+else rep+="plný ";
+rep+="sud.";
+say (rep, false);
+}
+else say ("Rozbil se poslední sud!", false);
+}
+if (!allow_fallen) lose();
+}
+}
+
+void state_falling()
+{
+if (frames >= 3 and y>bottom)
+{
+y-=2;
+frames=0;
+knock (true);
+}
+if (playing()) update();
+else destroy();
+}
+
+bool pickup (character@ handle)
+{
+if (@owner!=null or falling > 0 or frames<trance or handle.frames<handle.transition) return false;
+if (!handle.carrying.is_empty())
+{
+if (handle.is_player) error ("Nemùžeš sebrat sud, dokud neodložíš všechny pùllitry.");
+return false;
+}
+else if (@handle.has_barrel != null) return false;
+bool makes_sound=playing();
+if (makes_sound) clean();
+if (is_player) play_stat("pickup");
+else play("pickup");
+@owner=handle;
+@owner.has_barrel=@this;
+owner.frames=0;
+owner.frozen=1;
+string whois;
+if (owner.is_player) whois="Bereš ";
+else
+{
+owner.set_prepend();
+whois=owner.prepend+"bere ";
+}
+if (barrels.length() == 1 and amount > 0) say (whois+"poslední sud!", false);
+else if (count_barrels (kind) == 1 and amount > 0)
+{
+string rep=whois+"poslední";
+string bk=beers[kind];
+if (bk == "Kozel" or bk == "Poutník" or bk == "Fénix" or bk == "Bernard" or bk == "Bøezòák" or bk=="Birrel" or bk=="Démon" or bk=="San Miguel" or bk=="Šerák" or bk=="Kocour") rep+="ho";
+rep+=" "+beers4[kind]+"!";
+say (rep, false);
+}
+else if (amount > 0) say (whois+beers4[kind]+".", false);
+else say (whois+"prázdný sud.", false);
+if (@owner.wanted_barrel==@this)
+{
+@owner.wanted_barrel=null;
+owner.target_x=-127;
+owner.target_y=-127;
+if (owner.missing==kind and amount>0) owner.missing=-1;
+}
+if (amount == 0 and faucet.amounts[kind] == 0 and x==faucet.x and y==faucet.y) faucet.amounts[kind]=-1;
+if (makes_sound) clear_item_loops();
+return true;
+}
+
+void use()
+{
+if (faucet.state != 0)
+{
+if (owner.is_player) error ("Nemùžeš umístit sud na pípu bìhem toèení.");
+return;
+}
+else if (faucet.amounts[faucet.pipe] > -1)
+{
+if (owner.is_player) error ("Nemùžeš umístit sud na kohout, na kterém už sud je.");
+return;
+}
+else if (amount == 0)
+{
+if (owner.is_player) error ("Nemùžeš umístit prázdný sud zpátky na pípu.");
+return;
+}
+else if (faucet.pipe != kind)
+{
+if (owner.is_player) error ("Pøed umístìním sudu musíš nastavit pípu na správný kohout.");
+return;
+}
+play ("place");
+owner.frames=0;
+owner.frozen=1;
+@owner.has_barrel=null;
+faucet.amounts[kind]=amount;
+if (!owner.is_player)
+{
+if (owner.help_state > -1) say ("Pomocník vymìnil "+beers4[kind]+".", false);
+else if (owner.is_roaming) say ("Ožrala dal na pípu "+beers4[kind]+"!", false);
+}
+destroy (true);
+replaced++;
+}
+
+bool check()
+{
+barrel@ temp=barrel_here (x, y);
+if (@temp !is null and @temp !is this and @temp.owner==null)
+{
+if (amount > 0)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit plný sud na jiný sud.");
+return true;
+}
+else if (amount == 0 and temp.amount > 0)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit prázdný sud na plný sud.");
+return true;
+}
+}
+if (@mug_here (x, false, y) != null)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit sud na pùllitr.");
+return true;
+}
+if (x==left_edge and y==0)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit sud u dveøí.");
+return true;
+}
+if (x==right_edge and y==0)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit sud u døezu.");
+return true;
+}
+if (x==faucet.x and y==0)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit sud u pípy.");
+return true;
+}
+if (x==radio and y==0)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit sud u jukeboxu.");
+return true;
+}
+if (x==toilet and y==0)
+{
+if (@owner!=null and owner.is_player) error ("Nemùžeš položit sud u dveøí na záchod.");
+return true;
+}
+return false;
+}
+
+bool opEquals (barrel@ handle)
+{
+if (@this is handle) return true;
+return false;
+}
+}
+
+uint8 count_barrels (uint8 drink)
+{
+uint8 count=0, l=barrels.length();
+for (uint8 i=0; i<l; i++)
+if (barrels[i].kind == drink and barrels[i].amount > 0) count++;
+return count;
+}

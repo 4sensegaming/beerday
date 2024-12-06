@@ -1,0 +1,98 @@
+#include "translation.bgt"
+#include "locale.bgt"
+
+/*
+A class which solves the problems of translation priority, default translation selection and translation file loading.
+*/
+class translation_manager
+{
+/*
+Constructs a translation manager.
+Order is an array of language codes (e.g. cs, en_US) which should be used, empty string represents the user default language.
+Translation_dir is the directory with the translations (for format specification see the translation class).
+Translation_ext is the extension which is assumed for the files.
+Encryption_key is the encryption key used, if any.
+Expected_count is the expected number of entries in a language file. It can be used as a sort of validation.
+*/
+translation_manager(string[] order={""}, string translation_dir="locale", string translation_ext="lng", string encryption_key="", uint expected_count = 0)
+{
+this.translation_dir = translation_dir;
+this.translation_ext = translation_ext;
+string lang;
+for(uint i = 0; i < order.length(); i++)
+{
+translation t(expected_count);
+lang = expand_language(lang);
+if(t.read_strings(path_for_language(lang), encryption_key)) translations.insert_last(t);
+}
+// Remove possible empty translations.
+for (uint x=0; x<translations.length(); x++)
+if (translations[x].get_string_count() == 0)
+{
+translations.remove_at (x);
+x--;
+}
+}
+
+private string expand_language(string lang)
+{
+if(lang != "") return lang; // Explicit choices will not be checked for language_country/language file existence
+string code = user_default_language();
+if(string_contains(code, "_", 1) == -1) return code; // No choices anyway, so...
+if(file_exists(path_for_language(code))) return code; // Specific language found
+// Attempt language only
+string langcode = string_split(code, "_", true)[0];
+if(file_exists(path_for_language(langcode))) return langcode; // Found
+return code; // Not found and no preference could be determined, so pretend nothing happened. 
+}
+
+string translate(string key)
+{
+for(int i = 0; i < translations.length(); i++)
+{
+string t = translations[i].get_string(key);
+if(t != "") return t;
+}
+// We got there? That's bad. No translation exists. Okay, the key must be enough and the user will likely notice that, which is good.
+return key;
+}
+
+string user_default_language()
+{
+locale lc;
+string raw = lc.iso_639_language_name();
+if(lc.iso_3166_country_name() != "")
+{
+raw += "_" + lc.iso_3166_country_name();
+}
+return raw;
+}
+
+private string path_for_language(string lang)
+{
+return translation_dir + "\\" + lang + "." + translation_ext;
+}
+
+int get_translation_count (bool aggressive=false)
+{
+uint count=translations.length();
+if (aggressive)
+{
+uint[] string_counts;
+for (uint x=0; x<count; x++)
+{
+if (translations[x].expected_string_count > 0 and translations[x].get_string_count() != translations[x].expected_string_count) return -1;
+string_counts.insert_last (translations[x].get_string_count());
+}
+if (!string_counts.is_empty())
+for (uint x=1; x<string_counts.length(); x++)
+if (string_counts[x] != string_counts[0]) return -1;
+}
+return count;
+}
+
+int expected_count;
+private translation[] translations;
+private string translation_dir;
+private string translation_ext;
+}

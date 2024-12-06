@@ -1,0 +1,101 @@
+bool timewarn=false;
+uint limit, elapsed=0;
+
+string get_time (bool pre=true, double time=0, bool is_stat=false)
+{
+if (time == 0)
+{
+if (endless) time=elapsed;
+else time=limit-elapsed+fps;
+}
+if (time < 1*fps) time=1*fps;
+if (!is_gallery) time/=fps;
+else time/=1000;
+string report;
+int years=time/(365*24*3600);
+time-=years*365*24*3600;
+int days=time/(24*3600);
+time-=days*24*3600;
+int hours=time/3600;
+time-=hours*3600;
+int mins=time/60;
+time-=mins*60;
+int secs=time;
+if (pre and !endless and !is_stat and !is_gallery)
+{
+if (hours > 1 and hours < 5 or hours == 0 and mins > 1 and mins < 5 or hours == 0 and mins == 0 and secs > 1 and secs < 5) report="Zbývají ";
+else report="Zbývá ";
+}
+if (years > 0)
+{
+if (years == 1) report+="jeden rok";
+else if (years < 5) report+=years+" roky";
+else report+=years+" let";
+uint8 rem=0;
+if (days > 0) rem++;
+if (hours > 0) rem++;
+if (mins > 0) rem++;
+if (secs > 0) rem++;
+if (rem > 1) report+=", ";
+else if (rem == 1) report+=" a ";
+}
+if (days > 0)
+{
+if (days == 1) report+="jeden den";
+else if (days < 5) report+=days+" dny";
+else report+=days+" dnù";
+uint8 rem=0;
+if (hours > 0) rem++;
+if (mins > 0) rem++;
+if (secs > 0) rem++;
+if (rem > 1) report+=", ";
+else if (rem == 1) report+=" a ";
+}
+if (hours > 0)
+{
+if (hours == 1)
+{
+if (!pre) report+="jednu hodinu";
+else report+="jedna hodina";
+}
+else if (hours > 1 and hours < 5) report+=hours+" hodiny";
+else report+=hours+" hodin";
+if (mins > 0 and secs > 0) report+=", ";
+else if (mins > 0 or secs > 0) report+=" a ";
+}
+if (mins > 0)
+{
+if (mins == 1)
+{
+if (!pre) report+="jednu minutu";
+else report+="jedna minuta";
+}
+else if (mins > 1 and mins < 5) report+=mins+" minuty";
+else report+=mins+" minut";
+if (secs > 0) report+=" a ";
+}
+if (secs > 0)
+{
+if (secs == 1)
+{
+if (!pre) report+="jednu vteøinu";
+else report+="jedna vteøina";
+}
+else if (secs > 1 and secs < 5) report+=secs+" vteøiny";
+else report+=secs+" vteøin";
+}
+if (!is_stat and !is_gallery) report+=".";
+return report;
+}
+
+void track_time()
+{
+elapsed++;
+if (endless) return;
+if (limit - elapsed <= 60*fps and !timewarn)
+{
+play_stat ("minleft");
+timewarn=true;
+}
+if (elapsed >= limit) lose();
+}

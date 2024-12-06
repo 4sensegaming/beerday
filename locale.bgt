@@ -1,0 +1,179 @@
+/*
+Locale related stuff.
+*/
+#include "locale_constants.bgt"
+/*
+This class encapsulates information about a windows locale.
+*/
+class locale
+{
+int lcid;
+private library kernel32;
+
+/*
+Constructs a new locale of a given name. If you leave the default value, it will be the default user locale (e.g. the one set in control panel).
+*/
+locale(int lcid=LOCALE_USER_DEFAULT)
+{
+this.lcid = lcid;
+kernel32.load("kernel32.dll");
+}
+
+~locale()
+{
+kernel32.unload();
+}
+
+private string do_call(int lctype, int maxsize)
+{
+string ret;
+ret.resize(maxsize);
+dictionary@ dll_res;
+@dll_res = kernel32.call("int GetLocaleInfoA(unsigned long, unsigned long, char*, int);", lcid, lctype, ret, maxsize);
+dll_res.get("3", ret);
+string_replace(ret, "\0", "", true);
+return ret;
+}
+
+/*
+Returns the native language name.
+*/
+string native_language_name()
+{
+return do_call(LOCALE_SNATIVELANGUAGENAME, 85);
+}
+
+/*
+Returns the country phone code.
+*/
+int country_phone_code()
+{
+return string_to_number(do_call(LOCALE_ICOUNTRY, 6));
+}
+
+/*
+Returns the currency symbol position. Meanings (source MSDN):.
+0 - Prefix, no separation, for example, $1.1
+1 - Suffix, no separation, for example, 1.1$
+2 - Prefix, 1-character separation, for example, $ 1.1
+3 - Suffix, 1-character separation, for example, 1.1 $
+*/
+int currency_symbol_position()
+{
+return string_to_number(do_call(LOCALE_ICURRENCY, 2));
+}
+
+/*
+Abbreviated country name.
+*/
+string abbreviated_country_name()
+{
+return do_call(LOCALE_SABBREVCTRYNAME, 9);
+}
+
+/*
+Returns the abbreviated day name for a given weekday, in the range 1 - 7.
+*/
+string abbreviated_day_name(int day)
+{
+
+return do_call(LOCALE_SABBREVDAYNAMES[day - 1], 80);
+}
+
+/*
+Returns the abbreviated month name for a given month, in the range 1 - 12.
+*/
+string abbreviated_month_name(int month)
+{
+return do_call(LOCALE_SABBREVMONTHNAMES[month - 1], 80);
+}
+
+/*
+Returns the abbreviated language name (could be useful for translation search etc).
+*/
+string abbreviated_language_name()
+{
+return do_call(LOCALE_SABBREVLANGNAME, 10); // Max length not specified, but hope it's enough
+}
+
+/*
+Returns the localized country name. Note that Microsoft deprecated this constant on Windows 7, so forward compatibility (win 8, 8.1 etc). is a question.
+*/
+string country()
+{
+return do_call(LOCALE_SCOUNTRY, 80);
+}
+
+/*
+Returns Returns the local currency symbol.
+*/
+string currency()
+{
+return do_call(LOCALE_SCURRENCY, 13);
+}
+
+/*
+Returns a day name for a day in the range 1 - 7.
+*/
+string day_name(int day)
+{
+return do_call(LOCALE_SDAYNAMES[day - 1], 80);
+}
+
+/*
+Returns a month name for a day in the range 1 - 12.
+*/
+string month_name(int month)
+{
+return do_call(LOCALE_SMONTHNAMES[month - 1], 80);
+}
+
+/*
+Returns the decimal separator.
+*/
+string decimal_separator()
+{
+return do_call(LOCALE_SDECIMAL, 80);
+}
+
+/*
+Returns the english language name.
+*/
+string english_language_name()
+{
+return do_call(LOCALE_SENGLISHLANGUAGENAME, 80);
+}
+/*
+Returns the native currency name.
+*/
+string native_currency_name()
+{
+return do_call(LOCALE_SNATIVECURRNAME, 80);
+}
+/*
+Returns the english currency name.
+*/
+string english_currency_name()
+{
+return do_call(LOCALE_SENGCURRNAME, 80);
+}
+
+/*
+Returns the ISO 639 language name.
+*/
+string iso_639_language_name()
+{
+return do_call(LOCALE_SISO639LANGNAME, 9);
+}
+
+/*
+Returns the ISO 3166 country name.
+*/
+string iso_3166_country_name()
+{
+return do_call(LOCALE_SISO3166CTRYNAME, 9);
+}
+
+
+
+}

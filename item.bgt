@@ -1,0 +1,78 @@
+class item:entity
+{
+character@ owner;
+double start;
+string voice;
+uint8 falling;
+
+void reset()
+{
+entity::reset();
+@owner=null;
+voice="";
+is_item=true;
+falling=0;
+}
+
+void act()
+{
+entity::act();
+if (@owner != null and (x!=owner.x or y!=owner.y))
+{
+if (x != owner.x) x=owner.x;
+if (y != owner.y) y=owner.y;
+}
+else
+{
+int d=get_distance (0, 0, y, player.y);
+if (!playing() and falling==0 and d<=absolute(bottom/2)) start_loop();
+else if (playing() and falling==0 and (@owner!=null or d>absolute(bottom/2))) clean();
+}
+}
+
+void start_loop()
+{
+if ((vol == mugloop_vol and !play_mugloop) or (vol == barrelloop_vol and !play_barrelloop) or playing() or @owner!=null) return;
+bool proceed=true;
+if (!play_all_items)
+{
+if (vol==mugloop_vol)
+{
+uint8 l=mugs.length();
+for (uint8 i=0; i<l; i++)
+{
+if (@mugs[i]==@this or x!=mugs[i].x or y!=mugs[i].y or sink.washer.find (mugs[i])>-1) continue;
+if (mugs[i].playing())
+{
+proceed=false;
+break;
+}
+}
+}
+if (vol==barrelloop_vol)
+{
+uint8 l=barrels.length();
+for (uint8 i=0; i<l; i++)
+{
+if (@barrels[i]==@this or x!=barrels[i].x or y!=barrels[i].y or barrels[i].falling==1) continue;
+if (barrels[i].playing())
+{
+proceed=false;
+break;
+}
+}
+}
+}
+if (proceed)
+{
+slot=things.play_extended_2d (voice+ext, player.x, player.y, x, y, 0, 0, 0, 0, true, start, stereo_center, vol, size, true);
+}
+}
+
+void destroy (uint8 has_liquid)
+{
+generate_mess (1);
+if (has_liquid>0) generate_mess (2, has_liquid==1, has_liquid==1&&y==0);
+if (playing() or slot>-1) clean();
+}
+}

@@ -1,0 +1,621 @@
+bool enable_debugging=true, enable_lose_check=true, enable_chasing=true, enable_roaming=true, enable_fleeing=true, enable_idle=true, enable_infinite_patience=false, enable_new_customers=true, enable_logging=false, debug_speech=false;
+int debugging_key=KEY_F5;
+
+string get_state (character@ handle=player, bool speak=true)
+{
+string rep;
+if (handle.state==-1) rep="Nic nedìlá.\r\n";
+else rep=statedesc[handle.state]+".\r\n";
+if (handle.help_state>-1) rep+="Help_state: "+statedesc[handle.help_state]+"\r\n";
+rep+="Missing: "+handle.missing+"\r\nFrames: "+handle.frames+"\r\nSpeed: "+handle.speed+"\r\nTransition: "+handle.transition+"\r\nOnce_transition: "+handle.once_transition+"\r\nFrozen: "+handle.frozen+"\r\nPunched: "+handle.punched+"\r\nX: "+handle.x+"\r\nY: "+handle.y+"\r\nTarget_x: "+handle.target_x+"\r\nTarget_y: "+handle.target_y+"\r\nFound_mug: "+player.found_mug+"\r\nChose_drink: "+player.chose_drink+"\r\nPouring_drink: "+player.pouring_drink+"\r\nPouring_second_drink: "+player.pouring_second_drink;
+if (speak)
+{
+say (rep, true, false);
+clipboard_copy_text (rep);
+}
+return rep;
+}
+
+void toggle_autoplay()
+{
+autoplay=!autoplay;
+player.state=-1;
+player.prev_state=-1;
+player.help_state=-1;
+switch (mode)
+{
+case 1: mode=2; break;
+case 2: mode=1; break;
+case 3: mode=4; break;
+case 4: mode=3; break;
+}
+}
+
+void debug_menu()
+{
+ss_start();
+result=1;
+bool first=true;
+while (result!=0)
+{
+string[] dm;
+dm.reserve (100);
+dm.insert_last ("Menu ladìní");
+dm.insert_last ("get_player_state|Zjistit stav hráèe| |1");
+dm.insert_last ("get_player_leading|Zjistit cíl hráèe| |1");
+dm.insert_last ("toggle_autoplay|Automatická hra| |1|"+autoplay);
+dm.insert_last ("AI_log|Výpis ladicích informací|Pro automatického hráèe a pomocníky. Soubory s pøíponou .log se vytvoøí v aktuální složce, odkud je hra spuštìna.|2|"+enable_logging);
+if (!find_files("*.log").is_empty()) dm.insert_last ("delete_logs|Smazat existující .log soubory| |2");
+dm.insert_last ("activity_check|Kontrola špatné obsluhy|Pøedèasný konec hry|3|"+enable_lose_check);
+dm.insert_last ("angry|Aagresivní zákazníci| |3|"+enable_chasing);
+dm.insert_last ("leaving|Odcházení zákazníkù| |3|"+enable_fleeing);
+dm.insert_last ("drunkards|Opilci| |3|"+enable_roaming);
+dm.insert_last("sleeping|Usínání| |3|"+enable_idle);
+dm.insert_last ("allow_helpers|Pomocníci| |3|"+allow_helpers);
+dm.insert_last ("infinite_waiting|Nekoneèná trpìlivost| |3|"+enable_infinite_patience);
+if (limit>0 and elapsed<limit-(5*fps)) dm.insert_last ("simulate_win|Nasimulovat 5 vteøin pøed výhrou| |4");
+if (count_mess(2)+count_mess(3)<max_liquid_mess) dm.insert_last ("make_full_mess|Vygenerovat maximum nepoøádku| |4");
+if (customers.length()<max)
+{
+dm.insert_last ("spawn_customer|Vygenerovat nového zákazníka| |5");
+dm.insert_last ("max_customers|Vygenerovat maximum zákazníkù| |5");
+}
+dm.insert_last ("new_customers|Pøicházení nových zákazníkù| |5|"+enable_new_customers);
+if (player.x!=door.x or player.y!=door.y) dm.insert_last ("move_player_to_door|Pøesunout hráèe ke dveøím| |6");
+if (player.x!=faucet.x or player.y!=faucet.y) dm.insert_last ("move_player_to_faucet|Pøesunout hráèe k pípì| |6");
+if (player.x!=sink.x or player.y!=sink.y) dm.insert_last ("move_player_to_sink|Pøesunout hráèe ke døezu| |6");
+if (player.x!=stairs or player.y!=0) dm.insert_last ("move_player_to_stairs|Pøesunout hráèe na schody| |6");
+if (player.x!=radio or player.y!=0) dm.insert_last ("move_player_to_jukebox|Pøesunout hráèe k jukeboxu| |6");
+bool unordered=false;
+for (uint8 i=0; i<customers.length(); i++)
+if ((customers[i].state==arriving or customers[i].state==returning or customers[i].state==waiting or customers[i].state==fleeing or customers[i].state==chasing) and queue.find(customers[i])==-1)
+{
+unordered=true;
+break;
+}
+if (unordered) dm.insert_last ("ordering_to_faucet|Pøesunout všechny zákazníky bez objednávky k pípì| |6");
+if (!queue.is_empty())
+{
+dm.insert_last ("first_customer_wait|Pøesunout prvního zákazníka s objednávkou na místo a zaèít èekat| |6");
+dm.insert_last ("serve_first|Obsloužit prvního èekajícího zákazníka| |6");
+if (queue.length()>1)
+{
+dm.insert_last ("all_customers_wait|Pøesunout všechny zákazníky s objednávkou na místo a zaèít èekat| |6");
+dm.insert_last ("serve_all|Obsloužit všechny èekající zákazníky| |6");
+}
+}
+if (!player.count_state(waiting).is_empty()) dm.insert_last ("play_jukebox|Donutit prvního èekajícího zákazníka pustit jukebox| |7");
+character@[]@ drinkers=player.count_state(drinking);
+if (!drinkers.is_empty())
+{
+dm.insert_last ("finish_drink_first|Donutit prvního pijícího zákazníka dopít| |7");
+dm.insert_last ("force_helper_first|Donutit prvního pijícího zákazníka zaèít pomáhat| |7");
+dm.insert_last ("make_first_drunk|Donutit prvního pijícího zákazníka zaèít dìlat bordel| |7");
+if (drinkers.length()>1)
+{
+dm.insert_last ("finish_drink_all|Donutit všechny pijící zákazníky dopít| |7");
+dm.insert_last ("make_all_drunk|Donutit všechny pijící zákazníky zaèít dìlat bordel| |7");
+}
+}
+if (faucet.amounts[faucet.pipe]>1) dm.insert_last ("pipe_empty|Vyprázdnit aktuální kohoutek na pípì|Na pùl pùllitru|8");
+dm.insert_last ("all_pipes_empty|Vyprázdnit všechny kohoutky na pípì|Na pùl pùllitru|8");
+if (faucet.amounts[faucet.pipe]<=full_mug) dm.insert_last ("pipe_refill|Doplnit aktuální kohoutek na pípì| |8");
+dm.insert_last ("all_pipes_refill|Doplnit všechny kohoutky na pípì| |8");
+if (!player.count_state(arriving).is_empty()) dm.insert_last ("request|Donutit prvního pøicházejícího zákazníka chtít aktuální pití na pípì| |8");
+if (say_dirty(false)>0) dm.insert_last ("dirty_mugs_to_sink|Pøesunout všechny špinavé pùllitry ke døezu| |9");
+if (!sink.washer.is_empty()) dm.insert_last ("wash_all_mugs|Domýt všechny pùllitry u døezu| |9");
+dm.insert_last ("make_dirty_mugs|Vygenerovat 7 náhodnì umístìných špinavých pùllitrù| |9");
+if (!enable_infinite_patience and !player.count_state(waiting).is_empty()) dm.insert_last ("lose_patience|Donutit prvního èekajícího zákazníka ztratit trpìlivost| |10");
+if (!player.count_state(serving).is_empty() or !player.count_state(giving).is_empty() or !player.count_state(cleaning).is_empty() or !player.count_state(emptiing).is_empty() or !player.count_state(barreling).is_empty() or !player.count_state(throwing).is_empty() or !player.count_state(calming).is_empty()) dm.insert_last ("force_all_helpers_away|Donutit všechny pomocníky pøestat pomáhat| |10");
+if (!barrels.is_empty()) dm.insert_last ("break_barrel|Rozbít první dostupný plný sud ve sklepì| |10");
+if (!mugs.is_empty()) dm.insert_last ("break_mugs|Rozbít všechny pùllitry| |10");
+dm.insert_last ("debug_speech|Sledovat správnost promluv|Je-li zapnuto, zkopíruje každou promluvu pøi jejím vyslovení do schránky.|11|"+debug_speech);
+if (money>0 or money_total>0) dm.insert_last ("clear_money|Smazat veškeré výdìlky| |12");
+result=make_menu (dm, result, @menu, first, null, !first);
+first=false;
+string item=menu.get_item_name (result);
+if (instr (item, "player_state")) get_state();
+else if (instr (item, "player_leading")) get_target();
+else if (instr (item, "toggle")) toggle_autoplay();
+else if (instr (item, "activity")) enable_lose_check=!enable_lose_check;
+else if (instr (item, "infinite")) enable_infinite_patience=!enable_infinite_patience;
+else if (instr (item, "allow_helpers")) allow_helpers=!allow_helpers;
+else if (instr (item, "angry")) enable_chasing=!enable_chasing;
+else if (instr (item, "drunkards")) enable_roaming=!enable_roaming;
+else if (instr (item, "leaving")) enable_fleeing=!enable_fleeing;
+else if (instr (item, "sleeping")) enable_idle=!enable_idle;
+else if (instr (item, "play_jukebox"))
+{
+character@ h=player.count_state(waiting)[0];
+h.jukebox_interval=h.frames;
+h.set_state (wanting_jukebox);
+first=true;
+}
+else if (instr (item, "simulate_win"))
+{
+elapsed=limit-(5*fps);
+result=1;
+first=true;
+}
+else if (instr (item, "full_mess"))
+{
+for (uint8 i=0; i<=max_liquid_mess; i++) door.generate_mess (2, false);
+silence();
+result=1;
+first=true;
+}
+else if (instr (item, "spawn"))
+{
+spawn (true);
+update_ambience();
+result=1;
+first=true;
+}
+else if (instr (item, "max"))
+{
+for (uint8 i=customers.length(); i<max; i++) spawn (true);
+update_ambience();
+result=1;
+first=true;
+}
+else if (instr (item, "ordering_to"))
+{
+make_order();
+result=1;
+first=true;
+}
+else if (instr (item, "serve_first"))
+{
+serve (true);
+result=1;
+first=true;
+}
+else if (instr (item, "serve_all"))
+{
+serve (false);
+result=1;
+first=true;
+}
+else if (instr (item, "first_customer_wait"))
+{
+make_wait (true);
+result=1;
+first=true;
+}
+else if (instr (item, "all_customers_wait"))
+{
+make_wait (false);
+result=1;
+first=true;
+}
+else if (instr (item, "finish_drink_first"))
+{
+finish_drink (true);
+result=1;
+first=true;
+}
+else if (instr (item, "finish_drink_all"))
+{
+finish_drink (false);
+result=1;
+first=true;
+}
+else if (instr (item, "first_drunk")) make_drunk (false);
+else if (instr (item, "all_drunk")) make_drunk (true);
+else if (instr (item, "mugs_to_sink"))
+{
+mugs_to_sink();
+result=1;
+first=true;
+}
+else if (instr (item, "wash"))
+{
+wash_all_mugs();
+result=1;
+first=true;
+}
+else if (instr (item, "pipe_empty"))
+{
+faucet.amounts[faucet.pipe]=poured_half;
+result=1;
+first=true;
+}
+else if (instr (item, "pipe_refill"))
+{
+faucet.amounts[faucet.pipe]=full_mug*beer_count;
+result=1;
+first=true;
+}
+else if (instr (item, "all_pipes_empty"))
+{
+for (uint8 i=0; i<7; i++) faucet.amounts[i]=poured_half;
+result=1;
+first=true;
+}
+else if (instr (item, "all_pipes_refill"))
+{
+for (uint8 i=0; i<7; i++) faucet.amounts[i]=full_mug*beer_count;
+result=1;
+first=true;
+}
+else if (instr (item, "request")) player.count_state(arriving)[0].drink=faucet.pipe;
+else if (instr (item, "lose_patience")) lose_patience();
+else if (instr (item, "new_customers")) enable_new_customers=!enable_new_customers;
+else if (instr (item, "player_to_door"))
+{
+move_character (player, door);
+result=1;
+first=true;
+}
+else if (instr (item, "player_to_faucet"))
+{
+move_character (player, faucet);
+result=1;
+first=true;
+}
+else if (instr (item, "player_to_stairs"))
+{
+move_character (player, stairs);
+result=1;
+first=true;
+}
+else if (instr (item, "player_to_jukebox"))
+{
+move_character (player, radio);
+result=1;
+first=true;
+}
+else if (instr (item, "player_to_sink"))
+{
+move_character (player, sink);
+result=1;
+first=true;
+}
+else if (instr (item, "force_helper"))
+{
+make_helper();
+result=1;
+first=true;
+}
+else if (instr (item, "force_all_helpers_away"))
+{
+for (uint8 i=0; i<customers.length(); i++)
+{
+if (customers[i].help_state>-1)
+{
+customers[i].actions=7;
+customers[i].done=customers[i].actions;
+}
+if (customers[i].help_state>-1 and !customers[i].carrying.is_empty()) customers[i].set_state (disposing);
+else if (customers[i].help_state==serving) customers[i].state=serving;
+}
+result=1;
+first=true;
+}
+else if (instr (item, "make_dirty")) make_dirty();
+else if (instr (item, "break_barrel")) break_barrel();
+else if (instr (item, "AI")) enable_logging=!enable_logging;
+else if (instr (item, "delete"))
+{
+delete_logs();
+result=1;
+first=true;
+}
+else if (instr (item, "break_mugs"))
+{
+while (!mugs.is_empty()) mugs[0].destroy();
+result=1;
+first=true;
+}
+else if (instr (item, "debug_speech")) debug_speech=!debug_speech;
+else if (instr (item, "clear_money"))
+{
+money=0;
+money_total=0;
+result=1;
+first=true;
+}
+}
+ss_end();
+}
+
+void move_character (character@ who, entity@ where)
+{
+who.x=where.x;
+who.y=where.y;
+who.frames=who.speed;
+if (who.is_player)
+{
+pool.update_listener_2d (player.x, player.y);
+things.update_listener_2d (player.x, player.y);
+}
+else if (who.playing()) who.update();
+}
+
+void move_character (character@ who, int8 where)
+{
+who.x=where;
+who.y=0;
+who.frames=who.speed;
+if (who.is_player)
+{
+pool.update_listener_2d (player.x, player.y);
+things.update_listener_2d (player.x, player.y);
+}
+else if (who.playing()) who.update();
+}
+
+void warning (string wtf, bool quit=false)
+{
+if (!enable_debugging) return;
+bool oldpaused=paused;
+if (is_game) pause();
+alert ("Pozor!", wtf+"\r\nBuï tý lásky a upozorni toho vocasa, kterej to programoval. Máš to ve schránce.");
+clipboard_copy_text (wtf);
+if (!oldpaused and is_game) resume();
+if (quit) exit();
+}
+
+void reset_debugging()
+{
+enable_lose_check=true;
+enable_chasing=true;
+enable_roaming=true;
+enable_fleeing=true;
+enable_idle=true;
+enable_infinite_patience=false;
+enable_new_customers=true;
+autoplay=false;
+}
+
+void make_order()
+{
+uint8 l=customers.length();
+for (uint8 i=0; i<l; i++)
+if ((customers[i].state==returning or customers[i].state==arriving or customers[i].state==waiting or customers[i].state==fleeing or customers[i].state==chasing) and !customers[i].has_drink and queue.find(customers[i])==-1)
+{
+customers[i].x=faucet.x;
+customers[i].y=faucet.y;
+customers[i].state=ordering;
+customers[i].frozen=0;
+customers[i].frames=customers[i].speed+customers[i].transition;
+customers[i].once_transition=0;
+}
+}
+
+void serve (bool is_first)
+{
+uint8 l=queue.length();
+for (uint8 i=0; i<l; i++)
+{
+character@ h=queue[i];
+if (!h.has_drink and @h.hand==null and h.drink>-1)
+{
+h.x=h.seat_x;
+h.y=h.seat_y;
+mug m;
+m.x=h.seat_x;
+m.y=h.seat_y;
+character@[]@ ser=player.count_state(serving);
+if (ser.is_empty()) @m.last_owner=player;
+else @m.last_owner=ser[0];
+m.kinds[0]=h.drink;
+if (h.second_drink>-1)
+{
+m.kinds[1]=h.second_drink;
+m.amounts[0]=percent (full_mug, 50);
+m.amounts[1]=percent (full_mug, 50);
+}
+else m.amounts[0]=full_mug;
+m.total=full_mug;
+h.state=waiting;
+@m.owner=@h;
+h.carrying.insert_last (m);
+h.set_hand (m);
+h.has_drink=true;
+if (is_first) break;
+}
+}
+if (spawner==0) spawner++;
+}
+
+void make_wait (bool is_first)
+{
+uint8 l=queue.length();
+for (uint8 i=0; i<l; i++)
+if (queue[i].state!=waiting and queue[i].state!=drinking and !queue[i].has_drink and @queue[i].hand==null)
+{
+queue[i].x=queue[i].seat_x;
+queue[i].y=queue[i].seat_y;
+queue[i].state=waiting;
+queue[i].frozen=0;
+queue[i].frames=queue[i].speed+queue[i].transition;
+queue[i].once_transition=0;
+if (is_first) break;
+}
+}
+
+void finish_drink (bool is_first)
+{
+character@[]@ drinkers=player.count_state (drinking);
+uint8 l=drinkers.length();
+for (uint8 i=0; i<l; i++)
+{
+mug@ h=drinkers[i].hand;
+if (h.kinds.length()>1) h.kinds.resize(1);
+if (h.amounts.length()>1) h.amounts.resize(1);
+h.amounts[0]=1;
+h.total=1;
+if (is_first) break;
+}
+}
+
+void mugs_to_sink()
+{
+uint8 l=mugs.length();
+for (uint8 i=0; i<l; i++)
+{
+mug@ m=mugs[i];
+if (@m.owner==null and get_distance (m.x, sink.x, m.y, sink.y)>0 and (@m.drank!=null or m.total>0 or dirty.find(m)>-1))
+{
+m.x=sink.x;
+m.y=sink.y;
+sink.washer.insert_last (m);
+m.frames=0;
+int8 f=dirty.find(m);
+if (f>-1) dirty.remove_at(f);
+}
+}
+clear_item_loops();
+}
+
+void wash_all_mugs()
+{
+washed+=sink.washer.length();
+for (uint8 i=0; i<sink.washer.length(); i++)
+{
+sink.washer[i].reset();
+}
+sink.washer.resize(0);
+sink.act();
+sink.frames=0;
+if (sink.playing()) sink.clean();
+clear_item_loops();
+}
+
+void lose_patience()
+{
+character@[]@ waiters=player.count_state (waiting);
+if (!waiters.is_empty()) waiters[0].frames=waiters[0].patience+fps;
+}
+
+void make_helper()
+{
+string[] hm={"S èím má pomáhat?", "Toèit", "Roznášet pití", "Odnášet špinavé pùllitry", "Odnášet prázdné sudy", "Nosit nové sudy", "Vyhazovat opilce", "Pacifikovat agresivní zákazníky"};
+dynamic_menu tempmenu;
+int8 tempres=make_menu (hm, 1, tempmenu);
+if (tempres>0)
+{
+character@ h=player.count_state(drinking)[0];
+h.once_transition=0;
+h.frozen=0;
+h.frames=h.speed+h.transition;
+if (@h.hand!=null)
+{
+h.hand.frames=h.transition+h.speed;
+h.hand.drop();
+h.has_drink=false;
+}
+switch (tempres)
+{
+case 1: h.choose_help (serving); break;
+case 2: h.choose_help (giving); break;
+case 3: h.choose_help (cleaning); break;
+case 4: h.choose_help (emptiing); break;
+case 5: h.choose_help (barreling); break;
+case 6: h.choose_help (throwing); break;
+case 7: h.choose_help (calming); break;
+}
+h.actions=0;
+}
+}
+
+void make_drunk (bool all)
+{
+character@[]@ drinkers=player.count_state (drinking);
+uint8 l=drinkers.length();
+for (uint8 i=0; i<l; i++)
+{
+character@ h=drinkers[i];
+h.roamed=0;
+h.walked=0;
+h.roam_time=100;
+h.drank=5;
+h.set_state (roaming);
+if (!all) break;
+}
+}
+
+void make_dirty()
+{
+for (uint8 i=0; i<beers.length(); i++)
+{
+mug new;
+new.y=0;
+new.x=random (left_edge, right_edge);
+new.total=0;
+new.kinds[0]=random (0, beers.length()-1);
+new.kinds[1]=random (-1, beers.length()-1);
+new.amounts[0]=0;
+new.amounts[1]=0;
+@new.last_owner=@player;
+@new.drank=@player;
+dirty.insert_last (new);
+mugs.insert_last (new);
+}
+}
+
+void write_log (character@ handle)
+{
+if (!enable_debugging or !enable_logging or handle.log=="" or handle.log_filename=="") return;
+string log=handle.log, fn=handle.log_filename;
+uint l=handle.breakpoints.length();
+for (uint i=0; i<l; i++) log+="\r\nBreakpoint: "+handle.breakpoints[i];
+file f;
+f.open (fn, "wb");
+f.write (log);
+f.close();
+}
+
+void break_barrel()
+{
+uint8 l=barrels.length();
+for (uint8 i=0; i<l; i++)
+if (barrels[i].y==bottom and barrels[i].amount>0 and @barrels[i].owner==null and barrels[i].falling==0)
+{
+barrels[i].y=bottom+2;
+barrels[i].fell_from=barrels[i].y;
+barrels[i].falling=1;
+barrels[i].clean();
+barrels[i].slot=barrels[i].play("fall");
+break;
+}
+}
+
+void delete_logs()
+{
+string[] logs=find_files ("*.log");
+uint l=logs.length();
+bool success=true;
+for (uint i=0; i<l; i++)
+success=file_delete (logs[i]);
+if (!success)
+{
+play_stat ("error");
+say ("Nìkteré soubory se nepodaøilo smazat. Bude je potøeba smazat ruènì.", true, false, true);
+}
+}
+
+string get_target (character@ handle=player, bool speak=true)
+{
+string rep;
+if (@handle.leading!=null) rep=say_customer (handle.leading, true, false);
+if (@handle.wanted_mug!=null)
+{
+rep+="\r\nChce pùllitr: ";
+rep+=say_mug (false, true, @handle.wanted_mug);
+}
+if (@handle.wanted_barrel!=null)
+{
+rep+="\r\nChce sud: ";
+rep+=say_barrel (handle.wanted_barrel);
+}
+if (@handle.hand!=null) rep+="\r\n"+say_mug (false, true, @handle.hand);
+if (rep=="") rep="Žádný cíl.";
+if (speak)
+{
+say (rep, true, false);
+clipboard_copy_text (rep);
+}
+return rep;
+}

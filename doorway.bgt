@@ -1,0 +1,58 @@
+class doorway:entity
+{
+bool closed;
+
+void reset()
+{
+entity::reset();
+x=left_edge;
+y=0;
+closed=true;
+frames=fps/2;
+}
+
+bool open (character@ handle)
+{
+if (playing() or !closed or frames<fps/2) return false;
+if (slot>-1) clean();
+slot=play ("dooropen", false, true);
+play ("doorbell");
+closed=false;
+if (handle.is_player)
+{
+while (playing()) wait(5);
+handle.step (false);
+fadeout();
+pool.destroy_all();
+things.destroy_all();
+frames=(fps/2);
+}
+else frames=0;
+return true;
+}
+
+bool close (character@ handle)
+{
+if (playing() or closed or frames<=fps/2) return false;
+if (slot>-1) clean();
+slot=play ("doorclose", false, true);
+if (@handle!=null and !handle.is_player)
+{
+uint8 c=customers.length();
+if (c == max and handle.leaving == 0) say ("Výbornì! Máš plno!", false);
+else if (c == 0) say ("A sakra! Máš prázdnou hospodu!", false);
+garbage_collect();
+}
+frames=0;
+closed=true;
+if (@handle!=null and handle.is_player)lose();
+handle.frames=0;
+handle.frozen=1;
+return true;
+}
+
+void act()
+{
+entity::act();
+}
+}

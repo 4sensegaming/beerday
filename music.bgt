@@ -1,0 +1,580 @@
+class song
+{
+string filename="", name="", author="";
+double length=0;
+uint8 price=0;
+bool disabled=false, is_jingle=false, is_xmas=false, is_competition=false, is_adult=false;
+sound masterpiece;
+
+int opCmp (song@ other)
+{
+string me=to_letters (to_lower (name+author)), you=to_letters (to_lower (other.name+other.author));
+if (author==other.author)
+{
+me=string_trim_right (me, author.length());
+you=string_trim_right (you, author.length());
+}
+uint ml=me.length(), yl=you.length();
+int result=0;
+for (uint i=0; i<ml; i++)
+{
+if (yl<i) break;
+int8 letter1=lower.find (me[i]), letter2=lower.find (you[i]);
+if (letter1>letter2) result=1;
+else if (letter1==letter2) result=0;
+else result=-1;
+if (result!=0) break;
+}
+return result;
+}
+}
+
+class author
+{
+string name="", name2="";
+double duration=0;
+uint8 count=0;
+
+author (string who)
+{
+name=who;
+name2=name;
+if (name=="Hosnedlik") name2="Hosnedlika";
+else if (name=="Slávek") name2="Slávka";
+else if (name=="Metalista") name2="Metalisty";
+else if (name=="Proxima") name2="Proximy";
+else if (name=="Diana") name2="Diany";
+else if (name=="Foxter") name2="Foxtera";
+}
+
+int opCmp (author@ other)
+{
+string me=to_lower(name[0]), you=to_lower(other.name[0]);
+if (me>you) return 1;
+else if (me==you) return 0;
+else return -1;
+}
+}
+
+song@[] tracklist;
+author@[] authors;
+uint8 total_count=0, between_jingles=0, playing=0, available_tracks=0;
+double total_length=0;
+int music=-1, radio;
+bool repeat_playlist=false;
+string[] tracks, used_tracks, playlist, used_this_session;
+string last_track="";
+uint earned_jukebox, earned_jukebox_most_customer, played_jukebox, played_jukebox_player, played_jukebox_customers, pay_most_jukebox_once, use_jukebox;
+sound menuloop;
+
+void stop_menu_music()
+{
+garbage_collect();
+if (menuloop.playing) menuloop.stop();
+}
+
+void menu_music()
+{
+if (won.playing or !play_menu_music or (is_game and !play_menu_music_in_game) or onboarding or speaking_tutorial or (!is_game_window_active() and pause_on_blur) or is_updatemenu or is_gallery)
+{
+stop_menu_music();
+return;
+}
+if (!menuloop.playing and (!menuloop.paused or !is_learnmenu or global==-1 or !pool.sound_is_playing(global))) menuloop.play_looped();
+if ((is_game or is_learnmenu) and menuloop.volume !=menuloop_vol-10 and menuloop_vol!=min_music_vol)
+{
+menuloop.volume=menuloop_vol-10;
+if (menuloop.volume < min_music_vol) menuloop.volume=min_music_vol;
+}
+else if (!is_game and !is_learnmenu and menuloop.volume != menuloop_vol) menuloop.volume=menuloop_vol;
+}
+
+void purge_Music()
+{
+if (!is_game) garbage_collect();
+if (!play_game_music)
+{
+if (music>-1 and instr (pool.items[music].filename, "music"))
+{
+pool.destroy_sound (music);
+music=-1;
+}
+}
+}
+
+void switch_menu_music()
+{
+play_menu_music=!play_menu_music;
+}
+
+void soundtrack()
+{
+if (menuloop.playing) stop_menu_music();
+if (!play_game_music or player.state == closing or (music>-1 and pool.sound_is_playing(music))) return;
+if (music>-1) pool.destroy_sound (music);
+music=-1;
+if (!playlist.is_empty())
+{
+play_jukebox();
+return;
+}
+if (!play_random_music)
+{
+last_track="";
+return;
+}
+string track="";
+song@ try=null;
+if (used_this_session.length()>=available_tracks) used_this_session.resize(0);
+while (true)
+{
+track=tracks[random (0, tracks.length()-1)];
+uint8 l=tracklist.length();
+for (uint8 i=0; i<l; i++)
+if (tracklist[i].filename==track)
+{
+@try=@tracklist[i];
+break;
+}
+if (try.is_xmas and DATE_MONTH!=12) continue;
+else if (try.is_adult and TIME_HOUR>5 and TIME_HOUR<22) continue;
+else if (try.is_jingle and track!=last_track and (between_jingles>=3 or last_track=="")) break;
+else if (!try.is_jingle and used_this_session.find(track)==-1 and ((used_tracks.length()>=available_tracks and track!=last_track) or used_tracks.find(track)==-1)) break;
+}
+last_track=track;
+if (used_this_session.find(track)==-1) used_this_session.insert_last (track);
+music=pool.play_extended_2d (track, player.x, player.y, radio, 0, 0, 0, 0, 0, false, 0, stereo_center, gamemusic_vol, 100, true);
+if (!try.is_jingle and used_tracks.find(track)==-1) used_tracks.insert_last (track);
+try.disabled=false;
+if (try.is_jingle) between_jingles=0;
+else between_jingles++;
+}
+
+void play_jukebox()
+{
+music=pool.play_extended_2d (playlist[playing], player.x, player.y, radio, 0, 0, 0, 0, 0, false, 0, stereo_center, gamemusic_vol, 100, true);
+last_track=playlist[playing];
+if (repeat_playlist)
+{
+playing++;
+if (playing>=playlist.length()) playing=0;
+}
+else
+{
+playing=0;
+playlist.remove_at (0);
+}
+song@ try=null;
+uint l=tracklist.length();
+for (uint i=0; i<l; i++)
+if (tracklist[i].filename==last_track)
+{
+@try=tracklist[i];
+break;
+}
+if (!try.is_jingle and used_tracks.find(last_track)==-1) used_tracks.insert_last (last_track);
+try.disabled=false;
+if (try.is_jingle) between_jingles=0;
+else between_jingles++;
+if (used_this_session.find(last_track)==-1) used_this_session.insert_last (last_track);
+}
+
+void load_soundtrack()
+{
+file@ f=pack.get_file ("soundtrack.dat");
+string raw=string_decrypt (f.read(), scramble());
+string[] split=string_split (raw, "\r\n", true);
+uint l=split.length();
+for (uint i=0; i<l; i++)
+{
+string[] entry=string_split (split[i], "\t", true);
+uint8 el=entry.length();
+if (enable_debugging and(el<4 or el>5 or !instr (entry[0], ".ogg") or !string_is_digits (entry[1])))
+{
+warning ("Nesprávná definice hudby "+entry[0]+":\r\n"+split[i]);
+continue;
+}
+song new;
+new.filename=entry[0];
+new.length=string_to_number (entry[1]);
+new.name=entry[2];
+new.author=entry[3];
+author@ current_author=null;;
+uint8 al=authors.length();
+for (uint8 i=0; i<al; i++)
+if (authors[i].name==new.author)
+{
+@current_author=authors[i];
+break;
+}
+if (@current_author==null)
+{
+author new_author (new.author);
+@current_author=@new_author;
+authors.insert_last (current_author);
+}
+if (el==5)
+{
+if (instr (entry[4], "j")) new.is_jingle=true;
+if (instr (entry[4], "c")) new.is_competition=true;
+if (instr (entry[4], "x")) new.is_xmas=true;
+if (instr (entry[4], "a")) new.is_adult=true;
+}
+if ((used_tracks.find(new.filename)==-1 or (new.is_xmas and DATE_MONTH!=12) or (new.is_adult and TIME_HOUR>5 and TIME_HOUR<22)) and !instr (new.filename, "menu") and !instr (new.filename, "win") and !instr (new.filename, "lose") and !instr (new.filename, "15") and !instr (new.filename, "16") and !instr (new.filename, "17")) new.disabled=true;
+total_count++;
+current_author.count++;
+total_length+=string_to_number (entry[1]);
+current_author.duration+=string_to_number (entry[1]);
+uint8 cost=round (new.length/1000/60, 0)*10;
+string number=new.filename;
+number=string_trim_left (number, 5);
+number=string_trim_right (number, 4);
+uint8 rounded_number=string_to_number(number)/10;
+if (rounded_number>0) cost+=rounded_number*5;
+uint8 over5mins=round (new.length/1000/60, 0)/5;
+if (over5mins>0) cost+=10*over5mins;
+if (new.is_competition) cost*=2;
+if (new.is_xmas) cost*=3;
+if (new.is_adult) cost*=5;
+new.price=cost;
+if (instr (new.filename, "menu")) tracklist.sort_ascending();
+tracklist.insert_last (new);
+}
+authors.sort_ascending();
+filter_available_tracks();
+}
+
+void filter_available_tracks()
+{
+available_tracks=tracks.length();
+uint l=tracklist.length();
+for (uint i=0; i<l; i++)
+{
+if (tracklist[i].is_xmas and DATE_MONTH!=12) available_tracks--;
+if (tracklist[i].is_adult and TIME_HOUR>5 and TIME_HOUR<22) available_tracks--;
+if (tracklist[i].is_jingle) available_tracks--;
+}
+}
+
+void gallery (bool is_jukebox=false)
+{
+if (is_jukebox and !play_game_music)
+{
+error ("V nastavení zvuku máš vypnutou hudbu bìhem hry.");
+return;
+}
+is_gallery=true;
+if (!is_jukebox) fadeout();
+int8 tempres=1;
+dynamic_menu tempmenu;
+tempmenu.set_callback (callback, "");
+@top_menu=@tempmenu;
+bool stop_playing=false, checked=false;
+do
+{
+string[] author_names={"Vyber si autora"};
+if (!is_jukebox or money_total>0)
+{
+author_names.insert_at (1, "Everyone|Všichni autoøi");
+author_names[1]+=count_songs(-1)+"| |1|2|1";
+uint8 al=authors.length();
+for (uint8 i=0; i<al; i++) author_names.insert_last (authors[i].name+"|"+authors[i].name+count_songs(i)+"| |1|2|1");
+}
+if (is_jukebox and !playlist.is_empty())
+{
+uint pl=playlist.length();
+string count="("+pl;
+if (pl==0) count="";
+else if (pl==1) count+=" písnièka)";
+else if (pl<5) count+=" písnièky)";
+else count+=" písnièek)";
+author_names.insert_last ("repeat_playlist|Opakovat playlist"+count+"| |2|"+repeat_playlist);
+author_names.insert_last ("view_playlist|Zobrazit playlist"+count+"| |2|2|1");
+author_names.insert_last ("clear_playlist|Smazat playlist"+count+"| |2");
+}
+if (is_jukebox) author_names.insert_last ("stop_playing|Zastavit právì hrající písnièku| |2|"+stop_playing);
+tempres=make_menu (author_names, tempres, tempmenu, true, null, checked);
+if (tempres>0)
+{
+author@ artist=null;
+string name=tempmenu.get_item_name (tempres);
+if (!instr (name, "repeat") and !instr (name, "stop") and !instr (name, "view") and !instr (name, "clear"))
+{
+if (tempres>1) @artist=@authors[tempres-2];
+play_song (artist, is_jukebox);
+}
+else
+{
+checked=false;
+if (instr (name, "repeat"))
+{
+repeat_playlist=!repeat_playlist;
+checked=true;
+continue;
+}
+else if (instr (name, "view"))
+{
+view_playlist();
+continue;
+}
+else if (instr (name, "clear"))
+{
+clear_jukebox();
+stop_playing=false;
+tempres=1;
+continue;
+}
+else if (instr (name, "stop"))
+{
+stop_playing=!stop_playing;
+checked=true;
+continue;
+}
+}
+}
+}
+while (tempres>0);
+is_gallery=false;
+if (stop_playing) stop_jukebox();
+}
+
+void play_song (author@ artist, bool is_jukebox)
+{
+uint l=tracklist.length();
+int8 tempres=1;
+dynamic_menu tempmenu;
+tempmenu.set_callback (callback, "");
+@top_menu=@tempmenu;
+do
+{
+string[] songs={"Vyber si písnièku"};
+if (@artist!=null) songs[0]+=" od "+artist.name2;
+for (uint i=0; i<l; i++)
+if (@artist==null or tracklist[i].author==artist.name)
+{
+if (is_jukebox and (!instr (tracklist[i].filename, "music") or (tracklist[i].is_xmas and DATE_MONTH!=12))) continue;
+string entry=tracklist[i].filename+"|";
+if (is_jukebox)
+{
+int found=playlist.find (tracklist[i].filename);
+bool said=false;
+if (last_track==tracklist[i].filename)
+{
+entry+="Právì hraje";
+if (found>-1) entry+=" a ";
+said=true;
+}
+if (found>-1)
+{
+entry+="je v playlistu";
+said=true;
+}
+if (said)
+{
+entry=sanitize (entry);
+entry+=": ";
+}
+}
+entry+=tracklist[i].name;
+if (@artist==null)
+{
+string name=tracklist[i].author;
+uint8 al=authors.length();
+for (uint8 j=0; j<al; j++)
+if (name==authors[j].name)
+{
+name=authors[j].name2;
+break;
+}
+entry+=" od "+name;
+}
+if (is_jukebox) entry+=" za "+tracklist[i].price+" korun";
+if (is_jukebox or !tracklist[i].disabled) entry+="|"+get_time (true, tracklist[i].length)+"|1|2|0|";
+else entry+="| |1|2|0|";
+bool is_disabled=tracklist[i].disabled;
+if (!is_disabled and tracklist[i].is_adult and TIME_HOUR>5 and TIME_HOUR<22) is_disabled=true;
+if (is_jukebox) is_disabled=false;
+entry+=""+is_disabled;
+songs.insert_last (entry);
+}
+tempres=make_menu (songs, tempres, tempmenu);
+if (tempres>0)
+{
+string fn=tempmenu.get_item_name (tempres);
+if (is_jukebox and playlist.find(fn)==-1)
+{
+playlist.insert_last (fn);
+played_jukebox++;
+played_jukebox_player++;
+play_stat ("coin");
+continue;
+}
+else
+{
+song@ index=null;
+for (uint8 i=0; i<l; i++)
+if (tracklist[i].filename==fn)
+{
+@index=@tracklist[i];
+break;
+}
+if (@index==null) continue;
+if (!index.masterpiece.active)
+{
+string path=fn;
+if (instr (fn, "music")) path="music/"+fn;
+if (instr (path, "/"))
+{
+string data=download (path);
+if (data=="") continue;
+data=string_decrypt (data, scramble());
+if (data=="") continue;
+index.masterpiece.load_from_memory (data);
+}
+else index.masterpiece.load (path);
+garbage_collect();
+}
+if (index.masterpiece.active and !index.masterpiece.playing)
+{
+silence (true);
+set_sound_master_volume(0);
+index.masterpiece.play();
+wait_keys();
+frame.restart();
+while (index.masterpiece.playing or index.masterpiece.paused)
+{
+wait(5);
+if (frame.elapsed>=1000/fps)
+{
+frame.restart();
+closekey();
+if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE))
+{
+fadeout();
+index.masterpiece.stop();
+}
+}
+}
+}
+set_sound_master_volume (loudness);
+}
+}
+}
+while (tempres>0);
+}
+
+string count_songs (int8 who)
+{
+string result=" (";
+uint8 count=0;
+double duration=0;
+if (who==-1)
+{
+count=total_count;
+duration=total_length;
+}
+else
+{
+count=authors[who].count;
+duration=authors[who].duration;
+}
+if (count==1) result+="jedna písnièka";
+else if (count<5) result+=count+" písnièky";
+else result+=count+" písnièek";
+result+=", "+get_time (true, duration)+")";
+return result;
+}
+
+string view_playlist (bool read=true)
+{
+string playlist_names="";
+uint l=playlist.length(), tl=tracklist.length();
+for (uint i=0; i<l; i++)
+for (uint j=0; j<tl; j++)
+if (tracklist[j].filename==playlist[i])
+{
+playlist_names+=tracklist[j].name;
+if (read) playlist_names+="\r\n";
+else if (l>1 and i<l-1)
+{
+if (i==l-2 ) playlist_names+=" a ";
+else playlist_names+=", ";
+}
+}
+if (read) read_menu (playlist_names);
+return playlist_names;
+}
+
+string say_jukebox (bool interrupt)
+{
+string rep="";
+if (!interrupt) rep="Jukebox je "+say_distance (radio, 0)+" ";
+else rep="Jukebox. ";
+if (last_track!="")
+{
+rep+="Právì hraje ";
+uint l=tracklist.length();
+for (uint i=0; i<l; i++)
+if (tracklist[i].filename==last_track)
+{
+rep+=tracklist[i].name+" od ";
+l=authors.length();
+for (uint8 j=0; j<l; j++)
+if (authors[j].name==tracklist[i].author) rep+=authors[j].name2+". ";
+break;
+}
+}
+if (!playlist.is_empty())
+{
+rep+="V playlistu ";
+uint8 l=playlist.length();
+if (l==1) rep+="je teï jedna písnièka";
+else if (l<5) rep+="jsou teï "+l+" písnièky";
+else rep+="je teï "+l+" písnièek";
+if (l<=6) rep+=": "+view_playlist(false)+".";
+else rep+=". ";
+if (repeat_playlist) rep+="Playlist se opakuje. ";
+}
+if (played_jukebox>0)
+{
+rep+=" Zatím ";
+if (played_jukebox_player>0)
+{
+rep+="jsi pustil";
+if (gender==2) rep+="a";
+rep+=" ";
+if (played_jukebox_player==1) rep+="jednu písnièku";
+else if (played_jukebox_player<5) rep+=played_jukebox_player+" písnièky";
+else rep+=played_jukebox_player+" písnièek";
+if (played_jukebox_customers>0) rep+=" a ";
+}
+if (played_jukebox_customers>0)
+{
+rep+="zákazníci pustili ";
+if (played_jukebox_customers==1) rep+="jednu písnièku";
+else if (played_jukebox_customers<5) rep+=played_jukebox_customers+" písnièky";
+else rep+=played_jukebox_customers+" písnièek";
+rep+=", dohromady za "+earned_jukebox+" korun. Nejvíc v jukeboxu od jednoho zákazníka je "+earned_jukebox_most_customer+".";
+}
+else rep+=".";
+}
+else rep+=" Zatím nikdo nic nepustil.";
+return rep;
+}
+
+void stop_jukebox()
+{
+if (music>-1 and pool.sound_is_playing (music))
+{
+pool.destroy_sound (music);
+music=-1;
+}
+playing=0;
+}
+
+void clear_jukebox()
+{
+playlist.resize(0);
+playing=0;
+repeat_playlist=false;
+}

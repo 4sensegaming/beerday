@@ -1,0 +1,1296 @@
+	character@ tracking;
+uint tracker;
+int8 track_x, track_y, track_distance, track_state;
+
+void say_mugs()
+{
+if (player.carrying.is_empty()) say ("Žádné pùllitry nemáš.", true, false);
+else
+{
+uint8 l=player.carrying.length();
+string mugc="Máš ";
+if (l == 1) mugc+="jeden pùllitr";
+else if (l < 5) mugc+=l+" pùllitry";
+else mugc+=l+" pùllitrù";
+mugc+=".";
+say (mugc, true, false);
+}
+}
+
+string say_barrel (barrel@ handle=player.has_barrel, bool case4=true)
+{
+if (@handle == null) return "Žádný sud neneseš.";
+if (handle.amount == 0) return "prázdný sud.";
+string[]@ kinds;
+if (case4) @kinds=beers4;
+else @kinds=beers;
+return "sud "+kinds[handle.kind]+".";
+}
+
+string say_mug (bool speak=true, bool include_kinds=true, mug@ handle=faucet.owner.hand)
+{
+if (!speak and @handle==null) return "";
+string rep="";
+if (speak)
+{
+if (@handle == null)
+{
+if (!player.carrying.is_empty()) say ("Žádný pùllitr nedržíš.", true, false);
+else say ("Žádné pùllitry nemáš.", true, false);
+return "";
+}
+if (@handle == @player.hand)
+{
+if (player.carrying.length() == 1) rep="Jediný. ";
+else if (player.holding == 0) rep="První. ";
+else if (player.holding == player.carrying.length() -1) rep="Poslední. ";
+}
+}
+mug@ m=handle;
+uint p=m.total;
+if (include_kinds)
+{
+if (@handle.owner != null and @handle.owner != @player) rep+="Drží ";
+if (p > 0)
+{
+string[]@ da;
+if ((@m.owner != null and m.owner.is_player) or @m.owner==null) @da=beers;
+else if (@m.owner!=null) @da=beers4;
+rep+=da[m.kinds[0]];
+if (m.kinds[1] > -1)
+{
+@da=beers7;
+if (da[m.kinds[1]][0]=="S" or da[m.kinds[1]][0]=="Z" or da[m.kinds[1]][0]=="ž") rep+=" se ";
+else rep+=" s ";
+rep+=da[m.kinds[1]];
+}
+rep+=". ";
+}
+}
+if (dirty.find (m) > -1 or @m.drank != null) rep+="Špinavý.";
+if (p >= poured_full) rep+="Plný.";
+else if (p >= poured_undermeasure) rep+="Podmírák.";
+else if (p >= poured_bigger_half) rep+="Vìtší pùlka.";
+else if (p >= poured_half) rep+="Asi pùlka.";
+else if (p >= poured_almost_empty) rep+="Ani ne pùlka.";
+else if (p > poured_bottom) rep+="Po dnì.";
+else if (p == 0 and dirty.find (m) == -1 and @m.drank == null) rep+="Èistý.";
+if (speak) say (rep, !autoplay, false);
+else if (!include_kinds) rep+=" ";
+return rep;
+}
+
+uint8 say_dirty (bool speak=true)
+{
+string rep;
+uint8 d=mugs.length(), count=0;
+mug@[] result;
+result.reserve (d);
+for (uint8 i=0; i<d; i++)
+{
+mug@ m=mugs[i];
+if (@m.owner != null or get_distance (m.x, sink.x, m.y, sink.y) == 0 or @m.claimed != null) continue;
+count++;
+if (speak) result.insert_last (m);
+}
+if (speak)
+{
+if (count == 0) rep="Žádné odložené pùllitry.";
+else if (count == 1) rep="Jeden odložený pùllitr.";
+else
+{
+rep="Celkem ";
+if (count < 5) rep+=count+" odložené pùllitry.";
+else rep+=count+" odložených pùllitrù.";
+}
+if (!result.is_empty())
+{
+if (result.length() > 1) rep+=" Nejbližší je ";
+else rep+=" Je ";
+mug@ nearest=get_nearest (result, player);
+rep+=to_lower (say_distance (nearest.x, nearest.y));
+rep+=" "+say_mug (false, true, nearest);
+}
+say (rep, true, false);
+}
+return count;
+}
+
+string say_pipe (bool interrupt, bool include_price=true)
+{
+string rep="";
+if (!interrupt) rep="Pípa je "+say_distance (faucet.x, faucet.y)+" ";
+if (faucet.state == 1)
+{
+if (faucet.owner.is_player) rep+="Toèíš ";
+else
+{
+if (faucet.owner.help_state > -1) rep+="Pomocník";
+else if (faucet.owner.is_roaming) rep+="Ožrala";
+else rep+="Zákazník";
+rep+=" toèí ";
+}
+rep+=beers4[faucet.pipe]+", ";
+}
+else
+{
+rep+=beers[faucet.pipe];
+if (include_price) rep+=" za "+prices[faucet.pipe]+" korun";
+rep+=". ";
+}
+if (faucet.state == 1)
+{
+if (@faucet.using != null) rep+=say_mug (false, false);
+else if (faucet.amounts[faucet.pipe] > 0) rep+="mimo pùllitr! ";
+}
+if (faucet.amounts[faucet.pipe] > 0)
+{
+double a=round (faucet.amounts[faucet.pipe]/full_mug, 1);
+if (beer_count-a<0.9) rep+="Plný sud.";
+else if (a >= 4.5) rep+="Zhruba "+round (a, 0)+" pùllitrù.";
+else if (a > 1.5) rep+="Zhruba "+round (a, 0)+" pùllitry.";
+else if (a >=0.9) rep+="Zhruba jeden pùllitr.";
+else
+{
+if (a>=0.8) rep+="Necelý pùllitr.";
+else if (a>=0.6) rep+="Tøi ètvrtì pùllitru.";
+else if (a>=0.4) rep+="Pùl pùllitru.";
+else if (a>=0.2) rep+="Ètvrt pùllitru.";
+else if (a>=0.1) rep+="Po dnì.";
+else rep+="Pár kapek.";
+}
+}
+else
+{
+if (faucet.amounts[faucet.pipe] == 0) rep+="Prázdný sud!";
+else rep+="Bez sudu!";
+}
+return rep;
+}
+
+string say_customer (character@ handle, bool include_distances, bool speak=true)
+{
+if (@handle == null) return "";
+handle.set_prepend();
+string cust=handle.prepend;
+if (handle.help_state == -1)
+{
+int8 qu=queue.find (handle);
+if (qu == -1 and @tracking != @handle) cust+="není ve frontì. ";
+}
+if (include_distances)
+{
+cust+="Je "+say_distance (handle.x, handle.y, true, false, false);
+if (handle.x == handle.seat_x and handle.y == handle.seat_y and handle.state!=led and handle.state!=idle and handle.help_state==-1) cust+="na svém místì.";
+else cust+=say_distance (handle.seat_x, handle.seat_y, true, true);
+cust+=" ";
+}
+if (handle.help_state==-1)
+{
+cust+=statedesc[handle.state];
+if (handle.drink > -1 and handle.help_state == -1 and handle.state != idle)
+{
+if (handle.state == waiting and queue.find (handle) > -1) cust+=" na ";
+else if (handle.state != drinking and handle.state != ordering)
+{
+cust+=". Rozhodl";
+if (handle.sex==2) cust+="a";
+cust+=" se pro ";
+}
+if (handle.state==drinking) cust+=". ";
+else cust+=handle.get_drink();
+}
+else if (handle.is_chasing and @handle.leading != null)
+{
+if (@handle.leading == @player) cust+=" na tebe.";
+else cust+=" na "+handle.append;
+}
+else cust+=".";
+}
+mug@ m=mug_here (handle.x, false, handle.y);
+if (@m != null and m.total > 0 and handle.help_state==-1)
+{
+cust+=" Už je ";
+if (handle.state == drinking and @handle.hand!=null) cust+="dopøedu ";
+if (handle.sex==2) cust+="obsloužená.";
+else cust+="obsloužený.";
+}
+if (handle.state == waiting and handle.frozen == 0 and @handle.seen_mug == null)
+{
+cust+=" ";
+if (enable_infinite_patience) cust+="Má nekoneènou trpìlivost.";
+else
+{
+uint w=round (handle.frames/(handle.patience/100), 0);
+if (w <= 10)
+{
+cust+="Sotva si sedl";
+if (handle.sex==2) cust+="a";
+cust+=".";
+}
+else if (w <= 25) cust+="Èeká jenom chvilku.";
+else if (w <= 55) cust+="Neèeká moc dlouho.";
+else if (w < 90) cust+="Už èeká docela dlouho.";
+else if (w < 100) cust+="Každou chvíli ztratí trpìlivost.";
+else
+{
+cust+="Ztratil";
+if (handle.sex==2) cust+="a";
+cust+=" trpìlivost.";
+}
+}
+}
+cust+=" ";
+if (handle.health<100) cust+=handle.say_health();
+if (handle.help_state==-1)
+{
+uint8 d=handle.drank_total;
+if (d > 0)
+{
+cust+=" Vypil";
+if (handle.sex==2) cust+="a";
+cust+=" ";
+if (d == 1) cust+="jeden pùllitr.";
+else if (d < 5) cust+=d+" pùllitry.";
+else cust+=d+" pùllitrù.";
+}
+else
+{
+cust+=" Ještì nic nevypil";
+if (handle.sex==2) cust+="a";
+cust+=".";
+}
+}
+if (!handle.carrying.is_empty())
+{
+if (handle.carrying.length()>1) cust+=" "+count_mugs (handle);
+if (@handle.hand != null) cust+=" "+say_mug (false, true, handle.hand);
+}
+else if (@handle.has_barrel != null) cust+=" Nese "+say_barrel (handle.has_barrel);
+if (speak) say (cust, true, false);
+return cust;
+}
+
+string say_customers (bool speak=true)
+{
+if (@tracking != null)
+{
+tracker=0;
+return say_customer (tracking, true);
+}
+string rep=count_customers();
+uint8 c=customers.length();
+if (c == 0)
+{
+if (speak) say (rep, true, false);
+return rep;
+}
+uint8 d=statedesc.length();
+uint8[] counts;
+counts.reserve (d);
+for (uint8 i=0; i<d; i++) counts.insert_last (0);
+for (uint8 i=0; i<c; i++) counts[customers[i].state]++;
+for (uint8 i=0; i<d; i++)
+if (counts[i] > 0)
+{
+if (counts[i] > 1 and counts[i] < 5)
+{
+if (counts[i] != c) rep+=" "+counts[i]+" "+to_lower (statedesc_plural234[i])+".";
+else rep+=" "+statedesc_plural234[i]+".";
+}
+else
+{
+if (counts[i] != c) rep+=" "+counts[i]+" "+to_lower (statedesc[i])+".";
+else if (counts[i] == c and counts[i] > 1) rep+=" "+statedesc_plural234[i]+".";
+else rep+=" "+statedesc[i]+".";
+}
+}
+if (c > 0)
+{
+if (c == 1) rep+=" Je ";
+else rep+=" Nejbližší je ";
+character@ nearest=get_nearest (customers, player);
+rep+=to_lower (say_distance (nearest.x, nearest.y));
+}
+if (speak) say (rep, true, false);
+return rep;
+}
+
+string say_distance (int8 what_x, int8 what_y, bool check_y=true, bool place=false, bool include_period=true)
+{
+string dist="";
+if (place) dist+=" a místo má ";
+if (what_x == player.x and (what_y == player.y or !check_y))
+{
+dist+="tady";
+if (include_period) dist+=".";
+return dist;
+}
+else if (check_y and what_y != player.y)
+{
+if (place) return "";
+if (what_y == 0)
+{
+dist+="nahoøe";
+if (include_period) dist+=".";
+return dist;
+}
+else if (what_y == bottom)
+{
+dist+="dole";
+if (include_period) dist+=".";
+return dist;
+}
+else
+{
+dist+="na schodech";
+if (include_period) dist+=".";
+return dist;
+}
+}
+int8 distance=0;
+if (what_x > player.x) distance=what_x-player.x;
+else distance=player.x-what_x;
+distance/=step_size;
+dist+=distance+" ";
+if (what_x > player.x) dist+="doprava";
+else dist+="doleva";
+if (include_period) dist+=".";
+return dist;
+}
+
+void info()
+{
+string rep;
+if (get_distance (player.x, door.x, player.y, door.y) == 0) rep=say_door (true);
+else if (get_distance (player.x, sink.x, player.y, sink.y) == 0) rep=say_sink (true);
+else if (get_distance (player.x, faucet.x, player.y, faucet.y) == 0) rep=say_pipe (true);
+else if (get_distance (player.x, stairs, player.y, 0) == 0) rep="Schody.";
+else if (get_distance (player.x, radio, player.y, 0)==0) rep=say_jukebox (true);
+uint8 c=customers.length();
+for (uint8 i=0; i<c; i++)
+{
+character@ h=customers[i];
+if (get_distance (player.x, h.x, player.y, h.y) == 0)
+{
+if (rep != "") rep+=" ";
+rep+=say_customer (h, false, false);
+}
+}
+if (get_distance (player.x, sink.x, player.y, sink.y) > 0 and @mug_here (player.x, false, player.y) != null)
+{
+if (rep != "") rep+=" ";
+uint8 l=mugs.length(), mug_count=0;
+mug@ m=null;
+for (uint8 i=0; i<l; i++)
+if (mugs[i].x==player.x and mugs[i].y==player.y and @mugs[i].owner==null)
+{
+mug_count++;
+@m=@mugs[i];
+}
+if (mug_count==1 and @m!=null)
+{
+rep+=say_mug (false, true, m);
+if (m.total==0) rep=string_trim_right(rep, 1)+" pùllitr.";
+}
+ else rep=count_mugs (null);
+}
+uint8 bl=barrels.length();
+for (uint8 i=0; i<bl; i++)
+{
+barrel@ b=barrels[i];
+if (@b.owner is null and get_distance (b.x, player.x, b.y, player.y) == 0)
+{
+if (rep != "") rep+=" ";
+rep+=say_barrel (b, false);
+}
+}
+if (mess_here (player.x, player.y))
+{
+if (count_mess_here (player.x, player.y, 1)>0)
+{
+if (rep!="") rep+=" ";
+rep+="Støepy.";
+}
+if (count_mess_here (player.x, player.y, 2)>0)
+{
+if (rep!="") rep+=" ";
+rep+="Rozlité pití.";
+}
+if (count_mess_here (player.x, player.y, 3)>0)
+{
+if (rep!="") rep+=" ";
+rep+="Zvratky.";
+}
+}
+if (rep == "") rep="Nic tu není.";
+say (rep, true, false);
+}
+
+void say_queue()
+{
+if (queue.is_empty())
+{
+say ("Nikdo ve frontì.", true, false);
+return;
+}
+uint8 q=queue.length();
+string rep="Ve frontì ";
+if (q == 1) rep+="èeká jeden zákazník. ";
+else if (q < 5) rep+="èekají "+q+" zákazníci. ";
+else rep+="èeká "+q+" zákazníkù. ";
+rep+=say_customer (queue[0], true, false);
+say (rep, true, false);
+}
+
+string say_sink (bool interrupt)
+{
+string rep="";
+if (!interrupt) rep="Døez je "+say_distance (sink.x, sink.y)+" ";
+if (sink.frames >0) rep+="Právì se myje pùllitr.";
+uint8 d=sink.washer.length();
+if (d == 0) rep+="Žádné pùllitry na umytí.";
+else
+{
+rep+=" Zbývá umýt ";
+if (d == 1) rep+="jen tento pùllitr.";
+else if (d < 5) rep+=d+" pùllitry.";
+else rep+=d+" pùllitrù.";
+}
+if (washed > 0)
+{
+if (washed == 1) rep+=" Umyl se jeden pùllitr.";
+else if (washed < 5) rep+=" Umyly se "+washed+" pùllitry.";
+else rep+=" Umylo se "+washed+" pùllitrù.";
+}
+else rep+=" Žádné pùllitry se neumyly.";
+if (broken > 0)
+{
+if (broken == 1) rep+=" Rozbil se jeden pùllitr.";
+else if (broken < 5) rep+=" Rozbily se "+broken+" pùllitry.";
+else rep+=" Rozbilo se "+broken+" pùllitrù.";
+}
+else rep+=" Žádné pùllitry se nerozbily.";
+return rep;
+}
+
+string say_door (bool interrupt)
+{
+string rep="";
+if (!interrupt)
+{
+rep="Dveøe jsou "+say_distance (door.x, door.y)+" ";
+if (door.closed) rep+="Jsou zavøené. ";
+else rep+="Jsou otevøené. ";
+}
+else
+{
+rep="Dveøe jsou ";
+if (door.closed and door.frames>fps) rep+="zavøené. ";
+else rep+="otevøené. ";
+}
+if (spawned == 0)
+{
+rep+= "Ještì nikdo nepøišel.";
+return rep;
+}
+if (spawned == 1) rep+="Pøišel jeden zákazník";
+else if (spawned < 5) rep+="Pøišli "+spawned+" zákazníci";
+else rep+="Pøišlo "+spawned+" zákazníkù";
+rep+=". ";
+uint8 c=customers.length();
+if (c == 0) rep+="Teï tu není nikdo";
+else if (c == 1) rep+="Teï tu je jeden";
+else if (c < 5) rep+="Teï tu jsou "+c;
+else rep+="Teï tu je "+c;
+rep+=". ";
+if (c == max) rep+="Máš plno. ";
+if (most>1 and most!=spawned)
+{
+if (most<5) rep+="Nejvíc najednou tu byli "+most;
+else rep+="Nejvíc najednou tu bylo "+most;
+rep+=". ";
+}
+if (fled_total == 0) rep+="Nikdo neodešel. ";
+else
+{
+if (fled_total == 1) rep+="Odešel jeden";
+else if (fled_total < 5) rep+="odešli "+fled_total;
+else rep+="odešlo "+fled_total;
+rep+=". ";
+uint8 happy=fled_total-fled;
+if (happy>0)
+{
+if (happy==fled_total)
+{
+if (happy==1) rep+="Byl spokojený.";
+else rep+="Byli spokojení.";
+}
+else
+{
+if (happy==1) rep+="Jeden byl spokojený.";
+else if (happy<5) rep+=happy+" byli spokojení.";
+else rep+=happy+" bylo spokojených.";
+}
+rep+=" ";
+}
+}
+if (throwers > 0)
+{
+if (thrown==0) rep+="Vyhazovaèi nikoho nevyvedli. ";
+else
+{
+if (thrown == 1) rep+="Vyhazovaèi vyvedli jednoho ožralu";
+else if (thrown < 5) rep+="Vyhazovaèi vyvedli "+thrown+" ožraly";
+else rep+="Vyhazovaèi vyvedli "+thrown+" ožralù";
+}
+rep+=". ";
+}
+character@[] sleeping=player.count_state (idle);
+uint8 stuns=0, l=sleeping.length(), aggro=0, stoned=0;
+for (uint8 i=0; i<l; i++)
+if (sleeping[i].punched)
+{
+stuns++;
+if (sleeping[i].prev_state==roaming) stoned++;
+else if (sleeping[i].prev_state==chasing) aggro++;
+}
+if (l > 0)
+{
+if (l == 1) rep+="Jeden teï ";
+else rep+=l+" teï ";
+rep+=statedesc[idle]+". ";
+if (stuns > 0)
+{
+if (stuns==l)
+{
+if (l==1) rep+="Je omráèený.";
+else rep+="Jsou oomráèení.";
+}
+else
+{
+if (stuns == 1) rep+="Jeden z nich je omráèený.";
+else if (stuns < 5) rep+=stuns+" z nich jsou omráèení.";
+else rep+=stuns+" z nich je omráèených.";
+}
+rep+=" ";
+if (aggro>0)
+{
+if (aggro==l)
+{
+if (l==1) rep+="Byl agresivní.";
+else rep+="Byi agresivní.";
+rep+=" ";
+}
+else
+{
+if (aggro==1) rep+="Jeden byl agresivní.";
+else if (aggro<5) rep+=aggro+" byli agresivní.";
+else rep+=aggro+" bylo agresivních.";
+rep+=" ";
+}
+}
+if (stoned>0)
+{
+if (stoned==l)
+{
+if (l==1) rep+="Byl ožralý.";
+else rep+="Byli ožralí.";
+rep+=" ";
+}
+else
+{
+if (stoned==1) rep+="Jeden byl ožralý.";
+else if (stoned<5) rep+=stoned+" byli ožralí.";
+else rep+=stoned+" bylo ožralých.";
+rep+=" ";
+}
+}
+}
+}
+else rep+="Nikdo nespí.";
+return rep;
+}
+
+string count_mugs (character@ handle)
+{
+uint8 count=0, empty=0, used=0, full=0, near_full=0, near_empty=0, partial=0, l=mugs.length();
+for (uint8 i=0; i<l; i++)
+{
+mug@ m=mugs[i];
+if (sink.washer.find (m) > -1 or (@handle == @player and player.carrying.find (m) == -1) or (@handle != null and handle.carrying.find (m) == -1) or (@handle == null and (@m.owner != null or get_distance (player.x, m.x, player.y, m.y) > 0))) continue;
+count++;
+if (dirty.find (m) > -1 or @m.drank != null) used++;
+else if (m.total == 0) empty++;
+else if (m.total >= poured_full) full++;
+else if (m.total >= poured_undermeasure) near_full++;
+else if (m.total >= poured_almost_empty) partial++;
+else near_empty++;
+}
+if (count == 0)
+{
+if (@handle != null and @handle != @player) return "Nemá žádné pùllitry.";
+else if (@handle == @player) return "Žádné pùllitry nemáš.";
+}
+string rep;
+uint8 rem=0;
+if (used > 0) rem++;
+if (full > 0) rem++;
+if (empty > 0) rem++;
+if (near_full > 0) rem++;
+if (near_empty > 0) rem++;
+if (partial > 0) rem++;
+if (rem > 0 and used > 0) rem--;
+rep+=rep_count (used, rem, "Špinavý", "špinavé", "špinavých");
+if (rem > 0 and empty > 0) rem--;
+rep+=rep_count (empty, rem, "Èistý", "èisté", "èistých");
+if (rem > 0 and full > 0) rem--;
+rep+=rep_count (full, rem, "Plný", "plné", "plných");
+if (rem > 0 and near_full > 0) rem--;
+rep+=rep_count (near_full, rem, "Skoro plný", "skoro plné", "skoro plných");
+if (rem > 0 and partial > 0) rem--;
+rep+=rep_count (partial, rem, "Poloprázdný", "poloprázdné", "poloprázdných");
+if (rem > 0 and near_empty > 0) rem--;
+rep+=rep_count (near_empty, rem, "Skoro prázdný", "skoro prázdné", "skoro prázdných");
+rep+=".";
+if (@handle != null)
+{
+if (@handle == @player) rep="Máš "+to_lower (rep);
+else rep="Má "+to_lower (rep);
+}
+return rep;
+}
+
+string rep_count (uint8 kind, uint8 left_kinds, string one, string plural234, string rest)
+{
+string result;
+if (kind > 0)
+{
+if (kind == 1) result=one;
+else if (kind < 5) result=kind+" "+plural234;
+else result=kind+" "+rest;
+if (left_kinds == 0)
+{
+if (kind == 1) result+=" pùllitr";
+else if (kind < 5) result+=" pùllitry";
+else result+=" pùllitrù";
+}
+else
+{
+if (left_kinds > 1) result+=", ";
+else result+=" a ";
+}
+}
+return result;
+}
+
+string count_customers()
+{
+uint8 c=customers.length();
+if (c == 0) return "Teï tu nikdo není.";
+string rep;
+if (c == 1) rep="Je tu jeden zákazník.";
+else if (c < 5) rep="Jsou tu "+c+" zákazníci.";
+else rep="Je tu "+c+" zákazníkù.";
+return rep;
+}
+
+void track_menu()
+{
+if (@tracking != null)
+{
+untrack();
+return;
+}
+string rep=say_customers (false);
+uint8 l=customers.length();
+if (l == 0)
+{
+say (rep, true, false);
+return;
+}
+ss_start();
+int8 custresult=1;
+string[] sections={"Nebezpeèní", "Fronta", "Bez objednávky", "Odcházející", "Pomocníci", "Ostatní"};
+while (true)
+{
+is_custmenu=true;
+string[] cust;
+cust.reserve (l);
+character@[] custmenu=customers;
+custmenu.sort_ascending();
+for (uint8 i=0; i<l; i++)
+{
+string result=custmenu[i].id+"|"+say_customer (custmenu[i], true, false)+"| |";
+if (custmenu[i].is_roaming or custmenu[i].state==chasing) cust.insert_last (result+"1");
+else if (queue.find(custmenu[i])>-1) cust.insert_last (result+"2");
+else if (custmenu[i].state==arriving or custmenu[i].state==ordering or custmenu[i].state==waiting or custmenu[i].state==returning) cust.insert_last (result+"3");
+else if (custmenu[i].leaving>0) cust.insert_last (result+"4");
+else if (custmenu[i].help_state>-1) cust.insert_last (result+"5");
+else cust.insert_last (result+"6");
+}
+cust.insert_at (0, rep);
+speak_menu_prompt=true;
+custresult=make_menu (cust, custresult, menu, true, sections);
+if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
+is_custmenu=false;
+if (custresult == 0)
+{
+if (is_game and paused and !menuloop.playing and !play_menu_sounds) say ("Zrušeno.", true, false);
+break;
+}
+customer_menu (get_customer (menu.get_item_name (custresult)));
+}
+silence_custmenu();
+ss_end();
+}
+
+void customer_menu (character@ h)
+{
+player.set_append(h);
+string[] items={"Nabídka zákazníka"};
+if (@tracking==null) items.insert_last ("start_tracking|Sledovat "+player.append);
+else items.insert_last ("untrack_customer|Pøestat sledovat "+player.append);
+if (h.name=="")
+{
+items.insert_last ("name_randomly|Pojmenovat "+player.append+" náhodnì");
+items.insert_last ("name_manually|Pojmenovat "+player.append+" ruènì");
+}
+else
+{
+items.insert_last ("rename_randomly|Pøejmenovat "+player.append+" náhodnì");
+items.insert_last ("rename_manually|Pøejmenovat "+player.append+" ruènì");
+items.insert_last ("remove|Smazat jméno "+h.name);
+}
+dynamic_menu tempmenu;
+tempmenu.set_callback (callback, "");
+int8 tempres=make_menu (items, 1, tempmenu);
+string item=tempmenu.get_item_name (tempres);
+if (instr (item, "start")) start_tracking(h);
+else if (instr (item, "untrack")) untrack();
+else if (instr (item, "name_randomly")) name_customer_randomly(h);
+else if (instr (item, "name_manually")) name_customer_manually(h);
+else if (instr (item, "remove"))
+{
+h.name="";
+h.name4="";
+}
+}
+
+void name_customer_randomly (character@ h)
+{
+if (used_names>=available_names)
+{
+used_names=0;
+for (uint i=0; i<available_names; i++) names[i].used=false;
+}
+int chosen=-1;
+while (chosen==-1 or names[chosen].used or (h.sex==1 and names[chosen].gender==2) or (h.sex==2 and names[chosen].gender==1)) chosen=random (0, available_names-1);
+names[chosen].used=true;
+used_names++;
+h.name=names[chosen].name;
+h.name4=names[chosen].name4;
+}
+
+void name_customer_manually (character@ h)
+{
+if (!oldpaused) ss_start();
+player.set_append(h);
+string prompt="Zadej jméno pro ";
+if (h.name!="") prompt+=h.name4;
+else prompt+=player.append;
+prompt+=".";
+if (speak_menu_prompt) say (prompt, true, false);
+string old_name=h.name, old_name4=h.name4;
+input.set_text(old_name);
+string inp=input.run(30);
+silence();
+play_enter();
+if (inp=="")
+{
+say ("Zrušeno.", true, false);
+if (!oldpaused) ss_end();
+return;
+}
+h.name=inp;
+prompt=string_replace (prompt, "jméno", "ètvrtý pád jména (koho, co)", true);
+say (prompt, true, false);
+input.set_text(old_name4);
+inp=input.run(30);
+silence();
+play_enter();
+if (inp=="")
+{
+say ("Zrušeno.", true, false);
+if (!oldpaused) ss_end();
+h.name=old_name;
+return;
+}
+h.name4=inp;
+say ("Hotovo.", true, false);
+if (!oldpaused) ss_end();
+}
+
+character@ name_local_customer (bool silent=false)
+{
+character@ h=null;
+character@[] w=player.count_state(waiting);
+uint8 l=w.length();
+for (uint8 i=0; i<l; i++)
+if (w[i].x==player.x and w[i].y==player.y and w[i].x==w[i].seat_x and w[i].y==w[i].seat_y and queue.find(w[i])>-1)
+{
+@h=@w[i];
+break;
+}
+if (@h==null)
+{
+if (!silent) error ("Tady nesedí nikdo s objednávkou.");
+return h;
+}
+if (!silent) name_customer_manually (h);
+return h;
+}
+
+void track()
+{
+if (tracking.state != opening and tracking.state != closing and tracking.state != falldown and player.frames > player.speed and tracker > fps and !sapi.speaking and (track_x != tracking.x or track_y != tracking.y or track_state != tracking.state))
+{
+track_x=tracking.x;
+track_y=tracking.y;
+if (track_state != tracking.state) say (statedesc[tracking.state]+". ", true, false);
+track_state=tracking.state;
+uint8 dist=get_distance (0, 0, player.y, tracking.y);
+if (player.x != tracking.x and dist > 30)
+{
+if (track_distance <= 30) say ("Pøíliš daleko.", true, false);
+track_distance=dist;
+return;
+}
+else if (player.y == tracking.y) say (say_distance (tracking.x, tracking.y), false, false);
+else
+{
+int8 dist;
+string rep;
+if (player.y > tracking.y) dist=player.y-tracking.y;
+else dist=tracking.y-player.y;
+dist=absolute (dist/2);
+rep=dist+" ";
+if (player.y > tracking.y) rep+="dolù.";
+else rep+="nahoru.";
+say (rep, false, false);
+}
+tracker=0;
+}
+tracker++;
+}
+
+void untrack()
+{
+player.set_append (tracking);
+say ("Už nesleduješ "+player.append+".", true, false);
+@tracking=null;
+tracker=0;
+track_x=-127;
+track_y=-127;
+track_distance=-127;
+track_state=-1;
+if (pool.sound_is_active(nearby))
+{
+pool.destroy_sound (nearby);
+nearby=-1;
+}
+}
+
+bool start_tracking (character@ handle)
+{
+string rep="";
+if (@tracking != null) rep="Už sleduješ jiného zákazníka.";
+else if (handle.state == idle) rep="Zákazníka nelze sledovat, protože spí.";
+else if (get_distance (0, 0, player.y, handle.y) > 30) rep="Zákazníka nelze sledovat, protože je pøíliš daleko.";
+else if ((handle.state == opening or handle.state == closing) and handle.leaving > 0) rep="Zákazníka nelze sledovat, protože právì odešel.";
+if (rep != "")
+{
+play_stat ("error");
+say (rep, true, false);
+return false;
+}
+@tracking=handle;
+player.set_append (tracking);
+say ("Sleduješ "+player.append+".", false, false);
+tracker=0;
+track_state=handle.state;
+return true;
+}
+
+void say_earned()
+{
+string em;
+if (money == 0)
+{
+em="Ještì sis nic nevydìlal";
+if (gender==2) em+="a";
+em+=".";
+}
+else
+{
+em="Vydìlal";
+if (gender==2) em+="a";
+em+=" sis "+money+" korun";
+}
+if (gratuity > 0)
+{
+em+=", z toho ";
+if (gratuity == 1) em+="jedinou korunu";
+else if (gratuity < 5) em+=gratuity+" koruny";
+else em+=gratuity;
+em+=" na dýškách.";
+if (most_gratuity_once>0) em+=" Nejvìtší dýško bylo "+most_gratuity_once+".";
+if (most_gratuity_total>0) em+=" Nejvíc na dýškách od jednoho zákazníka je "+most_gratuity_total+".";
+}
+else if (money > 0) em+=".";
+if (money > 0) em+=" Nejvìtší celková útrata jednoho zákazníka je "+most_paid+".";
+if (earned_jukebox>0) em+=" Do jukeboxu naházeli zákazníci dohromady "+earned_jukebox+" korun. Nejvíc v jukeboxu od jednoho zákazníka je "+earned_jukebox_most_customer+".";
+say (em, true, false);
+}
+
+void say_given()
+{
+if (served == 0) say ("Ještì nikdo nedostal pití.", true, false);
+else
+{
+string serv;
+if (served == 1) serv="Jeden zákazník dostal pití.";
+else if (served < 5) serv=served+" zákazníci dostali pití.";
+else serv=served+" zákazníkù dostalo pití.";
+say (serv, true, false);
+}
+}
+
+void say_broken_mugs()
+{
+if (broken == 0) say ("Žádné pùllitry se nerozbily.", true, false);
+else
+{
+string bm;
+if (broken == 1)
+{
+bm="Rozbil se jeden ";
+if (broken_nonempty==broken) bm+="plný ";
+bm+="pùllitr.";
+}
+else if (broken < 5)
+{
+bm="Rozbily se "+broken+" ";
+if (broken_nonempty==broken) bm+="plné ";
+bm+="pùllitry.";
+}
+else
+{
+bm="Rozbilo se "+broken+" ";
+if (broken_nonempty==broken) bm+="plných ";
+bm+="pùllitrù.";
+}
+if (broken_nonempty>0 and broken_nonempty!=broken)
+{
+bm+=" ";
+if (broken_nonempty==1) bm+="Jeden nebyl prázdný.";
+else if (broken_nonempty<5) bm+=broken_nonempty+" nebyly prázdné.";
+else bm+=broken_nonempty+" nebylo prázdných.";
+}
+say (bm, true, false);
+}
+}
+
+void say_broken_barrels()
+{
+if (fallen == 0) say ("Žádné sudy se nerozbily.", true, false);
+else
+{
+string bb;
+if (fallen == 1)
+{
+bb="Rozbil se jeden ";
+if (fallen_nonempty==1) bb+="plný ";
+bb+="sud.";
+}
+else if (fallen < 5)
+{
+bb="Rozbily se "+fallen+" ";
+if (fallen_nonempty==fallen) bb+="plné ";
+bb+="sudy.";
+}
+else
+{
+bb="Rozbilo se "+fallen+" ";
+if (fallen_nonempty==fallen) bb+="plných ";
+bb+="sudù.";
+}
+if (fallen_nonempty>0 and fallen_nonempty!=fallen)
+{
+bb+=" ";
+if (fallen_nonempty==1) bb+="Jeden byl plný.";
+else if (fallen_nonempty<5) bb+=fallen_nonempty+" byly plné.";
+else bb+=fallen_nonempty+" bylo plných.";
+}
+say (bb, true, false);
+}
+}
+
+void say_replaced_barrels()
+{
+if (replaced == 0) say ("Žádné sudy se nevymìnily.", true, false);
+else
+{
+string rb;
+if (replaced == 1) rb="Vymìnil se jeden sud.";
+else if (replaced < 5) rb="Vymìnily se "+replaced+" sudy.";
+else rb="Vymìnilo se "+replaced+" sudù.";
+say (rb, true, false);
+}
+}
+
+void say_fled()
+{
+string fc;
+if (fled_total == 0)
+{
+fc="Nikdo neodešel";
+if (hurt == 0) fc+=" ani neutekl kvùli zranìní";
+fc+=". ";
+}
+else if (fled_total>0)
+{
+uint8 happy=fled_total-fled;
+if (fled_total == 1)
+{
+fc="Odešel jeden ";
+if (happy==fled_total) fc+="spokojený ";
+fc+="zákazník";
+}
+else if (fled_total < 5)
+{
+fc="Odešli "+fled_total+" ";
+if (happy==fled_total) fc+="spokojení ";
+fc+="zákazníci";
+}
+else
+{
+fc="Odešlo "+fled_total+" ";
+if (happy==fled_total) fc+="spokojených ";
+fc+="zákazníkù";
+}
+fc+=". ";
+if (happy>0 and happy!=fled_total)
+{
+if (happy==1) fc+="Jeden byl spokojený. ";
+else if (happy<5) fc+=happy+" byli spokojení. ";
+else fc+=happy+" bylo spokojených. ";
+}
+if (hurt>0)
+{
+if (hurt == 1) fc+="Jeden utekl";
+else if (hurt < 5) fc+=hurt+" utekli";
+else fc+=hurt+" uteklo";
+fc+=" kvùli zranìní. ";
+}
+}
+uint8 now_fleeing=0, now_hurt=0, now_happy=0;
+uint8 l=customers.length();
+for (uint8 i=0; i<l; i++)
+{
+character@ h=@customers[i];
+if ((h.state==fleeing or h.state==opening or h.state==closing) and h.leaving==1) now_fleeing++;
+else if (h.leaving==2 or h.health<h.attack or h.health<difficulty) now_hurt++;
+else if (h.leaving==3) now_happy++;
+}
+if (now_fleeing>0 or now_hurt>0 or now_happy>0)
+{
+fc+="Teï ";
+if (now_fleeing == 0) fc+="nikdo ne";
+else if (now_fleeing == 1)
+{
+fc+="jeden ";
+if (now_happy==now_fleeing) fc+="spokojený ";
+}
+else if (now_fleeing>0 and now_fleeing<5)
+{
+fc+=now_fleeing+" ";
+if (now_fleeing==now_happy) fc+="spokojení ";
+}
+else if (now_fleeing>0)
+{
+fc+=now_fleeing+" ";
+if (now_happy==now_fleeing) fc+="spokojených ";
+}
+fc+="odchází a ";
+if (now_hurt == 0) fc+="nikdo neutíká";
+else if (now_hurt == 1) fc+="jeden utíká";
+else if (now_hurt < 5) fc+=now_hurt+" utíkají";
+else fc+=now_hurt+" utíká";
+fc+=".";
+}
+say (fc, true, false);
+}
+
+void say_thrown()
+{
+string tc;
+if (!allow_helpers) tc="V této høe jsou pomocníci zakázaní.";
+else if (!allow_throwers) tc="V této høe jsou vyhazovaèi zakázaní.";
+else if (throwers == 0) tc="Žádného vyhazovaèe jsi ještì nemìl.";
+if (tc != "")
+{
+say (tc, true, false);
+return;
+}
+character@[]@ now=player.count_state (led);
+uint8 l=now.length();
+if (thrown == 0 and l == 0)
+{
+tc="Vyhazovaèi nikoho nevyvedli.";
+say (tc, true, false);
+return;
+}
+else if (thrown == 1) tc="Vyhazovaèi vyvedli jednoho zákazníka.";
+else if (thrown>0 and thrown < 5) tc="Vyhazovaèi vyvedli "+thrown+" zákazníky.";
+else if (thrown>0) tc="Vyhazovaèi vyvedli "+thrown+" zákazníkù.";
+if (l>0)
+{
+tc+=" ";
+if (l == 1) tc+="Teï vyvádìjí jednoho.";
+else tc+="Teï vyvádìjí "+l+".";
+}
+say (tc, true, false);
+}
+
+uint8 say_misplaced_barrels (bool speak=true)
+{
+barrel@[] all=barrels;
+uint8 l=all.length();
+for (uint8 i=0; i<l; i++)
+{
+barrel@ b=all[i];
+if (@b.owner != null or b.y == bottom or (b.x == faucet.x and b.y == faucet.y))
+{
+all.remove_at (i);
+i--;
+l--;
+}
+}
+string rep;
+if (all.is_empty())
+{
+rep="Žádné upuštìné sudy.";
+if (speak) say (rep, true, false);
+return l;
+}
+else if (l == 1) rep="Jeden upuštìný sud.";
+else if (l < 5) rep=l+" upuštìné sudy.";
+else rep=l+" upuštìných sudù.";
+if (l > 1) rep+=" Nejbližší je ";
+else rep+=" Je ";
+barrel@ nearest=get_nearest (all, player);
+rep+=to_lower (say_distance (nearest.x, nearest.y));
+if (speak) say (rep, true, false);
+return l;
+}
+
+void say_queue_count()
+{
+uint8 l=queue.length();
+string rep="";
+if (l==0) rep="Nikdo ve frontì.";
+else rep=l+" ve frontì.";
+say (rep, true, false);
+}
+
+uint8 say_nonempty (bool speak=true)
+{
+string rep;
+uint8 d=mugs.length(), count=0;
+mug@[] result;
+result.reserve (d);
+for (uint8 i=0; i<d; i++)
+{
+mug@ m=mugs[i];
+if (@m.owner != null or get_distance (m.x, sink.x, m.y, sink.y) == 0 or @m.drank!=null or dirty.find(m)>-1 or m.total==0) continue;
+count++;
+if (speak) result.insert_last (m);
+}
+if (speak)
+{
+if (count == 0) rep="Žádné bezprizorní natoèené pùllitry.";
+else if (count == 1) rep="Jeden bezprizorní natoèený pùllitr.";
+else
+{
+rep="Celkem ";
+if (count < 5) rep+=count+" bezprizorní natoèené pùllitry.";
+else rep+=count+" bezprizorních natoèených pùllitrù.";
+}
+if (!result.is_empty())
+{
+if (result.length() > 1) rep+=" Nejbližší je ";
+else rep+=" Je ";
+mug@ nearest=get_nearest (result, player);
+rep+=to_lower (say_distance (nearest.x, nearest.y));
+rep+=" "+say_mug (false, true, nearest);
+}
+say (rep, true, false);
+}
+return count;
+}
+
+void say_game()
+{
+string game=modes[mode-1];
+if (hardcore) game+=", hardcore";
+if (is_tutorial) game+=", tutoriál";
+game+=", "+difficulties[difficulty-1]+" obtížnost.\r\n";
+if (endless) game+="Hraješ "+get_time (false);
+else game+=get_time();
+if (hardcore)
+{
+game+="\r\n";
+if (!allow_helpers) game+="Není povolen žádný typ pomocníkù.\r\n";
+else
+{
+game+="Jsou povolení pomocníci na ";
+if (allow_servers) game+="toèení,\n";
+if (allow_givers) game+="roznášení pití,\r\n";
+if (allow_cleaners) game+="odnášení špinavých pùllitrù,\r\n";
+if (allow_emptiers) game+="odnášení prázdných sudù,\r\n";
+if (allow_barrelers) game+="nošení nových sudù,\r\n";
+if (allow_throwers) game+="vyhazování ožralù,\r\n";
+if (allow_calmers) game+="pacifikování agresivních zákazníkù,\r\n";
+game=append_and (game);
+}
+if (!allow_trips or !allow_falls or !allow_messy or !allow_fallen or !allow_broken or !allow_fled or !allow_mistakes or !allow_stunned or !allow_playerhits)
+{
+game+="\r\nHra skonèí pøi ";
+if (!allow_trips) game+="zakopnutí,\r\n";
+if (!allow_falls) game+="pádu ze schodù,\r\n";
+if (!allow_fled) game+="odchodu zákazníka,\r\n";
+if (!allow_messy) game+="odchodu všech zákazníkù kvùli nepoøádku,\r\n";
+if (!allow_mistakes) game+="chybì pøi obsluze,\r\n";
+if (!allow_stunned) game+="praštìní zákazníka,\r\n";
+if (!allow_playerhits) game+="praštìní hráèe,\r\n";
+if (!allow_broken) game+="rozbití pùllitru,\r\n";
+if (!allow_fallen) game+="rozbití sudu,\r\n";
+game=append_and (game);
+}
+}
+say (game, true, false);
+}
+
+string append_and (string source)
+{
+string[] split=string_split (source, "\r\n", true);
+uint8 l=split.length();
+if (l<3) return source;
+source="";
+split[l-1]=string_trim_right (split[l-1], 1);
+split[l-2]=string_trim_right (split[l-2], 1);
+split[l-2]+=" nebo ";
+for (uint8 i=0; i<l; i++) source+=split[i]+" ";
+return string_trim_right (source, 1)+".";
+}

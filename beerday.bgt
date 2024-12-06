@@ -1,0 +1,46 @@
+#include "constants.bgt"
+#include "net.bgt"
+#include "audio.bgt"
+#include "help.bgt"
+#include "keyboard.bgt"
+#include "auxiliary.bgt"
+#include "game.bgt"
+#include "options.bgt"
+#include "stats.bgt"
+#include "menus.bgt"
+
+bool can_write=true;
+pack_file pack;
+timer frame, runtime;
+
+void main()
+{
+string raw=download ("", true);
+if (raw!="") is_online=true;
+initialize();
+read_motd();
+if (is_online)
+{
+if (get_motd()) say_motd (true);
+if (updates) update();
+}
+cleanup();
+if (enable_debugging and (lastrun_day!=DATE_DAY or lastrun_month!=DATE_MONTH or lastrun_year!=DATE_YEAR)) say_first ("Tom's Beerday je zatím v pøedbìžném pøístupu. Je pravdìpodobné, že bìhem hry ještì budeš narážet na  chyby. Jakoukoli pøípadnou chybu mi mùžeš nahlásit pøíslušnou položkou z hlavního menu. Pøedem díky moc.");
+lastrun_day=DATE_DAY;
+lastrun_month=DATE_MONTH;
+lastrun_year=DATE_YEAR;
+lastrun_hour=TIME_HOUR;
+lastrun_minute=TIME_MINUTE;
+menus();
+frame.restart();
+while (true)
+{
+wait (5);
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+keyboard();
+if (!paused) game();
+}
+}
+}

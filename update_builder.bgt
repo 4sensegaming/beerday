@@ -1,0 +1,60 @@
+string source="beerday.bgt", exe="beerday.exe", update="update.tmp", real="update.001", bgtpath="c:/program files (x86)/bgt/bgt.exe", exec=read_environment_variable("windir")+"/explorer.exe";
+#include "build_constants.bgt"
+
+void main()
+{
+show_game_window ("Beerday Update Builder");
+if (question ("Uvedená verze je "+version, "V poøádku?") == 2) return;
+if (!check_build()) return;
+if (question ("Zadat zprávu dne?", "") == 1) run (bgtpath, "motd.bgt", true, false);
+if (question ("Zkontrolovat log?", "") == 1) run (exec, "changelog.html", true, false);
+if (question ("Zkontrolovat to do list?", "") == 1) run (exec, "_todo.html", true, false);
+run (exec, "packer.bgt", true, false);
+file f;
+string command="";
+if (question ("Smazat profil?", "")==1) command="c";
+f.open ("lastver.dat", "wb");
+f.write (string_encrypt (version+"\t"+build_day+"\t"+build_month+"\t"+build_year+"\t"+build_hour+"\t"+build_minute+"\t"+command, scramble_update()));
+f.close();
+string compile="";
+question("Zkompilovat jako release build?", "")==1?compile="-C":compile="-c";
+run (bgtpath, compile+source, true, false);
+file_copy (exe, update, true);
+file_encrypt (update, real, scramble_update());
+file_delete (update);
+f.open ("update.002", "wb");
+f.write (string_encrypt (file_hash (real, 2, false), scramble_update()));
+f.close();
+if (question ("Pøepnout debugging?", "")==1)
+{
+string current="", new="";
+f.open ("debugging.bgt", "rb");
+string raw=f.read();
+instr(raw,"debugging==true")?current="debugging=true":current="debugging=false";
+current=="debugging=true"?new="debugging=false":new="debugging=true";
+raw=string_replace (raw, current, new, true);
+f.open ("debugging.bgt", "wb");
+f.write (raw);
+f.close();
+}
+if (question ("Uploadnout?", "")==1)
+{
+run ("C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe", "", false, false);
+wait(1000);
+}
+}
+
+bool check_build()
+{
+if (build_day != DATE_DAY or build_month != DATE_MONTH or build_year != DATE_YEAR or build_hour != TIME_HOUR or build_minute != TIME_MINUTE)
+{
+if (question ("Pozor!", "Build konstanty nejsou aktuální! Pokraèovat?") ==2) return false;
+}
+return true;
+}
+
+bool instr (string source, string part)
+{
+if (source == "" or part == "") return false;
+return string_contains (source, part, 1) > -1;
+}

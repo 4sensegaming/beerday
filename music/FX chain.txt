@@ -1,0 +1,5 @@
+Band pass/stop -> Voice hum and hiss filter
+Channel mixer -> Mono mix
+Loudness ->Loud (modern compressed)
+Vorbis, 22050 hz, mono, 40 kbps
+Pøi konverzi do galerie 128 kbps

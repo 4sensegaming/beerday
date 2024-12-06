@@ -1,0 +1,614 @@
+class text
+{
+string[] buffer;
+int index=0, old_index=0, selection_start=-1, selection_end=-1;
+string char="", word="", smart="";
+bool echo_chars=false, echo_words=false, echo_smart=true, running=false, said_max=true, numbers_only=false, allow_escape=true;
+input_callback@ callback;
+uint frames=0;
+
+text()
+{
+buffer.reserve (10000);
+}
+
+text (string data)
+{
+text();
+set_text (data);
+}
+
+void reset (bool completely=false)
+{
+buffer.resize(0);
+index=0;
+old_index=0;
+selection_start=-1;
+selection_end=-1;
+clear_echo();
+running=false;
+frames=0;
+numbers_only=false;
+allow_escape=true;
+if (completely)
+{
+echo_chars=true;
+echo_words=false;
+echo_smart=false;
+@callback=null;
+}
+}
+
+void set_text (string data, bool autoselect=true)
+{
+reset();
+if (data=="") return;
+uint l=data.length();
+for (uint i=0; i<l; i++) buffer.insert_last (data[i]);
+if (autoselect)
+{
+selection_start=0;
+selection_end=buffer.length()-1;
+}
+}
+
+string run (uint max=255)
+{
+running=true;
+frame.restart();
+while (true)
+{
+wait(5);
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+closekey();
+if (@callback!=null) callback();
+if (allow_escape and singlekey (KEY_ESCAPE))
+{
+wait_keys();
+reset();
+running=false;
+help_read=false;
+return "";
+}
+else if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER))
+{
+wait_keys();
+help_read=false;
+break;
+}
+else if ((up or down) and keys<=2 and !ctrl and !alt)
+{
+wait_keys();
+clear_echo();
+if (buffer.is_empty())
+{
+say ("Žádný text.", true, false);
+continue;
+}
+if (!shift)
+{
+string result=concat();
+uint l=buffer.length();
+if (selection_start>-1) result+=" vybráno.";
+result+="\r\n"+l+" ";
+if (l==1) result+="znak";
+else if (l<5) result+="znaky";
+else result+="znakù";
+if (max>0) result+=" z "+max;
+result+=".\r\n";
+uint spaces=string_split (concat(), " ", true).length();
+result+=spaces+" ";
+if (spaces==1) result+="slovo";
+else if (spaces<=4) result+="slova";
+else result+=" slov";
+result+=".\r\nKurzor je na pozici "+(index+1)+".";
+say (result, true, false);
+said_max=true;
+}
+else
+{
+silence();
+spell (concat());
+}
+}
+else if (inc and !ctrl and !alt and keys<=2)
+{
+move_index (0, false);
+if (shift) select_from_to (index, old_index);
+}
+else if (dec and !ctrl and !alt and keys<=2)
+{
+move_index (buffer.length(), false);
+if (shift) select_from_to (old_index, index);
+}
+else if (key_down (KEY_DELETE) and !shift and !alt)
+{
+if (!ctrl) del (true);
+else del_next_word();
+}
+else if (lone (KEY_BACK) and !shift and !alt)
+{
+if (!ctrl) del (false);
+else del_prev_word();
+}
+else if (left and keys<=3 and !alt)
+{
+silence();
+if (!ctrl) move_index (index-1);
+else prev_word();
+}
+else if (right and keys<=3 and !alt)
+{
+silence();
+if (!ctrl) move_index (index+1);
+else next_word();
+}
+else if (lone (KEY_A) and ctrl and !shift and !alt) select_all();
+else if (lone (KEY_C) and ctrl and !shift and !alt) copy();
+else if (lone (KEY_X) and ctrl and !shift and !alt) cut();
+else if (lone (KEY_V) and ctrl and !shift and !alt) paste();
+char=get_characters();
+frames++;
+if (char!="")
+{
+if (numbers_only and !string_is_digits (char))
+{
+error ("Do tohoto pole mùžeš zadávat pouze èísla.");
+char="";
+continue;
+}
+said_max=false;
+string tempchar=char;
+if (selection_start>-1) del_selection();
+char=tempchar;
+if (echo_chars) spell(char);
+buffer.insert_at (index, char);
+index++;
+if (echo_words) word+=char;
+if (echo_smart) smart+=char;
+if (echo_words and char==" ")
+{
+if (word.length()==1) spell(word);
+else say (word, false, false);
+char="";
+word="";
+}
+char="";
+frames=0;
+}
+if (frames>=fps/2 and echo_smart and smart!="" and keys==0)
+{
+if (smart.length()==1) spell(smart);
+else say (smart, false, false);
+smart="";
+frames=0;
+said_max=false;
+}
+if (max>0 and keys==0 and !said_max and smart=="")
+{
+said_max=true;
+uint l=buffer.length(), c=max-l;
+if (c>0 and c<=10)
+{
+string rep;
+if (c==1 or c>=5) rep="Zbývá";
+else rep="Zbývají";
+rep+=" "+c+" ";
+if (c==1) rep+="znak";
+else if (c<5) rep+="znaky";
+else rep+="znakù";
+rep+=".";
+clear_echo();
+say (rep, false, false);
+}
+else if (l==max)
+{
+clear_echo();
+error ("Text dosáhl maximální povolené délky "+max+" znakù.");
+buffer.resize (max);
+if (index>=max) index=buffer.length();
+continue;
+}
+}
+}
+}
+running=false;
+return concat();
+}
+
+void move_index (int new_index, bool can_select=true)
+{
+clear_echo();
+bool selection_interrupt=true;
+if (!shift and selection_start>-1)
+{
+unselect();
+selection_interrupt=false;
+}
+if (buffer.is_empty())
+{
+say ("Žádný text.");
+return;
+}
+uint l=buffer.length();
+if (new_index<0 or new_index>l)
+{
+say_text_edge();
+return;
+}
+old_index=index;
+index=new_index;
+if (shift)
+{
+selection_interrupt=false;
+if (can_select) select();
+}
+if (index<l) spell (buffer[index]);
+else say ("Konec textu.", selection_interrupt, false);
+}
+
+void next_word()
+{
+clear_echo();
+if (buffer.is_empty())
+{
+error ("Žádný text.");
+return;
+}
+int x=index, l=buffer.length();
+while (x<=l)
+{
+if (x==l) break;
+if (buffer[x]==" ")
+{
+while (x<l and buffer[x]==" ") x++;
+break;
+}
+x++;
+}
+if (x<l and buffer[x]==" ")
+{
+say_text_edge();
+return;
+}
+if (x>l) x=l;
+old_index=index;
+index=x;
+if (shift)
+{
+if (selection_start==-1) select_from_to (old_index, index);
+else select_from_to (selection_start, index);
+}
+else if (selection_start>-1) unselect();
+if (x<l) get_word();
+else say_text_edge();
+}
+
+void prev_word()
+{
+clear_echo();
+if (buffer.is_empty())
+{
+error ("Žádný text.");
+return;
+}
+int x=index, moved=0;
+if (x==0)
+{
+say_text_edge();
+return;
+}
+if (x==buffer.length()) x--;
+while (true)
+{
+if (x<0)
+{
+x=0;
+break;
+}
+if (buffer[x]==" ")
+{
+if (moved>1) break;
+while (x>-1 and buffer[x]==" ") x--;
+moved++;
+}
+else
+{
+x--;
+moved++;
+}
+}
+old_index=index;
+if (buffer[x]==" ") index=x+1;
+else index=x;
+if (shift)
+{
+if (selection_start==-1) select_from_to (index, old_index);
+else select_from_to (selection_start, old_index);
+}
+else if (selection_start>-1) unselect();
+get_word();
+}
+
+void get_word()
+{
+if (selection_start>-1)
+{
+say (concat()+" vybráno.", false, false);
+return;
+}
+int x=index, l=buffer.length();
+string word="";
+while (true)
+{
+if (x>=l or buffer[x]==" ") break;
+word+=buffer[x];
+x++;
+}
+say (word, false, false);
+}
+
+void del (bool forward)
+{
+wait_keys();
+clear_echo();
+if (selection_start>-1)
+{
+del_selection();
+return;
+}
+if (buffer.is_empty())
+{
+error ("Žádný text.");
+return;
+}
+if (index<0 or (!forward and index >buffer.length()) or (forward and index>=buffer.length()))
+{
+say_text_edge();
+return;
+}
+string deleted="";
+if (forward) deleted=buffer[index];
+else
+{
+if (index-1 < 0)
+{
+say_text_edge();
+return;
+}
+deleted=buffer[index-1];
+}
+spell (deleted);
+say ("smazáno.", false, false);
+bool move_back=false;
+if (index>=buffer.length()) move_back=true;
+if (forward) buffer.remove_at(index);
+else buffer.remove_at(index-1);
+if (move_back) index--;
+if (!buffer.is_empty() and index>-1 and index<buffer.length()) spell (buffer[index]);
+else say_text_edge();
+}
+
+void del_next_word()
+{
+wait_keys();
+clear_echo();
+if (selection_start>-1)
+{
+del_selection();
+return;
+}
+if (buffer.is_empty())
+{
+error ("Žádný text.");
+return;
+}
+string char="", word="";
+while (true)
+{
+if(index>=buffer.length()) break;
+char=buffer[index];
+word+=char;
+buffer.remove_at (index);
+if (char==" ") break;
+}
+old_index=index;
+say (word+" smazáno.", true, false);
+get_word();
+}
+
+void del_prev_word()
+{
+wait_keys();
+clear_echo();
+if (selection_start>-1)
+{
+del_selection();
+return;
+}
+if (buffer.is_empty())
+{
+error ("Žádný text.");
+return;
+}
+string char="", word="";
+old_index=index;
+if (index==buffer.length()) index--;
+while (true)
+{
+if (index<0) break;
+if (buffer[index]==" " and word!="") break;
+char=buffer[index];
+word+=char;
+buffer.remove_at (index);
+index--;
+}
+if (word!="")
+{
+uint l=buffer.length();
+if (old_index>l) index=l;
+if (index<0) index=0;
+old_index=index;
+say (string_reverse (word)+" smazáno.", true, false);
+get_word();
+}
+else index=old_index;
+}
+
+void del_selection (bool speak=true)
+{
+clear_echo();
+if (speak) say (concat()+" smazáno.", true, false);
+uint count=0, times=selection_end-selection_start;
+while (count<=times)
+{
+buffer.remove_at (selection_start);
+if (index>0) index--;
+count++;
+}
+selection_start=-1;
+selection_end=-1;
+old_index=index;
+}
+
+void select()
+{
+if (left) selection_end--;
+else selection_end=old_index;
+if (selection_start==-1) selection_start=old_index;
+if (selection_end==buffer.length()) selection_end--;
+if (selection_start<0 or selection_end>=buffer.length() or selection_end<selection_start)
+{
+selection_start=-1;
+selection_end=-1;
+say ("Nic nevybráno.", true, false);
+return;
+}
+say (concat()+" vybráno", true, false);
+}
+
+void unselect()
+{
+clear_echo();
+selection_start=-1;
+selection_end=-1;
+say ("Výbìr zrušen.", true, false);
+}
+
+void select_all()
+{
+clear_echo();
+if (buffer.is_empty())
+{
+error ("Žádný text.");
+return;
+}
+selection_start=0;
+selection_end=buffer.length()-1;
+index=selection_end;
+say ("Vybrat vše", true, false);
+}
+
+void select_from_to (int start, int end)
+{
+int l=buffer.length();
+if (end==l) end--;
+if ((selection_start==start and selection_end==end) or start==end or (end==l-1 and old_index==l and start!=0))
+{
+unselect();
+return;
+}
+selection_start=start;
+selection_end=end;
+say (concat()+" vybráno.", true, false);
+}
+
+bool copy (bool speak=true)
+{
+if (speak) clear_echo();
+if (selection_start==-1)
+{
+if (speak) error ("Nic nevybráno.");
+return false;
+}
+clipboard_copy_text (concat());
+if (speak) say ("Zkopírováno.", true, false);
+return true;
+}
+
+void cut()
+{
+clear_echo();
+if (!copy (false)) return;
+del_selection (false);
+say ("Vyjmuto., true, false");
+if (index<buffer.length()) spell (buffer[index]);
+else say ("Konec textu.", false, false);
+}
+
+void paste()
+{
+clear_echo();
+string raw=clipboard_read_text();
+if (raw=="")
+{
+error ("Ve schránce není text.");
+return;
+}
+if (instr (raw, "\r") or instr (raw, "\n"))
+{
+error ("Nelze vkládat víceøádkový text.");
+return;
+}
+bool selection_interrupt=true;
+if (selection_start>-1)
+ {
+del_selection();
+selection_interrupt=false;
+}
+uint l=raw.length();
+for (uint i=0; i<l; i++)
+{
+buffer.insert_at (index, raw[i]);
+index++;
+}
+say (raw+" vloženo.", selection_interrupt, false);
+if (index<buffer.length()) spell(buffer[index]);
+else say ("Konec textu.", false, false);
+}
+
+string concat()
+{
+if (buffer.is_empty()) return "";
+string result="";
+uint i, l;
+if (selection_start>-1) i=selection_start;
+else i=0;
+if (selection_end>-1) l=selection_end;
+else l=buffer.length()-1;
+for (; i<=l; i++) result+=buffer[i];
+return result;
+}
+
+void say_text_edge()
+{
+play_stat ("edge");
+}
+
+void clear_echo()
+{
+get_characters();
+char="";
+word="";
+smart="";
+said_max=true;
+}
+
+void set_callback (input_callback@ new_callback)
+{
+@callback=@new_callback;
+}
+}
+funcdef void input_callback();

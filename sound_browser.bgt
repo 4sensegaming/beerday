@@ -1,0 +1,137 @@
+string folder="pack/", ext=".ogg";
+sound test, beep, select;
+string[] files, selected;
+int index;
+
+void main()
+{
+if (!screen_reader_set_library_path (NVDA, "pack/nvda.dll")) alert ("Error!", "Could not load the NVDA DLL.");
+show_game_window ("Sound browser");
+files=find_files (folder+"*"+ext);
+alert ("Found "+files.length()+" sounds.", "");
+if (files.is_empty()) exit();
+load();
+while (true)
+{
+if (key_pressed (KEY_ESCAPE) or key_down (KEY_LMENU) and key_pressed (KEY_F4)) exit();
+else if (key_pressed (KEY_SPACE))
+{
+if (!test.playing) test.play_looped();
+else test.stop();
+}
+else if (key_pressed (KEY_RETURN) or key_pressed (KEY_NUMPADENTER))
+{
+if (test.playing) test.stop();
+else test.play();
+}
+else if (key_pressed (KEY_DELETE) and question ("delete "+files[index]+"?", "For real?") == 1)
+{
+test.close();
+if (!file_delete (folder+files[index])) alert ("Error!", "The delete operation failed. Reason:\r\n"+get_last_error_text());
+else
+{
+files.remove_at (index);
+if (index > 0) index--;
+load();
+}
+}
+else if (key_pressed (KEY_UP) and index > 0)
+{
+index--;
+load();
+}
+else if (key_pressed (KEY_DOWN) and index < files.length() -1)
+{
+index++;
+load();
+}
+else if (key_pressed (KEY_HOME) and index > 0)
+{
+index=0;
+load();
+}
+else if (key_pressed (KEY_END) and index < files.length() -1)
+{
+index=files.length()-1;
+load();
+}
+else if (key_pressed (KEY_F2))
+{
+test.close();
+string new_name=input_box ("Enter the new filename, without the extension.", "", string_trim_right (files[index], 4));
+if (new_name!="" and !file_copy (folder+files[index], folder+new_name+ext, false)) alert ("Error!", "The rename operation failed. Reason:\r\n"+get_last_error_text());
+else if (new_name!="")
+{
+if (!file_delete (folder+files[index])) alert ("Error!", "The delete original file operation failed. Reason:\r\n"+get_last_error_text());
+else
+{
+files=find_files (folder+"*"+ext);
+index=files.find (new_name+ext);
+if (index == -1) alert ("Error!", "The rename operation failed. Reason:\r\n"+get_last_error_text());
+else
+{
+load();
+}
+}
+}
+else if (new_name=="")
+{
+say ("Canceled.");
+wait (300);
+}
+}
+else if (key_pressed (KEY_F1))
+{
+file f;
+f.open (folder+files[index], "rb");
+string info="Length "+test.length+" milliseconds. Channels "+test.channels+". Bitrate "+test.bits+". Sample rate "+test.sample_rate+". File size "+f.size+" bytes.";
+say (info);
+f.close();
+clipboard_copy_text (files[index]+"\t"+test.length+"\t");
+}
+else if (key_pressed (KEY_F3))
+{
+if (test.playing) test.pause();
+else test.play();
+}
+else if (key_pressed (KEY_F4)) alert ("Length "+test.length, "Current position "+test.position+", which is "+round (test.length/test.position, 0)+" percent.");
+string char=get_characters();
+if (char.length() == 1 and string_is_alphabetic (char))
+{
+uint current=index, fl=files.length();
+int found=-1;
+for (uint i=current+1; i<fl; i++)
+if (files[i][0] == char)
+{
+found=i;
+break;
+}
+if (found == -1)
+for (uint i=0; i<current; i++)
+if (files[i][0] == char)
+{
+found=i;
+break;
+}
+if (found>-1)
+{
+index=found;
+say (files[index]);
+if (found != current) load();
+}
+}
+wait(5);
+}
+}
+
+void say (string text)
+{
+screen_reader_speak_interrupt (NVDA, text);
+}
+
+void load()
+{
+say ("Loading.");
+test.load (folder+files[index]);
+say (files[index]);
+}

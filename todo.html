@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Tom's Beerday - to do list</title>
+</head>
+
+<body>
+<h1>Tom's Beerday - to do list</h1>
+<p>Naposledy aktualizováno: 29. října 2024</li>
+<p><a href="changelog.html">Historie změn</a></p>
+<hr>
+<h2>Upozornění</h2>
+<p>To do list jsem si léta psal jen jako ryze interní a často dost technické poznámky sám pro sebe. Ty nejkryptičtější položky jsem před jeho zveřejněním zkusil přeformulovat, aby byly srozumitelnější, ale srozumitelnost pro mě v tomhle případě rozhodně není prioritou. Účelem to do listu je čistě jenom eliminovat hlášení chyb a požadavky na funkce, o kterých už vím nebo které už jsou v plánu. Proto když u něčeho nebudete rozumět, co to má znamenat, prosím, neptejte se mě na to, pokud nejste betatesteři. Beztak bych vám nejspíš stejně neodpověděl a radši bych ten čas využil k tomu, abych to přímo implementoval. ☺</p>
+<hr>
+<article>
+<h2 id="010">Verze 0.10</h2>
+<ul aria-labelledby="010">
+<li>Hlasitost dveří a pípy a test celého mixu přímo v nastavení</li>
+<li>Onboarding, profil a statistika</li>
+<li>Zastavit právě hrající písničku, i když nic nehraje</li>
+<li>Dopsat zbylé vokály a k nenáhodným chování</li>
+<li>Upravit hlášky v lose a v say_customer podle most_gender, drank_Most_gender, most_longest_gender</li>
+<li>Bool include_queue v say_customer, při číslech false</li>
+<li>Zrušit sledování jenom přes ctrl+shift+C, ne pomocí shift+C. Otevřít přehled i při sledovaném zákazníkovi.</li>
+<li>Nastavení:<ul>
+<li>Nastavení, jestli oznamovat dýška, domytí půllitru, sebrání a položení posledního půllitru, sudu, pomocníky, kdo koho praštil, kdo co dělá (odchází, probral se apod.), nepořádek, pády a zakopnutí zákazníků, potvrzovat nákupy v obchodě, přerušení hry a ukončení programu</li>
+<li>Interval oznamování sledovaného a jestli ho oznamovat automaticky</li>
+</ul></li>
+</ul>
+</article>
+<hr>
+<article>
+<h2 id="other">Další verze</h2>
+<ul aria-labelledby="other">
+<li>Tutoriál:<ul>
+<li>Nevkládají se do historie</li>
+<li>Nezapauzuje se zvuk nalévání</li>
+<li>Tutoriál ke zvuku prvního zákazníka ve frontě se přečte dřív, než je slyšet zvuk</li>
+<li>Tutoriál při první objednávce s odečítačem říct, až když už se vrací na místo a nečeká na prodlevu po změně stavu (Luky)</li>
+<li>Tutoriály založené na krocích (stavové klávesy) říkat po víc krocích a vždy až po řečení předchozího tutoriálu v pořadí</li>
+<li>Nasimulovat odchod, naštvání a ožrání zákazníka v příslušné fázi napevno, místo čekání na chybu hráče (Silvia)</li>
+<li>Rozdělit tutoriály na levely podle jednotlivých kroků / úkonů / činností, jako takovou kampaň (Petr K.)</li>
+<li>Upozornění, když hráč jde hodně rychle nebo zbytečně pomalu.</li>
+</ul></li>
+<li>Nějakou hezkou animaci / cutscénu při výhře</li>
+<li>Zvážit možnost průběžné aktualizace statistiky o celkové době běhu programu v reálném čase i přímo v otevřeném menu statistik.</li>
+<li>Možnost koupení si pomocníka:<ul>
+<li>Údaj ve zprávě na konci hry</li>
+<li>Zkratka, kontextové menu, klávesová nápověda</li>
+<li>Volba v hardcore, jestli tohle umožnit</li>
+<li>Menu pro výběr, na co a za kolik</li>
+<li>Chování pro automatického hráče</li>
+<li>Tutoriál</li></ul></li>
+<li>Obchod<ul>
+<li>Změnit model odemykání dalších variant: Budou k dispozici všechny jen v obchodě a žádná automaticky a kup si, co chceš, kdy chceš (Ráchel)</li>
+<li>Jak to implementovat? Může dlužit, ale nemůže kupovat pomocníky ani žádné upgrady a nové varianty, když je v mínusu, protože se automaticky budou dokupovat chybějící půllitry anebo sudy do minimálního počtu nutného ke spuštění nové hry?</li></ul></li>
+<li>Achievementy za peníze navíc</li>
+<li>Chození zákazníků na záchod</li>
+<li>Přemapovávání a obnovení výchozího ovládání</li>
+<li>Hláška o uspání i pro JAWS</li>
+<li>Port do NVGT</li>
+<li>Instalátor</li>
+<li>Lokalizace</li>
+</ul>
+</article>
+<hr>
+<article>
+<h2 id="issues">Známé chyby</h2>
+<ul aria-labelledby="issues">
+<li>Při přehrání mnoha tracků v síni slávy najednou přestanou nové tracky v určité chvíli hrát a nakonec hra spadne (runtime error &quot;standard library exception - bad allocation&quot;). Jedná se o chybu v enginu, ve kterém hru vyvíjím (BGT). V dohledné době převedu celou hru do novějšího enginu NVGT. Prozatím se tuto nepříjemnou chybu dá obejít jedině restartem celé hry. Tohle prosím nenahlašujte, zatím s tím nic neudělám.</li>
+</ul>
+</article>
+</body>
+</html>

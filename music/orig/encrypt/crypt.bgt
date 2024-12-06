@@ -1,0 +1,41 @@
+tts_voice sapi;
+string[] f;
+file c;
+
+string scramble()
+{
+const string key="Jedno pivooo, dvì pivaaa, tøi pivaaa, ètyøi pivaaa, pìt, šest, sedum, vosum piiiv, devìt, deset piiiv.";
+string temp=string_reverse (key);
+temp=string_replace (temp, "a", "\0", true);
+string result;
+uint8 l=temp.length();
+for (uint i=0; i<l; i++) result+="" + character_to_ascii (temp[i]+46);
+return result;
+}
+
+void main()
+{
+timer perf;
+f.reserve(200);
+f=find_files ("*.ogg");
+uint8 l=f.length();
+if (l==0) error ("Žádné soubory.");
+for (uint8 i=0; i<l; i++)
+{
+c.open (f[i], "rb");
+string raw=c.read();
+c.open (f[i], "wb");
+c.write (string_encrypt (raw, scramble()));
+c.close();
+}
+perf.pause();
+sapi.speak_interrupt_wait ("Zašifrováno "+l+" souborù za "+perf.elapsed+" milisekund.");
+}
+
+void error (string msg)
+{
+string err=get_last_error_text();
+if (err!="") msg+=": "+err;
+sapi.speak_interrupt_wait (msg);
+while (!f.is_empty()) file_delete (f[0]);
+}

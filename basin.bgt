@@ -1,0 +1,40 @@
+class basin:entity
+{
+mug@[] washer;
+
+void reset()
+{
+entity::reset();
+x=right_edge;
+y=0;
+washer.reserve (60);
+washer.resize (0);
+is_item=true;
+}
+
+void act()
+{
+entity::act();
+if (!playing())
+{
+if (slot>-1) clean();
+slot=play ("wash", false, true);
+}
+if (frames >= wash_time)
+{
+mug@ m=washer[0];
+m.reset();
+m.play ("drop");
+if (play_all_items) m.start_loop();
+else clear_item_loops();
+if (washer.is_empty())
+{
+if (slot>-1) clean();
+say ("Domyl se poslední pùllitr.", false);
+}
+else say ("Domyl se pùllitr.", false);
+frames=0;
+washed++;
+}
+}
+}

@@ -1,0 +1,285 @@
+class mug:item
+{
+int8[] kinds;
+double[] amounts;
+double total;
+int pour;
+character@ drank, claimed, last_owner;
+
+mug()
+{
+reset();
+}
+
+void reset()
+{
+item::reset();
+x=sink.x;
+y=sink.y;
+kinds.resize(0);
+amounts.resize(0);
+for (uint8 i=0; i<2; i++)
+{
+kinds.insert_last (-1);
+amounts.insert_last (0);
+}
+total=0;
+@drank=null;
+@claimed=null;
+@last_owner=null;
+voice=randomize("mugloop");
+start=random(0, 710);
+int8 f=dirty.find (this);
+if (f > -1) dirty.remove_at (f);
+f=sink.washer.find (this);
+if (f >-1) sink.washer.remove_at (f);
+vol=mugloop_vol;
+if (pour>-1 and things.sound_is_active(pour)) things.destroy_sound(pour);
+pour=-1;
+}
+
+void act()
+{
+if (sink.washer.find (this) == -1)
+{
+item::act();
+if (@owner != null and @owner.hand != @this and pour > -1 and things.sound_is_playing (pour)) things.pause_sound (pour);
+}
+}
+
+bool pickup (character@ handle, bool force=false)
+{
+if (@handle==null) return false;
+if (!force)
+{
+if (sink.washer.find (this) > -1 or @owner != null or handle.frozen > 0 or handle.state == tripped or handle.state == falldown or frames<trance) return false;
+if (handle.carrying.length() == beers.length())
+{
+if (handle.is_player) error ("Víc než "+beers.length()+" pùllitrù nepobereš.");
+return false;
+}
+if (@handle.has_barrel != null)
+{
+if (handle.is_player) error ("Nemùžeš sebrat pùllitr, dokud neseš sud.");
+return false;
+}
+}
+@claimed=null;
+bool makes_sound=playing() and slot>-1;
+if (makes_sound) clean();
+if (is_player) play_stat ("pickmug");
+else play("pickmug");
+if (!autoplay and handle.is_player and handle.holding == handle.carrying.length()) handle.holding++;
+handle.carrying.insert_last (this);
+@owner=handle;
+handle.frozen=1;
+handle.frames=0;
+handle.once_transition=0;
+if (!force and handle.help_state!=cleaning)
+{
+uint8 m=mugs.length(), unowned=0;
+for (uint8 i=0; i<m; i++)
+if (@mugs[i].owner == null and sink.washer.find (mugs[i]) == -1)
+{
+unowned++;
+break;
+}
+if (unowned == 0)
+{
+string rep;
+if (@handle == @player) rep="Bereš ";
+else
+{
+handle.set_prepend();
+ rep=handle.prepend+" bere ";
+}
+rep+="poslední pùllitr.";
+say (rep, false);
+}
+}
+@last_owner=@owner;
+if (makes_sound) clear_item_loops();
+if (pour>-1 and (owner.state==drinking or owner.state==waiting or owner.state==returning or owner.state==fleeing or owner.state==cleaning or owner.state==disposing or owner.is_chasing or owner.is_roaming or owner.state==giving or owner.state==ordering or owner.state==calming or owner.state==throwing or owner.state==emptiing or owner.state==barreling or owner.state==piping or owner.state==serving or total>=poured_full))
+{
+if (pour>-1) things.destroy_sound (pour);
+pour=-1;
+}
+if (@owner.seen_mug==@this) @owner.seen_mug=null;
+if (@owner.wanted_mug==@this)
+{
+@owner.wanted_mug=null;
+owner.target_x=-127;
+owner.target_y=-127;
+}
+return true;
+}
+
+void drop (bool force=false)
+{
+if (@owner == null) return;
+if ((owner.frames < owner.speed or owner.frames < owner.transition or (owner.once_transition>0 and owner.frames<owner.once_transition)) and !force) return;
+if (!force and barrel_here (x, y) !is null)
+{
+if (owner.is_player) error ("Nemùžeš položit pùllitr na sud.");
+return;
+}
+owner.carrying.remove_at (owner.carrying.find (this));
+owner.update_holding();
+if (!force and dirty.find (this) == -1 and @drank != null and get_distance (x, sink.x, y, sink.y) > 0)
+{
+dirty.insert_last (this);
+@claimed=null;
+}
+if (get_distance (x, sink.x, y, sink.y) == 0)
+{
+if (total > 0 or @drank != null) sink.washer.insert_last (this);
+int8 f=dirty.find (this);
+if (f > -1) dirty.remove_at (f);
+@last_owner=null;
+@claimed=null;
+}
+owner.frozen=1;
+owner.frames=0;
+if (!force and (owner.is_roaming or owner.state==led)) say ("Ožrala pokládá pùllitr.", false);
+if (!force and owner.is_player and owner.carrying.is_empty()) say ("Pokládáš poslední pùllitr.", false);
+if (owner.found_mug) owner.found_mug=false;
+@owner=null;
+if (!force) play ("drop");
+frames=0;
+if (total>=poured_full and pour>-1)
+{
+if (things.sound_is_active (pour)) things.destroy_sound (pour);
+pour=-1;
+}
+if (@owner==null and !force and sink.washer.find(this)==-1) act();
+}
+
+void destroy()
+{
+if (pour>-1 and things.sound_is_active (pour)) things.destroy_sound (pour);
+pour=-1;
+if (total > 0)
+{
+play ("splash");
+broken_nonempty++;
+}
+play ("break");
+if (@owner != null)
+{
+if (@owner.hand == @this)
+{
+@owner.hand=null;
+if (owner.has_drink) owner.has_drink=false;
+if (owner.found_mug) owner.found_mug=false;
+}
+owner.carrying.remove_at (owner.carrying.find (this));
+owner.update_holding();
+@owner=null;
+}
+@last_owner=null;
+mugs.remove_at (mugs.find (this));
+int8 d=dirty.find (this);
+if (d > -1) dirty.remove_at (d);
+d=sink.washer.find (this);
+if (d > -1) sink.washer.remove_at (d);
+broken++;
+if (x==stairs) y=bottom;
+uint8 has_liquid=0;
+if (total>0) has_liquid=1;
+item::destroy (has_liquid);
+if (!allow_broken) lose();
+}
+
+void sip()
+{
+uint8 a=amounts.length(), pointer=0;
+for (uint8 i=0; i<a; i++)
+if (amounts[i] > 0 and pointer != i)
+{
+pointer=i;
+break;
+}
+if (amounts[pointer] >0) amounts[pointer]--;
+if (total > 0) total--;
+if (amounts[pointer] == 0) kinds[pointer]=-1;
+if (total == 0)
+{
+if (pour > -1) things.destroy_sound (pour);
+pour=-1;
+owner.has_drink=false;
+@drank=@owner;
+}
+}
+
+bool opEquals (mug@ handle)
+{
+return handle is @this;
+}
+}
+
+void set_mug (int8 dir)
+{
+if (player.frozen > 0 or player.state == tripped or player.state == falldown or player.state == fleeing or player.state == opening or player.state == closing) return;
+if (player.carrying.is_empty())
+{
+error ("Žádné pùllitry nemáš.");
+return;
+}
+else if (dir < -1)
+{
+error ("Žádný pøedchozí pùllitr.");
+return;
+}
+else if (dir >= player.carrying.length()+1)
+{
+error ("Žádný další pùllitr.");
+return;
+}
+else if (dir == player.holding)
+{
+error ("Tento pùllitr už držíš.");
+return;
+}
+player.holding=dir;
+if (player.holding <= -1 or player.holding >= player.carrying.length())
+{
+@player.hand=null;
+say ("Žádný.", true, false);
+return;
+}
+@player.hand=player.carrying[player.holding];
+say_mug (true, true, player.hand);
+}
+
+mug@ mug_here (int8 tile, bool pourer=false, int8 yc=0)
+{
+uint8 l=mugs.length();
+for (uint8 i=0; i<l; i++)
+{
+mug@ m=mugs[i];
+if (get_distance (m.x, tile, m.y, yc) == 0 and @m.owner == null and sink.washer.find (m) == -1 and ((pourer and dirty.find (m) == -1 and @m.drank == null) or !pourer)) return m;
+}
+return null;
+}
+
+uint8 count_clean_mugs()
+{
+uint8 l=mugs.length(), count=0;
+for (uint8 i=0; i<l; i++)
+{
+mug@ m=mugs[i];
+if (@m.owner == null and sink.washer.find (m) == -1 and dirty.find (m) == -1 and @m.claimed == null and (m.total == 0 or m.total >= poured_undermeasure) and @m.drank == null) count++;
+}
+return count;
+}
+
+uint8 count_drank_mugs()
+{
+uint8 count=0, l=mugs.length();
+for (uint8 i=0; i<l; i++)
+{
+mug@ m=mugs[i];
+if (@m.drank != null and @m.owner == null and get_distance (m.x, sink.x, m.y, sink.y) > 0 and dirty.find (m) == -1 and sink.washer.find (m) == -1 and @m.claimed == null) count++;
+}
+return count;
+}

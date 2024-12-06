@@ -1,0 +1,62 @@
+bool said_mess=false;
+
+class mess:entity
+{
+uint8 type;
+bool driable=true;
+
+void act()
+{
+entity::act();
+if (type<2 or !driable) return;
+if (frames >= difficulty*60*fps) remove();
+}
+
+void remove()
+{
+uint l=messes.length();
+for (uint i=0; i<l; i++)
+if (@messes[i] is this)
+{
+if (messes[i].y==0)
+{
+if (count_mess(2)+count_mess(3)<max_liquid_mess) said_mess=false;
+if (count_mess_here(messes[i].x, messes[i].y, 2)+count_mess_here(x, y, 3)==1) play ("tidy");
+if (count_mess(2)+count_mess(3)==1) say ("Zaschl poslední nepoøádek.", false);
+dried++;
+}
+messes.remove_at (i);
+return;
+}
+}
+}
+
+bool mess_here (int8 xc, int8 yc)
+{
+double l=messes.length();
+for (double i=0; i<l; i++)
+if (messes[i].x == xc and messes[i].y == yc) return true;
+return false;
+}
+
+double count_mess (uint8 which)
+{
+double l=messes.length(), count=0;
+for (double i=0; i<l; i++)
+if (messes[i].type == which and messes[i].y==0) count++;
+return count;
+}
+
+double count_mess_here (int8 xc, int8 yc, uint8 which)
+{
+double l=messes.length(), count=0;
+for (double i=0; i<l; i++)
+if (messes[i].type == which and messes[i].x == xc and messes[i].y == yc) count++;
+return count;
+}
+
+bool can_make_mess()
+{
+double l1=count_mess(2), l2=count_mess(3);
+return l1+l2+1<max_liquid_mess;
+}

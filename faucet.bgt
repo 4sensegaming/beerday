@@ -1,0 +1,163 @@
+class faucets:entity
+{
+double[] amounts;
+uint8 pipe, state;
+character@ owner;
+mug@ using;
+int spill;
+bool said_running_out;
+
+void reset()
+{
+entity::reset();
+do
+x=random (right_edge-faucet_distance, right_edge-step_size);
+while (x == stairs);
+y=0;
+amounts.resize(0);
+uint8 a=beers.length();
+for (uint8 i=0; i<a; i++) amounts.insert_last (full_mug*beer_count);
+pipe=0;
+state=0;
+@owner=null;
+@using=null;
+spill=-1;
+frames=-1;
+said_running_out=false;
+is_item=true;
+}
+
+void start (character@ handle)
+{
+if (state == 1 or @handle==null or handle.x!=x or handle.y!=y) return;
+if (@handle.hand != null and handle.hand.kinds[0] > -1 and handle.hand.kinds[1] > -1 and handle.hand.kinds.find (pipe) == -1)
+{
+if (handle.is_player) error ("Do jednoho pùllitru nemùžeš natoèit víc než dva druhy pití.");
+return;
+}
+if (amounts[pipe] <= 0) return;
+@owner=handle;
+if (@using != @owner.hand) @using=@owner.hand;
+state=1;
+owner.frozen=1;
+owner.frames=0;
+frames=-1;
+check_pipe();
+}
+
+void stop (character@ handle, bool check_empty=true)
+{
+if (state ==0 or @handle==null or handle.x!=x or handle.y!=y) return;
+handle.frozen=1;
+handle.frames=0;
+@owner=null;
+state=0;
+if (spill>-1 and things.sound_is_playing (spill)) things.destroy_sound (spill);
+spill=-1;
+if (@using != null and using.pour > -1 and things.sound_is_playing (using.pour)) things.pause_sound (using.pour);
+@using=null;
+frames=-1;
+if (check_empty and amounts[pipe] == 0) make_empty();
+check_pipe();
+said_running_out=false;
+}
+
+void state_running()
+{
+if (amounts[pipe] == 0)
+{
+frames=-1;
+make_empty();
+stop (owner, false);
+return;
+}
+if (@owner != null and @using != null and (@owner.hand != @using or owner.x!=x or owner.y!=y)) @using=null;
+amounts[pipe]--;
+if (@owner!=null and (owner.x != x or owner.y != y or @using == null or using.total >= full_mug))
+{
+if (@using != null and using.pour > -1 and things.sound_is_playing (using.pour))
+{
+if (using.total < full_mug) things.pause_sound (using.pour);
+else
+{
+things.destroy_sound (using.pour);
+using.pour=-1;
+}
+}
+if (spill==-1)
+{
+frames=-1;
+spill=play ("spill", true);
+}
+}
+else
+{
+if (spill>-1 and things.sound_is_active (spill)) things.destroy_sound (spill);
+spill=-1;
+if (@using != null)
+{
+if (using.pour == -1) using.pour=play ("pour", false, true);
+else things.resume_sound (using.pour);
+using.total++;
+if (using.amounts[0] == 0) using.kinds[0]=pipe;
+else if (using.kinds.length()>1 and using.amounts[1] == 0 and using.kinds[0] != pipe and using.kinds[1] != pipe) using.kinds[1]=pipe;
+int8 f=using.kinds.find(pipe);
+if (f > -1) using.amounts[f]++;
+}
+}
+if (@using == null and @owner != null and @owner.hand != null and owner.x==x and owner.y==y) @using=@owner.hand;
+if (spill>-1 and things.sound_is_playing (spill) and (frames==0 or frames>fps*2) and amounts[pipe]>0) generate_mess (2);
+if (frames>fps*2) frames=1;
+check_pipe();
+}
+
+void act()
+{
+entity::act();
+if (state == 1) state_running();
+}
+
+void make_empty()
+{
+uint8 l=barrels.length();
+for (uint8 i=0; i<l; i++)
+{
+barrel@ b=barrels[i];
+if (b.x==x and b.y==y and b.kind==pipe and b.amount==0) return;
+}
+barrel new;
+new.x=x;
+new.y=y;
+new.kind=pipe;
+new.amount=0;
+new.voice="barrel";
+new.start=random(0, 330);
+new.falling=0;
+new.slot=-1;
+new.frames=0;
+new.clean_frames=0;
+new.is_player=false;
+@new.owner=null;
+new.is_item=true;
+barrels.insert_last (new);
+new.start_loop();
+string rep, b=beers[pipe];
+if (b=="Plzeò" or b=="Litovel" or b=="Polièka" or b=="Stella" or b=="Kofola" or b=="Malinovka" or b=="Domácí limonáda" or b=="Voda" or b=="Žlutá" or b=="Citrónka" or b=="Zonka" or b=="Cola" or b=="Corona") rep="Došla ";
+else if (b=="Svijany" or b=="Daèice") rep="Došly ";
+else if (b=="Kafe") rep="Došlo ";
+else rep="Došel ";
+if (count_barrels(pipe) ==0) rep+="poslední ";
+rep+=b+".";
+say (rep, false);
+frames=-1;
+}
+
+void check_pipe()
+{
+if (amounts[pipe]<=full_mug and amounts[pipe]>1 and !said_running_out)
+{
+say (beers[pipe]+" dochází.", false);
+said_running_out=true;
+}
+}
+}

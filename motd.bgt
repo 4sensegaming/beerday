@@ -1,0 +1,11 @@
+#include "build_constants.bgt"
+
+void main()
+{
+string motd=input_box ("Message of the day", "");
+if (motd == "") return;
+motd=DATE_DAY+"\t"+DATE_MONTH+"\t"+DATE_YEAR+"\t"+TIME_HOUR+"\t"+TIME_MINUTE+"\t"+motd;
+file f;
+f.open ("motd.dat", "wb");
+f.write (string_encrypt (motd, scramble_update()));
+}

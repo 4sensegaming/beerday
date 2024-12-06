@@ -1,0 +1,472 @@
+#include "sound_pool.bgt"
+#include "pack.dat"
+#include "music.bgt"
+
+sound_pool pool(200), things(200);
+sound@[] preloads;
+tts_voice sapi;
+uint output_check_frames=0;
+string[] history;
+int global=-1, ambience=-1, nearby=-1, history_index, history_old_index;
+int8 output=0;
+bool hooked=false;
+string[] files;
+string last_text="";
+sound won, move, turn, enter, esc, inmenu, submenu, custbeep, doingsound;
+
+string randomize (string file)
+{
+int8 start_index=-1, last_index=-1;
+uint count=0;
+uint l=files.length();
+for (uint x=0; x<l; x++)
+if (instr (files[x], file))
+{
+count++;
+if (start_index == -1) start_index=1;
+else last_index=count;
+}
+if (count > 1) file+=random (start_index, last_index);
+return file;
+}
+
+void silence (bool full=false)
+{
+if (output == 0 and sapi.speaking) sapi.stop();
+else if (output > 0 and foreground) screen_reader_stop_speech (output);
+if (full)
+{
+pool.destroy_all();
+things.destroy_all();
+silence_menu();
+}
+}
+
+bool say (string phrase, bool interrupt=true, bool remember=true, bool pause=false, bool correct=true)
+{
+if (pause) wait_keys();
+if (correct) phrase=sanitize (phrase);
+if (strip_diacritics) phrase=fuck_czech (phrase);
+if (interrupt)
+{
+if (output == 0) sapi.speak_interrupt (phrase);
+else screen_reader_speak_interrupt (output, phrase);
+}
+else
+{
+if (output == 0) sapi.speak (phrase);
+else screen_reader_speak (output, phrase);
+}
+if (phrase != last_text and !instr (phrase, "Pokraèuj enterem")) last_text=phrase;
+if (play_say and phrase != "" and remember and !paused and !menu.running and !is_custmenu and !keyhelp) play_stat ("say");
+if (remember and use_history)
+{
+history.insert_at (0, phrase);
+if (history_entries>0 and history.length() > history_entries) history.resize(history_entries);
+history_index=0;
+history_old_index=0;
+}
+if (enable_debugging and debug_speech) clipboard_copy_text (phrase);
+if (pause)
+{
+if (output == 0) return wait_speech();
+else wait_reader (phrase);
+}
+return true;
+}
+
+void fadeout (double volume_step=0.5, bool enable_close=true)
+{
+if (loudness <= minvol) return;
+uint l=pool.items.length(), count=0;
+for (uint i=0; i<l; i++)
+if (pool.sound_is_playing(i)) count++;
+l=things.items.length();
+for (uint i=0; i<l; i++)
+if (things.sound_is_playing(i)) count++;
+if (count==0 and !menuloop.playing and !won.playing and !is_gallery) return;
+frame.restart();
+while (get_sound_master_volume()>minvol)
+{
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+wait (5);
+if (enable_close) closekey();
+double curvol=get_sound_master_volume();
+curvol-=volume_step;
+set_sound_master_volume (curvol);
+}
+}
+silence(true);
+if (menuloop.playing) stop_menu_music();
+set_sound_master_volume (loudness);
+}
+
+void fadein (double volume_step=0.5)
+{
+if (loudness <= minvol) return;
+set_sound_master_volume(minvol-10);
+frame.restart();
+while (get_sound_master_volume() < loudness)
+{
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+wait (5);
+closekey();
+double curvol=get_sound_master_volume();
+curvol+=volume_step;
+set_sound_master_volume (curvol);
+}
+}
+}
+
+bool wait_sound (int which=global, bool fade=true)
+{
+wait_keys();
+bool old_music=play_menu_music;
+if (!is_game) play_menu_music=false;
+frame.restart();
+while (pool.sound_is_playing (which))
+{
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+wait(5);
+closekey();
+if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE))
+{
+if (fade) fadeout();
+else
+{
+pool.destroy_sound (which);
+which=-1;
+}
+if (play_menu_music!=old_music) play_menu_music=old_music;
+return false;
+}
+}
+}
+if (play_menu_music!=old_music) play_menu_music=old_music;
+return true;
+}
+
+bool wait_speech()
+{
+wait_keys();
+frame.restart();
+while (sapi.speaking)
+{
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+wait(5);
+closekey();
+if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE))
+{
+silence();
+wait_keys();
+return false;
+}
+}
+}
+wait_keys();
+return true;
+}
+
+void checkup()
+{
+output_check_frames=0;
+output=0;
+if (!forced_output)
+{
+for (uint8 x=1; x<5; x++)
+{
+if (x == 2 or x == 3) continue;
+if (screen_reader_is_running (x))
+{
+output=x;
+break;
+}
+}
+if (!hooked and output == 1 and foreground)
+{
+install_keyhook();
+hooked=true;
+}
+else if (hooked and (output != 1 or !foreground))
+{
+uninstall_keyhook();
+hooked=false;
+}
+}
+}
+
+void changed_output()
+{
+if (output == 0 and !sapi.active)
+{
+alert ("Chyba!", "Není spuštìn žádný kompatibilní odeèítaè obrazovky ani hlas Sapi. Program se ukonèí.");
+quit (true);
+}
+}
+
+void preload_audio()
+{
+say ("Naèítají se zvuky.", true, false);
+int l=files.length();
+loading.restart();
+custbeep.play_looped();
+for (uint x=0; x<l; x++)
+{
+closekey();
+sound new;
+if (!new.load (files[x]) and enable_debugging)
+{
+warning ("Nepodaøilo se naèíst zvuk "+files[x]+"\r\n"+get_last_error_text());
+exit();
+}
+closekey();
+preloads.insert_last (new);
+custbeep.pitch=custbeep.pitch+0.5;
+closekey();
+if (loading.elapsed>=10000)
+{
+read_tip (false);
+loading.restart();
+}
+closekey();
+}
+create_vocals();
+if (use_vocals)
+{
+string[] available_vocals=find_files (vocals_path+"*.wav");
+uint avl=available_vocals.length();
+if (available_vocals.is_empty())
+{
+use_vocals=false;
+loading.restart();
+loading.pause();
+all_vocals.delete_all();
+return;
+}
+say ("Naèítají se hlášky zákazníkù.", true, false);
+custbeep.pitch=100;
+set_sound_storage("");
+set_sound_decryption_key ("", false);
+for (uint i=0; i<avl; i++)
+{
+closekey();
+sound new;
+if (!new.load (vocals_path+available_vocals[i]) and enable_debugging)
+{
+warning ("Nepodaøilo se naèíst vokál "+vocals_path+available_vocals[i]+"\r\n"+get_last_error_text());
+exit();
+}
+closekey();
+preloads.insert_last (new);
+custbeep.pitch=custbeep.pitch+0.1;
+closekey();
+if (loading.elapsed>=10000)
+{
+read_tip (false);
+loading.restart();
+}
+closekey();
+}
+set_sound_storage("*");
+set_sound_decryption_key (scramble(), true);
+}
+else all_vocals.delete_all();
+custbeep.stop();
+custbeep.pitch=100;
+loading.restart();
+loading.pause();
+}
+
+void play_move()
+{
+if (!play_menu_sounds or (is_gallery and question!="")) return;
+silence_menu();
+silence();
+move.play();
+}
+
+void play_turn()
+{
+if (!play_menu_sounds or (is_gallery and question!="")) return;
+silence_menu();
+silence();
+turn.play();
+}
+
+void play_enter()
+{
+if (!play_menu_sounds or (is_gallery and question!="")) return;
+silence_menu();
+enter.play();
+}
+
+void play_esc()
+{
+if (!play_menu_sounds or (is_gallery and question!="")) return;
+silence_menu();
+esc.play();
+}
+
+void silence_menu()
+{
+if (move.playing) move.stop();
+if (turn.playing) turn.stop();
+if (enter.playing) enter.stop();
+if (esc.playing) esc.stop();
+if (submenu.playing) submenu.stop();
+if (is_learnmenu and global > -1 and pool.sound_is_playing (global))
+{
+pool.destroy_sound (global);
+global=-1;
+}
+if (is_custmenu) silence_custmenu();
+}
+
+void wait_menu()
+{
+garbage_collect();
+while (enter.playing or esc.playing) wait(5);
+}
+
+void play_inmenu()
+{
+if (!play_menu_sounds or (is_gallery and question!="")) return;
+if (turn.playing) turn.stop();
+if (move.playing) move.stop();
+if (inmenu.playing) inmenu.stop();
+if (submenu.playing) submenu.stop();
+inmenu.play();
+}
+
+void play_submenu()
+{
+if (!play_menu_sounds or (is_gallery and question!="")) return;
+if (submenu.playing) submenu.stop();
+submenu.play();
+}
+
+int play_stat (string sound, bool looping=false, bool persistent=false, double thisvol=0)
+{
+return pool.play_stationary_extended (randomize (sound) +ext, looping, 0, stereo_center, thisvol, 100, persistent);
+}
+
+void silence_custmenu()
+{
+if (custbeep.playing) custbeep.stop();
+custchanged=false;
+doingsound.close();
+if (custslot > -1 and pool.sound_is_playing (custslot))
+{
+pool.destroy_sound (custslot);
+custslot=-1;
+}
+}
+
+void pan_menu (double new_pan)
+{
+move.pan=new_pan;
+turn.pan=new_pan;
+enter.pan=new_pan;
+esc.pan=new_pan;
+inmenu.pan=new_pan;
+}
+
+void player_position()
+{
+if (custbeep.playing) custbeep.stop();
+position_sound_2d (custbeep, 0, 0, player.x, player.y, pool.pan_step, pool.volume_step, pool.behind_pitch_decrease);
+custbeep.pitch=100 -absolute (player.y/2);
+custbeep.volume=0;
+custbeep.play();
+}
+
+void clear_item_loops()
+{
+if (play_all_items or !changed_item_loops) return;
+uint l=mugs.length();
+for (uint8 i=0; i<l; i++)
+{
+if (mugs[i].slot>-1 and things.sound_is_active(mugs[i].slot)) things.destroy_sound (mugs[i].slot);
+mugs[i].slot=-1;
+if (play_mugloop and @mugs[i].owner==null and sink.washer.find(mugs[i])==-1) mugs[i].start_loop();
+}
+l=barrels.length();
+for (uint8 i=0; i<l; i++)
+{
+if (barrels[i].slot>-1 and things.sound_is_active (barrels[i].slot)) things.destroy_sound (barrels[i].slot);
+barrels[i].slot=-1;
+if (play_barrelloop and @barrels[i].owner==null and barrels[i].falling==0) barrels[i].start_loop();
+}
+changed_item_loops=false;
+}
+
+void update_ambience()
+{
+double l=-20+player.y;
+l+=(customers.length()-player.count_state(idle).length()-player.count_state(closing).length());
+uint cl=customers.length();
+for (uint i=0; i<cl; i++)
+if (customers[i].y<0) l--;
+if (ambience>-1 and !pool.items.is_empty() and pool.sound_is_active(ambience)) pool.items[ambience].handle.volume=l;
+}
+
+void update_stereo()
+{
+if (!is_game) return;
+uint l=pool.items.length();
+for (uint i=0; i<l; i++)
+{
+if (mono_audio and @pool.items[i].handle!=null) pool.items[i].handle.pan=0;
+else if (stereo_invert and @pool.items[i].handle!=null) pool.items[i].handle.pan=-pool.items[i].handle.pan;
+else if (@pool.items[i].handle!=null) pool.update_sound_start_values (i, stereo_center, pool.items[i].handle.volume, pool.items[i].handle.pitch);
+}
+l=things.items.length();
+for (uint i=0; i<l; i++)
+{
+if (mono_audio and @things.items[i].handle!=null) things.items[i].handle.pan=0;
+else if (stereo_invert and @things.items[i].handle!=null) things.items[i].handle.pan=-things.items[i].handle.pan;
+else if (@things.items[i].handle!=null) things.update_sound_start_values (i, stereo_center, things.items[i].handle.volume, things.items[i].handle.pitch);
+}
+}
+
+void update_volumes()
+{
+if (!is_game) return;
+uint8 l=pool.items.length();
+for (uint8 i=0; i<l; i++)
+{
+sound_pool_item@ snd=pool.items[i];
+string fn=snd.filename;
+sound@ sndh=snd.handle;
+if (@sndh!=null and fn!="" and sndh.paused)
+{
+if (instr (fn, "music")) pool.update_sound_start_values (i, snd.start_pan, gamemusic_vol, snd.start_pitch);
+else if (fn=="beep") pool.update_sound_start_values (i, snd.start_pan, nearby_vol, snd.start_pitch);
+else if (instr (fn, ".wav")) pool.update_sound_start_values (i, snd.start_pan, vocals_vol, snd.start_pitch);
+}
+}
+l=things.items.length();
+for (uint8 i=0; i<l; i++)
+{
+sound_pool_item@ snd=things.items[i];
+string fn=snd.filename;
+sound@ sndh=snd.handle;
+if (@sndh!=null and fn!="" and sndh.paused)
+{
+if (instr (fn, "mugloop")) things.update_sound_start_values (i, snd.start_pan, mugloop_vol, snd.start_pitch);
+else if (fn=="barrel") things.update_sound_start_values (i, snd.start_pan, barrelloop_vol, snd.start_pitch);
+}
+}
+l=mugs.length();
+for (uint8 i=0; i<l; i++) mugs[i].vol=mugloop_vol;
+l=barrels.length();
+for (uint8 i=0; i<l; i++) barrels[i].vol=barrelloop_vol;
+}

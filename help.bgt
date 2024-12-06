@@ -1,0 +1,115 @@
+command@[] shortcuts;
+
+class command
+{
+string ui_name, name, combo, combo2, desc, longdesc;
+uint8 section=0;
+}
+
+void read_help()
+{
+shortcuts.reserve (200);
+file@ helptext=pack.get_file ("help.dat");
+string[] entries=string_split (string_decrypt (helptext.read(), scramble()), "\r\n", true);
+uint e=entries.length();
+for (uint xl=0; xl<e; xl++)
+{
+command new;
+string[] sep=string_split (entries[xl], "\t", true);
+if (enable_debugging and (sep.length()<6 or sep.length()>7))
+{
+warning ("Chyba pøi parsování nápovìdy. Øádek "+(xl+1)+", zkratka:\r\n"+entries[xl]);
+continue;
+}
+new.ui_name=sep[0];
+new.name=sep[1];
+new.combo=sep[2];
+new.combo2=sep[3];
+new.desc=sep[4];
+new.longdesc=sep[5];
+if (sep.length()==7) new.section=string_to_number (sep[6]);
+shortcuts.insert_last (new);
+}
+}
+
+void help()
+{
+ss_start();
+keyhelp=true;
+say ("Klávesová nápovìda zapnuta.", true, false);
+uint8 count=0;
+string lastkey="";
+uint counter=0;
+ui_help_frames=0;
+frame.restart();
+while (!singlekey (KEY_F1))
+{
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+if (speak_ui_help)
+{
+ui_help_frames++;
+if (ui_help_frames<=ui_help_delay and keys>0) ui_help_frames=0;
+if (ui_help_frames==ui_help_delay and keys==0) say ("Libovolná klávesa dvakrát za sebou: Pøeète dlouhý popis zkratky, pokud ho daná zkratka má.", true, false);
+}
+menu_music();
+closekey();
+if (singlekey (KEY_F1)) break;
+counter++;
+string keylist="";
+if (ctrl and !instr (keylist, "kontrol")) keylist+="kontrol plus ";
+if (shift and !instr (keylist, "šift")) keylist+="šift plus ";
+if (alt and !instr (keylist, "alt")) keylist+="alt plus ";
+int[] keyb=keys_pressed();
+if (keyb.length() > 0)
+{
+uint8 ikl=indkeys.length();
+for (uint xl=0; xl<ikl; xl++)
+{
+if (keyb[0] == indkeys[xl])
+{
+keylist+=key_names[xl];
+if (instr (keylist, "vindous") or keylist == "alt plus tab" or keylist == "šift plus alt plus tab" or keylist == "kontrol plus eskejp" or keylist=="kontrol plus alt plus dylít") break;
+if (keylist == lastkey and count == 1) count=2;
+else count=1;
+counter=0;
+lastkey=keylist;
+say (keylist, true, false);
+uint8 sl=shortcuts.length();
+for (uint yl=0; yl<sl; yl++)
+{
+if (keylist == shortcuts[yl].combo or keylist == shortcuts[yl].combo2)
+{
+if (count == 2)
+{
+if (shortcuts[yl].longdesc == " ") say ("Tato zkratka nemá žádný dlouhý popis.", true, false);
+else say (shortcuts[yl].longdesc, true, false);
+}
+else say (shortcuts[yl].desc, false, false);
+break;
+}
+if (yl == shortcuts.length() -1 and keylist != shortcuts[yl].combo and keylist != shortcuts[yl].combo2)
+{
+say ("Nevyužito.", false, false);
+count=0;
+break;
+}
+}
+break;
+}
+}
+}
+if (counter >= fps/2)
+{
+counter=0;
+count=0;
+}
+}
+wait(5);
+}
+if (oldpaused) say ("Klávesová nápovìda vypnuta.", true, false);
+ui_help_frames=0;
+keyhelp=false;
+ss_end();
+}

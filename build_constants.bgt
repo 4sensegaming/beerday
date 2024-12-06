@@ -1,0 +1,14 @@
+const string version="0.9";
+const uint build_day=20, build_month=10, build_year=2024, build_hour=19, build_minute=49;
+
+string scramble_update()
+{
+const string key="Tak to by mì zajímalo, jestli se tohle nìkdy nìkomu povede rozlousknout! Chtìl bych takovýho èurdu vidìt. Aspoò se mi nikdo nebude srát, kam nemá, a to konkrétnì do aktualizací.";
+string temp=string_replace (key, " ", "  \r\n\r\n\t\t", true);
+for (uint8 i=0; i<20; i++) temp=string_reverse (temp);
+string temp2=string_base64_encode (temp);
+uint8 l=temp2.length();
+for (uint8 i=0; i<l; i++) temp2[i]=character_to_ascii (temp2[i]) -1;
+string result=temp2;
+return result;
+}

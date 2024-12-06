@@ -1,0 +1,358 @@
+bool use_vocals=true;
+string[] supported_voices, available_voices, known_voices;
+tts_voice@ tts=null;
+string vocals_path=folder+"\\vocals";
+dictionary all_vocals;
+timer loading;
+
+void read_voices()
+{
+file@ f=pack.get_file ("voices.dat");
+known_voices=string_split (string_decrypt (f.read(), scramble()), "\r\n", true);
+uint l=known_voices.length();
+for (uint i=0; i<l; i++) supported_voices.insert_last (string_split (known_voices[i], "\t", true)[0]);
+}
+
+void create_vocals()
+{
+if (!can_write)
+{
+use_vocals=false;
+return;
+}
+if (!directory_exists (vocals_path))
+{
+directory_create (vocals_path);
+say ("Vytváøejí se hlášky zákazníkù.", true, false);
+custbeep.pitch=100;
+}
+if (!directory_exists (vocals_path))
+{
+use_vocals=false;
+return;
+}
+vocals_path+="\\";
+tts_voice temp;
+@tts=@temp;
+if (@tts==null or !tts.active)
+{
+@tts=null;
+use_vocals=false;
+return;
+}
+available_voices.reserve(100);
+available_voices=tts.get_voice_names();
+uint l=available_voices.length();
+if (l==0)
+{
+@tts=null;
+use_vocals=false;
+return;
+}
+for (uint i=0; i<l; i++)
+{
+for (uint j=0; j<supported_voices.length(); j++)
+{
+string stripped=to_lower (fuck_czech (available_voices[i]));
+if (!instr (stripped, supported_voices[j])) continue;
+tts.set_current_voice (i);
+tts.rate=3;
+narrate (drunk_vocals, supported_voices[j], roaming);
+if (!use_vocals) return;
+narrate (waiting_vocals, supported_voices[j], waiting);
+narrate (got_drink_vocals, supported_voices[j], "got_drink");
+narrate (lost_patience_vocals, supported_voices[j], "lost_patience");
+narrate (drinking_vocals, supported_voices[j], drinking);
+narrate (angry_vocals, supported_voices[j], chasing);
+narrate (serve_vocals, supported_voices[j], serving);
+narrate (new_barrel_vocals, supported_voices[j], barreling);
+narrate (empty_barrel_vocals, supported_voices[j], emptiing);
+narrate (calmer_vocals, supported_voices[j], calming);
+narrate (leaving_unhappy_vocals, supported_voices[j], fleeing+1);
+narrate (leaving_hurt_vocals, supported_voices[j], fleeing+2);
+narrate (leaving_happy_vocals, supported_voices[j], fleeing+3);
+narrate (trip_vocals, supported_voices[j], tripped);
+narrate (fall_vocals, supported_voices[j], falldown);
+narrate (disposing_vocals, supported_voices[j], disposing);
+narrate (thrower_vocals, supported_voices[j], throwing);
+narrate (led_vocals, supported_voices[j], led);
+narrate (going_jukebox_vocals, supported_voices[j], wanting_jukebox);
+narrate (jukebox_vocals, supported_voices[j], jukeboxing);
+narrate (punched_vocals, supported_voices[j], "punched");
+narrate (punch_vocals, supported_voices[j], "punch");
+narrate (leave_me_vocals, supported_voices[j], "target");
+narrate (surprise_vocals, supported_voices[j], "surprise");
+narrate (skip_vocals, supported_voices[j], "skip");
+narrate (greetings, supported_voices[j], ordering);
+string v=supported_voices[j];
+uint dl=all_beers.length();
+for (uint k=0; k<dl; k++)
+{
+narrate_single (all_beers4[k], v);
+narrate_single (all_beers7[k], v);
+}
+dl=non_alco.length();
+for (uint k=0; k<dl; k++)
+{
+narrate_single (non_alco4[k], v);
+narrate_single (non_alco7[k], v);
+}
+narrate_single ("s", v);
+narrate_single ("se", v);
+}
+}
+@tts=null;
+for (int i=0; i<supported_voices.length(); i++)
+if (find_files (vocals_path+supported_voices[i]+"*.wav").is_empty())
+{
+supported_voices.remove_at (i);
+i--;
+}
+if (supported_voices.is_empty()) use_vocals=false;
+}
+
+void narrate (const string[]@ vocals, string voice, string which_state)
+{
+uint l=vocals.length(), narrated=0;
+string path=vocals_path+voice+"_"+which_state+"_";
+for (uint i=0; i<l; i++)
+{
+if (enable_debugging)
+{
+for (uint j=0; j<l; j++)
+{
+if (i==j) continue;
+if (vocals[i]==vocals[j]) warning ("Duplicitní vokál "+vocals[i]+".");
+}
+}
+closekey();
+if (file_exists (path+i+".wav") or tts.speak_to_file (path+i+".wav", vocals[i]))
+{
+narrated++;
+if (!all_vocals.exists (which_state+"_"+i)) all_vocals.set (which_state+"_"+i, vocals[i]);
+closekey();
+if (loading.elapsed>=10000)
+{
+read_tip (false);
+loading.restart();
+}
+closekey();
+}
+}
+closekey();
+custbeep.pitch=custbeep.pitch+0.1;
+//if (enable_debugging and l!=narrated) warning ("Narrated "+narrated+" z "+l+".");
+if (l>1 and narrated==0) use_vocals=false;
+if (!all_vocals.exists ("count_"+which_state))
+{
+all_vocals.set ("count_"+which_state, narrated);
+all_vocals.set ("used_"+which_state, 0);
+}
+}
+
+void narrate_single (string vocal, string voice)
+{
+vocal=to_lower (vocal);
+string path=vocals_path+voice+"_"+vocal+".wav";
+closekey();
+if (!file_exists (path))
+{
+tts.speak_to_file (path, vocal);
+custbeep.pitch=custbeep.pitch+0.1;
+closekey();
+}
+if (loading.elapsed>=10000)
+{
+read_tip (false);
+loading.restart();
+}
+closekey();
+}
+
+const string[] waiting_vocals={
+"To je doba.",
+"Panebožeto je doba.",
+"Co je.",
+"No Tak co je.",
+"Tak co bude s tim pitím.",
+"Tak co bude.",
+"No tak co bude.",
+"No tak co je jako.",
+"No tak co budejako.",
+"No tak kdy to bude?",
+"Dostanu to nìkdy?",
+"Jako dostanu to vùbec nìkdy?",
+"No to je obsluha.",
+"No ty vole tomu øikám obsluha.",
+"No tak tomu øikám obsluha.",
+"Hej hospodo.",
+"No tak hospodo.",
+"No takhaló.",
+"No tak dìlej.",
+"Dìlej hospodo.",
+"Haló.",
+"Dìlej.",
+"Panebože.",
+"Já tu mezitím zestárnu.",
+"To ti to trvá.",
+"Na co èekáš.",
+"To si radši zajdu vedle na Rùžek.",
+"Pomalejc by to nešlo?",
+"Ty se teda moc nepøedøeš.",
+"Koukám plný ruce práce, co?",
+"Že by to tady nìjak odsejpalo.",
+"To mám èekat hodinu?",
+"To tu jako budu èekat hodinu?",
+"To mám èekat do soudnýho dne?",
+"Mám tu snad èekat do soudnýho dne?",
+"Tímhle tempem tu budu ještì zejtra.",
+"To by mì zajímalo jestli se nìkdy doèkám.",
+"Doèkám se nìkdy?",
+"Tak doèkám se nebo co.",
+"No ty vole.",
+"No ty kráso.",
+"No ty krávo.",
+"Ježišto je doba.",
+"Ježišto je obsluha.",
+"Kriste paneto je doba.",
+"Kriste paneto je obsluha.",
+"Ježiši Kriste to je doba.",
+"Ježiši Kriste to je obsluha.",
+"Ty na to dobøe sereš.",
+"Ty na mì jako sereš?",
+"Se poseru.",
+"Se z toho poseru.",
+"Já se z toho poseru.",
+"Já se poseru.",
+"Já se normálnì poseru.",
+"No já se poseru.",
+"Já se fakt poseru.",
+"Já se z toho fakt poseru.",
+"Se fakt poseru.",
+"Se poseru jako.",
+"Se fakt poseru jako.",
+"Kurva.",
+"Pro todle jsme klíèema nezvonili.",
+"To za našich mladejch let nebejvalo.",
+"Kurva fix.",
+"Jedu jedu.",
+"No tak jedu.",
+"Hejbni kostrou.",
+"Bude to.",
+"No tak bude to?.",
+"Zrychli to.",
+"Neflákám to.",
+"Neflákám se.",
+"Neflákej to.",
+"Proè se tak flákáš?", 
+"Pøidej.",
+"Co ti tak trvá?",
+"Proè ti to tak trvá?",
+"Neloudej se.",
+"Proè se tak loudáš.", 
+"Neser se s tim tolik.",
+"Co se s tim tak sereš.",
+"Neser se s tim.",
+"Proè se s tim tak sereš.", 
+"Proè se s tim tak crcáš.", 
+"Necrcej se s tim.",
+"Necrcej se s tim tolik.",
+"Co se s tim tak crcáš.",
+"Tak kde to je.",
+"Tak kde to mám."};
+
+const string[] lost_patience_vocals={
+""
+};
+
+const string[] got_drink_vocals={
+""
+};
+
+const string[] drinking_vocals={
+""
+};
+
+const string[] leaving_happy_vocals={
+""
+};
+
+const string[] leaving_unhappy_vocals={
+""
+};
+
+const string[] leaving_hurt_vocals={
+""
+};
+
+const string[] angry_vocals={
+""
+};
+
+const string[] drunk_vocals={
+""
+};
+
+const string[] disposing_vocals={
+""
+};
+
+const string[] serve_vocals={
+""
+};
+
+const string[] empty_barrel_vocals={
+""
+};
+
+const string[] new_barrel_vocals={
+""
+};
+
+const string[] calmer_vocals={
+""
+};
+
+const string[] thrower_vocals={
+""
+};
+
+const string[] trip_vocals={
+""
+};
+
+const string[] fall_vocals={
+""
+};
+
+const string[] punched_vocals={
+""
+};
+
+const string[] punch_vocals={
+""
+};
+
+const string[] leave_me_vocals={
+""
+};
+
+const string[] surprise_vocals={
+""
+};
+
+const string[] skip_vocals={
+""
+};
+
+const string[] led_vocals={
+""
+};
+
+const string[] going_jukebox_vocals={
+""
+};
+
+const string[] jukebox_vocals={
+""
+};

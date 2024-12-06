@@ -1,0 +1,95 @@
+menu_back	Zpìt	eskejp	 	V nabídkách slouží k návratu o úroveò zpìt. Ve høe se vrátí zpìt do hlavní nabídky.	 	1
+silence	Pøerušení øeèi	dylít	kontrol plus šift plus alt	Pøeruší aktuální promluvu.	 
+pause	Pauza	pé	pauza	Pozastaví nebo znovu spustí hru.	 
+conmenu	Kontextové menu	kontextové menu	šift plus ef deset	Otevøe kontextové menu.	Z tohoto menu je možné zjistit kteroukoli dostupnou informaci o prùbìhu hry, zákaznících nebo pøedmìtech. Pøi spuštìní kontextového menu bude hra pozastavena.
+label_local_customer	Pojmenování zákazníka na políèku	kontrol plus cé	 	Pokud právì stojíš na políèku, kde èeká zákazník s objednávkou, otevøe dialog pro jeho pojmenování.	 
+optmenu	Nabídka nastavení	ef dva	 	Otevøe nabídku nastavení.	Pozastaví hru. Nìkterá nastavení nelze mìnit v prùbìhu hry. U takových voleb na tuto skuteènost program vždy upozorní.
+learn_menu	Nabídka seznámení se zvuky	ef tøi	 	Otevøe nabídku seznámení se zvuky.	Pozastaví hru.
+move_left	Krok doleva	levá šipka	 	Krok doleva.	 	2
+move_right	Krok doprava	pravá šipka	 	Krok doprava.	 
+move_up	Krok nahoru	horní šipka	 	Krok o schod nahoru.	 
+move_down	Krok dolù	dolní šipka	 	Krok o schod dolù.	 
+faucet_prev	Pøedchozí kohoutek	kontrol plus levá šipka	 	Pøepne pípu na pøedchozí kohoutek.	 
+faucet_next	Následující kohoutek	kontrol plus pravá šipka	 	Pøepne pípu na další kohoutek.	 
+mug_prev	Pøedchozí pùllitr	kontrol plus dolní šipka	 	Vezme do ruky pøedchozí pùllitr, který máš u sebe.	 
+mug_next	Následující pùllitr	kontrol plus horní šipka	 	Vezme do ruky další pùllitr, který máš u sebe.	 
+mug_first	První pùllitr	kontrol plus šift plus dolní šipka	 	Vezme do ruky první pùllitr, který máš u sebe.	 
+mug_last	Poslední pùllitr	kontrol plus šift plus horní šipka	 	Vezme do ruky poslední pùllitr, který máš u sebe.	 
+action_primary	Primární akce	alfanumerický enter	numerický enter	Interaguje s pøedmìtem nebo zákazníkem na políèku, kde právì stojíš, pokud je to v danou chvíli možné.	Vždy podle kontextu buï sebere pùllitr nebo odloží ten, který právì držíš v ruce, zapne nebo vypne pípu, omráèí zákazníka, sebere nebo odloží sud atd. Ne každá akce se dá provést kdykoli.
+action_secondary	Sekundární akce		šift plus alfanumerický enter	šift plus numerický enter	Pøedá natoèený pùllitr zákazníkovi; otevøe nabídku pro zaplacení zákazníkovi, aby ti pomáhal; ovládá jukebox.	 
+get_time	Informace o høe	té	 	Oznámí souhrnné informace o probíhající høe.	Informace uvádìjí - kromì uplynulého èasu v režimu nekoneèné hry nebo zbývajícího èasu ve všech ostatních režimech - i zvolenou obtížnost, režim a pøípadná omezení hardcore hry.	3
+square_info	Informace o políèku	mezerník	 	Oznámí postupnì všechny postavy nebo pøedmìty, které se nacházejí na místì, kde právì stojíš.	 
+say_door	Vzdálenost ke dveøím	dé	 	Oznámí, jak daleko jsou od tebe dveøe, kterými pøicházejí dovnitø noví zákazníci a kterými pøípadnì mùžeš i ty z hospody utéct.	Zároveò oznámí, kolik zákazníkù už v prùbìhu hry pøišlo, kolik jich tady je právì teï, kolik už jich odešlo, kolik vyhodili vyhazovaèi, kolik vyspává opici a kolik je omráèených.
+say_stairs	Vzdálenost ke schodùm	es	 	Oznámí, jak daleko jsou od tebe schody do sklepa.	Ve sklepì jsou náhradní sudy.
+say_faucet	Vzdálenost k pípì	ef	 	Oznámí, jak daleko je od tebe pípa.	Zároveò oznámí, který druh pití právì toèíš, kolik stojí atd.
+say_sink	Vzdálenost ke døezu	I	 	Oznámí, jak daleko je od tebe døez.	Zároveò oznámí, kolik zbývá umýt špinavých pùllitrù a kolik už se celkem umylo.
+say_jukebox	Vzdálenost k jukeboxu	jé	 	Oznámí, jak daleko je od tebe jukebox.	Zároveò oznámí, která písnièka právì hraje, kolik jich je v playlistu, kolik písnièek už nìkdo pustil a kolik zákazníci do jukeboxu naházeli dohromady penìz.
+say_health	Zdraví	há	 	Oznámí, kolik ti zbývá zdraví.	Zdraví ti klesá, když zakopneš, spadneš ze schodù nebo tì praští naštvaný zákazník. Pokud se dostane až na nulu, samozøejmì pro tebe hra skonèí neslavnì. Zdraví se nedá nijak obnovit.
+say_earned	Vydìlané peníze	E	 	Oznámí, kolik už máš obsluhováním zákazníkù celkem vydìláno penìz.	Každý druh pití, který mùžeš toèit, má jinou cenu. Tu se dozvíš tak, že si pøeèteš informace o pípì, buï klávesou ef kdekoli nebo mezerníkem na pøíslušném políèku.
+say_given	Poèet obsloužených zákazníkù	gé	 	Oznámí, kolik zákazníkù už v prùbìhu hry dostalo pití.	 
+say_player	Tvoje poloha	tab	 	Pøehraje krátké pípnutí znázoròující tvoji momentální pozici v herním prostoru pøi pohledu shora.	Stereováha znamená pozici na ose x, tedy zleva doprava; výška tónu pak pozici na ose y, tedy èím nižší tón, tím jsi níž na schodech, pøípadnì až úplnì dole ve sklepì.
+say_customers	Souhrn zákazníkù	cé	 	Oznámí, kolik se tu právì nachází zákazníkù a kolik z nich co dìlá.	Pokud máš nìkterého zákazníka nastaveného jako sledovaného, oznámí místo toho informace o nìm.	4
+custmenu	Podrobný pøehled všech zákazníkù	šift plus cé	 	Zobrazí podrobný pøehled všech zákazníkù.	Pozastaví hru. Zároveò uslyšíš pípání z pøíslušné pozice podle vzdálenosti toho kterého zákazníka od støedu herního prostoru. Èím nižší tón, tím níž zákazník je, tedy buï na schodech nebo dole ve sklepì. Pokud nìkterého zákazníka na této obrazovce vybereš, mùžeš ho tak zaèít sledovat nebo mu pøiøadit jméno. Bìhem samotné hry, mimo pøehled, mùžeš sledování ukonèit dalším stiskem této zkratky. Pøehled se sám nikdy nezavøe, vždycky ho musíš zavøít eskejpem.
+read_customer	Podrobné ètení informací o zákazníkovi	kontrol plus er	 	Zobrazí informace o aktuálnì vybraném zákazníkovi z pøehledu v nabídce pro ètení delšího textu.	 
+say_fled		Poèet odešlých zákazníkù		el	 	Oznámí, kolik zákazníkù už za celou dobu odešlo.	 
+say_thrown	Poèet vyhozených ožralù		šift plus el	 	Oznámí, kolik ožralých zákazníkù už v prùbìhu hry vyhodili pomocníci vyhazovaèi.	 
+say_mugs	Kolik máš pùllitrù	em	 	Oznámí, kolik máš u sebe pùllitrù.	 	5
+mugs_overview	Souhrn tvých pùllitrù		kontrol plus em	 	Oznámí podrobnìjší informace o pùllitrech, které máš u sebe.	 
+say_holding	Jaký pùllitr držíš	šift plus em	 	Oznámí, který pùllitr právì držíš v ruce.	Když zrovna toèíš, mùžeš to zjistit i mezerníkem, který pøeète informace o pípì, pokud u ní zrovna stojíš, nebo klávesou ef kdekoli.
+say_dirty	Poèet odložených pùllitrù		U	 	Oznámí, kolik je momentálnì odložených pùllitrù, tj. nikdo je zrovna nedrží a nejsou u døezu.	 
+say_broken_mugs	Poèet rozbitých pùllitrù	šift plus U	 	Oznámí, kolik se zatím rozbilo pùllitrù.	 
+say_dirty_nonempty	Poèet odložených natoèených pùllitrù	kontrol plus U	 	Oznámí, kolik je momentálnì odložených natoèených pùllitrù.	Když napøíklad zákazník, pro kterého je pùllitr natoèený, mezitím odešel. O takových pùllitrech se hodí vìdìt, protože když z nich nikdo zatím nepil, mùžeš je poøád dát nìkomu jinému.
+say_barrel	Jaký neseš sud		bé	 	Oznámí druh pití v sudu, který máš u sebe.	 	6
+say_broken_barrels	Poèet rozbitých sudù	šift plus bé	 	Oznámí, kolik se celkem rozbilo sudù.	 
+say_replaced_barrels	Poèet vymìnìných sudù	kontrol plus bé	 	Oznámí, kolik se celkem vymìnilo sudù na pípì.	 
+say_discarded_barrels	Poèet upuštìných sudù	alt plus bé	 	Oznámí, kolik je celkem upuštìných sudù.	Upuštìné sudy jsou takové, které zrovna nikdo nemá u sebe ani neleží ve sklepì, ale tøeba se nìkomu odkutálely ve výèepu atd.
+say_queue		Souhrn fronty	qé	 	Oznámí souhrnné informace o frontì.	 	7
+say_queue_count	Poèet zákazníkù ve frontì	šift plus qé	 	Oznámí pouze poèet zákazníkù, kteøí právì èekají ve frontì.	 
+say_queue1	První zákazník ve frontì	alfanumerická jednièka	numerická jednièka	Oznámí informace o prvním zákazníkovi ve frontì.	 
+say_queue2	Druhý zákazník ve frontì	alfanumerická dvojka	numerická dvojka	Oznámí informace o druhém zákazníkovi ve frontì.	 
+say_queue3	Tøetí zákazník ve frontì	alfanumerická trojka	numerická trojka	Oznámí informace o tøetím zákazníkovi ve frontì.	 
+say_queue4	Ètvrtý zákazník ve frontì	alfanumerická ètyøka	numerická ètyøka	Oznámí informace o ètvrtém zákazníkovi ve frontì.	 
+say_queue5	Pátý zákazník ve frontì	alfanumerická pìtka	numerická pìtka	Oznámí informace o pátém zákazníkovi ve frontì.	 
+say_queue6	Šestý zákazník ve frontì	alfanumerická šestka	numerická šestka	Oznámí informace o šestém zákazníkovi ve frontì.	 
+say_queue7	Sedmý zákazník ve frontì	alfanumerická sedmièka	numerická sedmièka	Oznámí informace o sedmém zákazníkovi ve frontì.	 
+say_queue8	Osmý zákazník ve frontì	alfanumerická osmièka	numerická osmièka	Oznámí informace o osmém zákazníkovi ve frontì.	 
+say_queue9	Devátý zákazník ve frontì	alfanumerická devítka	numerická devítka	Oznámí informace o devátém zákazníkovi ve frontì.	 
+say_queue10	Desátý zákazník ve frontì	alfanumerická nula	numerická nula	Oznámí informace o desátém zákazníkovi ve frontì.	 
+track_queue1	Sledování prvního zákazníka ve frontì	kontrol plus alfanumerická jednièka	kontrol plus numerická jednièka	Pøepíná sledování prvního zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.	8
+track_queue2	Sledování druhého zákazníka ve frontì	kontrol plus alfanumerická dvojka	kontrol plus numerická dvojka	Pøepíná sledování druhého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue3	Sledování tøetího zákazníka ve frontì	kontrol plus alfanumerická trojka	kontrol plus numerická trojka	Pøepíná sledování tøetího zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue4	Sledování ètvrtého zákazníka ve frontì	kontrol plus alfanumerická ètyøka	kontrol plus numerická ètyøka	Pøepíná sledování ètvrtého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue5	Sledování pátého zákazníka ve frontì	kontrol plus alfanumerická pìtka	kontrol plus numerická pìtka	Pøepíná sledování pátého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue6	Sledování šestého zákazníka ve frontì	kontrol plus alfanumerická šestka	kontrol plus numerická šestka	Pøepíná sledování šestého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue7	Sledování sedmého zákazníka ve frontì	kontrol plus alfanumerická sedmièka	kontrol plus numerická sedmièka	Pøepíná sledování sedmého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue8	Sledování osmého zákazníka ve frontì	kontrol plus alfanumerická osmièka	kontrol plus numerická osmièka	Pøepíná sledování osmého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue9	Sledování devátého zákazníka ve frontì	kontrol plus alfanumerická devítka	kontrol plus numerická devítka	Pøepíná sledování devátého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+track_queue10	Sledování desátého zákazníka ve frontì	kontrol plus alfanumerická nula	kontrol plus numerická nula	Pøepíná sledování desátého zákazníka ve frontì.	Pokud už tohoto zákazníka sleduješ, sledování se zruší. Pokud právì nikoho nesleduješ, sledování se spustí. Pokud už sleduješ nìkoho jiného, budeš nejdøív muset ruènì zrušit stávající sledování.
+say_drink1	Objednané pití prvního zákazníka ve frontì	alt plus alfanumerická jednièka	alt plus numerická jednièka	Oznámí, které pití chce první zákazník ve frontì, bez dalších informací.	 	9
+say_drink2	Objednané pití druhého zákazníka ve frontì	alt plus alfanumerická dvojka	alt plus numerická dvojka	Oznámí, které pití chce druhý zákazník ve frontì, bez dalších informací.	 
+say_drink3	Objednané pití tøetího zákazníka ve frontì	alt plus alfanumerická trojka	alt plus numerická trojka	Ooznámí, které pití chce tøetí zákazník ve frontì, bez dalších informací.	 
+say_drink4	Objednané pití ètvrtého zákazníka ve frontì	alt plus alfanumerická ètyøka	alt plus numerická ètyøka	Oznámí, které pití chce ètvrtý zákazník ve frontì, bez dalších informací.	 
+say_drink5	Objednané pití pátého zákazníka ve frontì	alt plus alfanumerická pìtka	alt plus numerická pìtka	Oznámí, které pití chce pátý zákazník ve frontì, bez dalších informací.	 
+say_drink6	Objednané pití šestého zákazníka ve frontì	alt plus alfanumerická šestka	alt plus numerická šestka	Ooznámí, které pití chce šestý zákazník ve frontì, bez dalších informací.	 
+say_drink7	Objednané pití sedmého zákazníka ve frontì	alt plus alfanumerická sedmièka	alt plus numerická sedmièka	Oznámí, které pití chce sedmý zákazník ve frontì, bez dalších informací.	 
+say_drink8	Objednané pití osmého zákazníka ve frontì	alt plus alfanumerická osmièka	alt plus numerická osmièka	Oznámí, které pití chce osmý zákazník ve frontì, bez dalších informací.	 
+say_drink9	Objednané pití devátého zákazníka ve frontì	alt plus alfanumerická devítka	alt plus numerická devítka	Oznámí, které pití chce devátý zákazník ve frontì, bez dalších informací.	 
+say_drink10	Objednané pití desátého zákazníka ve frontì	alt plus alfanumerická nula	alt plus numerická nula	Oznámí, které pití chce desátý zákazník ve frontì, bez dalších informací.	 
+label_customer_queue1	Pojmenování prvního zákazníka ve frontì	kontrol plus alt plus alfanumerická jednièka	kontrol plus alt plus numerická jednièka	Otevøe dialog pro pojmenování prvního zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.	10
+label_customer_queue2	Pojmenování druhého zákazníka ve frontì	kontrol plus alt plus alfanumerická dvojka	kontrol plus alt plus numerická dvojka	Otevøe dialog pro pojmenování druhého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue3	Pojmenování tøetího zákazníka ve frontì	kontrol plus alt plus alfanumerická trojka	kontrol plus alt plus numerická trojka	Otevøe dialog pro pojmenování tøetího zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue4	Pojmenování ètvrtého zákazníka ve frontì	kontrol plus alt plus alfanumerická ètyøka	kontrol plus alt plus numerická ètyøka	Otevøe dialog pro pojmenování ètvrtého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue5	Pojmenování pátého zákazníka ve frontì	kontrol plus alt plus alfanumerická pìtka	kontrol plus alt plus numerická pìtka	Otevøe dialog pro pojmenování pátého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue6	Pojmenování šestého zákazníka ve frontì	kontrol plus alt plus alfanumerická šestka	kontrol plus alt plus numerická šestka	Otevøe dialog pro pojmenování šestého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue7	Pojmenování sedmého zákazníka ve frontì	kontrol plus alt plus alfanumerická sedmièka	kontrol plus alt plus numerická sedmièka	Otevøe dialog pro pojmenování sedmého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue8	Pojmenování osmého zákazníka ve frontì	kontrol plus alt plus alfanumerická osmièka	kontrol plus alt plus numerická osmièka	Otevøe dialog pro pojmenování osmého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue9	Pojmenování devátého zákazníka ve frontì	kontrol plus alt plus alfanumerická devítka	kontrol plus alt plus numerická devítka	Otevøe dialog pro pojmenování devátého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+label_customer_queue10	Pojmenování desátého zákazníka ve frontì	kontrol plus alt plus alfanumerická nula	kontrol plus alt plus numerická nula	Otevøe dialog pro pojmenování desátého zákazníka ve frontì.	Pokud už tento zákazník jméno má, umožòuje ho pøejmenovat.
+log_newest	Zaèátek historie øeèi	houm	 	Ve høe se pøesune na nejnovìjší položku v historii øeèi, v nabídkách na první položku.	 	11
+log_oldest	Konec historie øeèi	end	 	Ve høe se pøesune na nejstarší položku v historii øeèi, v nabídkách na poslední položku.	 
+log_prev	Pøedchozí položka v historii øeèi	pejdž ap	 	Ve høe se pøesune na nejbližší novìjší položku v historii øeèi, v nabídkách o 10 položek nahoru.	 
+log_next	Následující položka v historii øeèi	pejdž daun	 	Ve høe se pøesune na nejbližší starší položku v historii øeèi, v nabídkách o 10 položek dolù.	 
+say_history	Zopakování vybrané položky v historii øeèi	dvojité vé	 	Zopakuje vybranou položku v historii øeèi.	 
+copy_history	Zkopírování vybrané položky v historii øeèi	kontrol plus dvojité vé	 	Skopíruje vybranou položku v historii øeèi do schránky.	 
+spell_history	Vyhláskování vybrané položky v historii øeèi	šift plus dvojité vé	 	Vyhláskuje vybranou položku v historii øeèi znak po znaku.	 
+read_history	Podrobné ètení vybrané položky v historii øeèi	kontrol plus šift plus dvojité vé	 	Zobrazí vybranou položku v historii øeèi v nabídce pro ètení delšího textu.	 

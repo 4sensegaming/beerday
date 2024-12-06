@@ -1,0 +1,95 @@
+void main()
+{
+show_game_window ("Steps");
+string[] steps=find_files ("pack/*.ogg");
+uint l=steps.length();
+for (uint i=0; i<l; i++)
+if (string_contains (steps[i], "floor", 1) == -1 and string_contains (steps[i], "stairs", 1) == -1)
+{
+steps.remove_at (i);
+i--;
+l--;
+}
+tts_voice sapi;
+l=steps.length();
+if (l == 0)
+{
+sapi.speak_interrupt_wait ("Žádné kroky nenalezeny.");
+exit();
+}
+sound[] sounds;
+sounds.reserve (l);
+for (uint i=0; i<l; i++)
+{
+sound new;
+sounds.insert_last (new);
+sounds[sounds.length()-1].load ("pack/"+steps[i]);
+if (!sounds[sounds.length()-1].active)
+{
+sapi.speak_interrupt_wait ("Zvuk "+steps[i]+" se nepodaøilo naèíst.\r\n"+get_last_error_text());
+exit();
+}
+}
+sapi.speak_interrupt_wait ("Naèteno "+sounds.length()+" zvukù.");
+if (sounds.length() != l) exit();
+uint index=0;
+bool autoplay=true;
+while (true)
+{
+wait (5);
+if (key_pressed (KEY_ESCAPE) or (key_down (KEY_LMENU) and key_pressed (KEY_F4))) exit();
+else if (key_pressed (KEY_RETURN) or key_pressed (KEY_NUMPADENTER))
+{
+sapi.stop();
+sounds[index].stop();
+sounds[index].play();
+}
+else if (key_pressed (KEY_SPACE))
+{
+sapi.speak_interrupt ("Zvuk "+steps[index]+". "+(index+1)+" z "+l+". Délka "+sounds[index].length+", sample rate "+sounds[index].sample_rate+", kanály "+sounds[index].channels+", bitrate "+sounds[index].bits+".");
+clipboard_copy_text (steps[index]);
+}
+else if ((key_pressed (KEY_UP) or key_pressed (KEY_LEFT)) and index > 0)
+{
+if (autoplay) sounds[index].stop();
+index--;
+if (!autoplay) sapi.speak_interrupt (steps[index]);
+else sounds[index].play();
+}
+else if ((key_pressed (KEY_RIGHT) or key_pressed (KEY_DOWN)) and index < l-1)
+{
+if (autoplay) sounds[index].stop();
+index++;
+if (!autoplay) sapi.speak_interrupt (steps[index]);
+else sounds[index].play();
+}
+else if (key_pressed (KEY_HOME) and index > 0)
+{
+if (autoplay) sounds[index].stop();
+index=0;
+if (!autoplay) sapi.speak_interrupt (steps[index]);
+else sounds[index].play();
+}
+else if (key_pressed (KEY_END) and index < l-1)
+{
+if (autoplay) sounds[index].stop();
+index=l-1;
+if (!autoplay) sapi.speak_interrupt (steps[index]);
+else sounds[index].play();
+}
+else if (key_pressed (KEY_LCONTROL) or key_pressed (KEY_RCONTROL) or key_pressed (KEY_LSHIFT) or key_pressed (KEY_RSHIFT) or key_pressed (KEY_LMENU) or key_pressed (KEY_RMENU)) sapi.stop();
+else if (key_pressed (KEY_TAB))
+{
+if (autoplay)
+{
+autoplay=false;
+sapi.speak_interrupt ("Autoplay off.");
+}
+else
+{
+autoplay=true;
+sapi.speak_interrupt ("Autoplay on.");
+}
+}
+}
+}

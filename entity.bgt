@@ -1,0 +1,160 @@
+class entity
+{
+int8 x, y, fell_from;
+int slot=-1, frames=0, clean_frames;
+bool is_player, is_item;
+double vol, size;
+
+void sync()
+{
+if (frames<0) frames=0;
+frames++;
+clean_frames++;
+}
+
+void act()
+{
+sync();
+if (clean_frames >= fps/10)
+{
+clean_frames=0;
+if (!playing() and slot>-1) clean();
+}
+}
+
+void reset()
+{
+clean();
+frames=0;
+clean_frames=0;
+is_player=false;
+is_item=false;
+fell_from=bottom;
+vol=0;
+size=random (90, 110);
+}
+
+int play (string what, bool loop=false, bool persistent=false, double thisvol=0)
+{
+if (instr (what, "music")) thisvol=gamemusic_vol;
+else if (instr (what, "beep")) thisvol=nearby_vol;
+sound_pool@ handle=get_pool (what);
+return handle.play_extended_2d (randomize (what) +ext, player.x, player.y, x, y, 0, 0, 0, 0, loop, 0, 0, thisvol, 100, persistent);
+}
+
+void knock (bool characters=false)
+{
+uint8 l=mugs.length();
+for (int8 i=0; i<l; i++)
+{
+mug@ m=mugs[i];
+if (get_distance (m.x, x, m.y, y) == 0 and get_distance (m.x, sink.x, m.y, sink.y) > 0 and (@m.owner == null or @m.owner == @this))
+{
+m.destroy();
+l--;
+i--;
+}
+}
+l=barrels.length();
+for (uint8 i=0; i<l; i++)
+{
+barrel@ b=barrels[i];
+if (@b != @this and b.falling == 0 and get_distance (b.x, x, b.y, y) == 0 and (@b.owner == null or @b.owner == @this))
+{
+b.y=y;
+if (x==stairs)
+{
+b.falling=1;
+if (b.playing()) b.clean();
+b.slot=b.play ("fall", false, true);
+}
+else
+{
+b.play ("fall");
+b.destroy();
+i--;
+l--;
+}
+}
+}
+if (!characters) return;
+l=customers.length();
+for (uint8 i=0; i<l; i++)
+{
+character@ c=customers[i];
+if (@c != @this and c.state != tripped and c.state != falldown and c.state != idle and get_distance (c.x, x, c.y, y) == 0) c.trip();
+}
+if (!is_player)
+if (player.state != tripped and player.state != falldown and get_distance (player.x, x, player.y, y) == 0) player.trip();
+}
+
+void clean()
+{
+sound_pool@ handle=get_pool();
+if (slot > -1) handle.destroy_sound (slot);
+slot=-1;
+}
+
+bool playing()
+{
+return slot>-1 and get_pool().sound_is_playing(slot);
+}
+
+void update()
+{
+if (playing()) get_pool().update_sound_2d (slot, x, y);
+}
+
+void fall_sideways()
+{
+int8 temp_x=x;
+do
+{
+temp_x=random (x-(2*difficulty), x+(2*difficulty));
+if (temp_x < left_edge) temp_x=left_edge;
+else if (temp_x > right_edge) temp_x=right_edge;
+}
+while (temp_x == x);
+x=temp_x;
+if (is_player and playing()) pool.update_sound_2d (slot, x, y);
+if (x==faucet.x and y==0) play ("pipe");
+else if (x==radio and y==0) play ("collidejukebox");
+}
+
+void generate_mess (uint8 type, bool can_dry=true, bool warn=true)
+{
+mess new;
+new.type=type;
+new.x=x;
+new.y=y;
+new.driable=can_dry;
+messes.insert_last (new);
+if (!autoplay) set_stat ("mess"+type, 1);
+if (count_active()>0 and type>1 and count_mess(2)+count_mess(3) >=percent (max_liquid_mess, 80) and count_mess (2)+count_mess(3) < max_liquid_mess and warn and y==0 and !said_mess)
+{
+play_stat ("alert");
+say ("Brzy ti odejdou všichni zákazníci, protože je tu takový nepoøádek.", false);
+}
+}
+
+barrel@ barrel_here (int8 tile, int8 yc=0, bool full_only=false)
+{
+barrel@ handle=null;
+uint8 l=barrels.length();
+for (uint8 i=0; i<l; i++)
+if (barrels[i] !is this and barrels[i].x == tile and barrels[i].y == yc and (barrels[i].amount>0 or !full_only))
+{
+@handle=barrels[i];
+break;
+}
+return handle;
+}
+
+sound_pool@ get_pool (string what="")
+{
+sound_pool@ handle;
+if (is_item or (what!="" and (instr (what, "pour") or instr (what, "faucet") or instr (what, "wash") or instr (what, "drop")))) @handle=@things;
+else @handle=@pool;
+return handle;
+}
+}

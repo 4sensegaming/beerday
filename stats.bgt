@@ -1,0 +1,432 @@
+string[] stat_sections={"Bìh programu", "Poèty her", "Dokonèené", "Prohrané", "Pøerušené", "Odehráno", "Poèty hardcore her", "Dokonèené", "Prohrané", "Pøerušené", "Odehráno", "Nejdelší nekoneèná normální hra", "Nejdelší nekoneèná automatická hra", "Pohyb", "Zákazníci celkovì", "Omráèeno hráèem", "Omráèeno jiným zákazníkem", "Pomocníci", "Zajímaví zákazníci", "Praštìní hráèe", "Vydìláno", "Na dýškách", "Z jukeboxu", "Jukebox celkovì", "Pùllitry", "Sudy", "Nepoøádek", "Rozneseno pití"};
+
+class stat
+{
+string name="", ui_name="";
+double content;
+uint8 section=0;
+
+string render (bool copied=false)
+{
+if (content > 0 or show_empty_stats)
+{
+if (instr (name, "duration") or instr (name, "longest") or instr (name, "patient") or instr (name, "runtime"))
+{
+bool is_longest=true;
+if (instr (name, "longest") or instr (name, "patient")) is_longest=false;
+if (content > 0)
+{
+if (copied) return ui_name+": "+get_time (is_longest, content, true);
+else return name+"|"+ui_name+": "+get_time (is_longest, content, true);
+}
+else
+{
+if (copied) return ui_name+": Dosud žádný èas";
+else return name+"|"+ui_name+": Dosud žádný èas.";
+}
+}
+else
+{
+if (copied) return ui_name+": "+content;
+else return name+"|"+ui_name+": "+content;
+}
+}
+if (copied) return "";
+else return " | ";
+}
+
+int opCmp (stat@ handle)
+{
+string this=ui_name, other=handle.ui_name;
+if (this > other) return 1;
+else if (this == other) return 0;
+else return -1;
+}
+}
+
+stat[] stats;
+
+stat@ find_stat (string name)
+{
+stat@ handle=null;
+uint sl=stats.length();
+for (uint i=0; i<sl; i++)
+if (stats[i].name == name) return stats[i];
+if (@handle==null and enable_debugging) warning ("Neexistující statistika "+name+".");
+return handle;
+}
+
+double get_stat (string name)
+{
+stat@ temp=find_stat (name);
+if (@temp==null)
+{
+if (enable_debugging) warning ("Statistika "+name+" nenalezena.");
+exit();
+}
+return temp.content;
+}
+
+void set_stat (string name, double value, bool overwrite=false)
+{
+if ((is_tutorial or value == 0) and name != "runtime") return;
+stat@ handle=find_stat (name);
+if (@handle == null) return;
+if (!overwrite) handle.content+=value;
+else if (value > handle.content) handle.content=value;
+}
+
+void create_stats()
+{
+file@ f=pack.get_file ("stats.dat");
+string raw=string_decrypt (f.read(), scramble());
+if (raw=="")
+{
+if (enable_debugging) warning ("Chyba pøi naèítání statistik:\r\n"+get_last_error_text());
+return;
+}
+string[] split=string_split (raw, "\r\n", true);
+uint l=split.length();
+stats.reserve (l);
+uint last_section=1;
+for (uint i=0; i<l; i++)
+{
+string[] single_stat=string_split (split[i], "\t", true);
+uint8 ssl=single_stat.length();
+if ((ssl<2 or ssl>3))
+{
+if (enable_debugging) warning ("Nesprávná statistika na øádku "+(i+1)+". Má jen "+ssl+" prvkù.");
+return;
+}
+stat new;
+new.name=single_stat[0];
+new.ui_name=single_stat[1];
+if (ssl==3) last_section=string_to_number (single_stat[2]);
+new.content=0;
+new.section=last_section;
+stats.insert_last (new);
+}
+l=all_beers.length();
+uint8 nl=non_alco.length();
+for (uint8 i=0; i<l; i++)
+{
+stat new;
+new.content=0;
+new.ui_name="Celkem";
+new.name="solo_"+all_beers[i];
+last_section++;
+new.section=last_section;
+stats.insert_last (new);
+for (uint8 j=0; j<l; j++)
+{
+if (all_beers[i]==all_beers[j]) continue;
+stat mix;
+mix.content=0;
+mix.name="mixed_"+all_beers[i]+"_"+all_beers[j];
+string mixed_name=all_beers7[j];
+if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="se "+mixed_name;
+else mixed_name="s "+mixed_name;
+mix.ui_name=mixed_name;
+stats.insert_last (mix);
+}
+for (uint8 k=0; k<nl; k++)
+{
+stat mix;
+mix.content=0;
+mix.name="mixed_"+all_beers[i]+"_"+non_alco[k];
+string mixed_name=non_alco7[k];
+if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="se "+mixed_name;
+else mixed_name="s "+mixed_name;
+mix.ui_name=mixed_name;
+stats.insert_last (mix);
+}
+}
+for (uint8 i=0; i<nl; i++)
+{
+stat new;
+new.content=0;
+new.ui_name="Celkem";
+new.name="solo_"+non_alco[i];
+last_section++;
+new.section=last_section;
+stats.insert_last (new);
+for (uint8 j=0; j<l; j++)
+{
+stat mix;
+mix.content=0;
+mix.name="mixed_"+non_alco[i]+"_"+all_beers[j];
+string mixed_name=all_beers7[j];
+if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="se "+mixed_name;
+else mixed_name="s "+mixed_name;
+mix.ui_name=mixed_name;
+stats.insert_last (mix);
+}
+}
+}
+
+void save_stats()
+{
+update_runtime();
+uint l=stats.length();
+for (uint i=0; i<l; i++)
+if (stats[i].content>0) profile.set (stats[i].name, stats[i].content);
+profile.set ("did_tutorial", did_tutorial);
+}
+
+void load_stats()
+{
+uint l=stats.length();
+for (uint i=0; i<l; i++)
+if (profile.exists (stats[i].name)) profile.get (stats[i].name, stats[i].content);
+if (profile.exists ("did_tutorial")) profile.get ("did_tutorial", did_tutorial);
+set_stat ("run_times", 1);
+}
+
+void make_stats (bool exited)
+{
+if (!can_write) return;
+update_runtime();
+if (is_tutorial)
+{
+save_stats();
+return;
+}
+update_customer_stats();
+set_stat ("played_total", 1);
+set_stat ("played_diff"+difficulty, 1);
+set_stat ("duration_total", elapsed);
+set_stat ("duration_diff"+difficulty, elapsed);
+set_stat ("played_mode"+mode, 1);
+set_stat ("duration_mode"+mode, elapsed);
+if (!endless and elapsed >= limit)
+{
+set_stat ("completed_total", 1);
+set_stat ("completed_diff"+difficulty, 1);
+set_stat ("completed_mode"+mode, 1);
+set_stat ("duration_completed", elapsed);
+}
+else
+{
+if (exited)
+{
+set_stat ("quit_total", 1);
+set_stat ("quit_diff"+difficulty, 1);
+set_stat ("quit_mode"+mode, 1);
+set_stat ("duration_quit", elapsed);
+}
+else
+{
+set_stat ("lost_total", 1);
+set_stat ("lost_diff"+difficulty, 1);
+set_stat ("lost_mode"+mode, 1);
+set_stat ("duration_lost", elapsed);
+}
+}
+if (mode == 3)
+{
+set_stat ("longest_overall_total", elapsed, true);
+set_stat ("longest_diff"+difficulty, elapsed, true);
+}
+else if (mode == 4)
+{
+set_stat ("longest_auto_overall_total", elapsed, true);
+set_stat ("longest_auto_diff"+difficulty, elapsed, true);
+}
+if (hardcore)
+{
+set_stat ("played_hardcore_total", 1);
+set_stat ("played_hardcore_mode"+mode, 1);
+set_stat ("duration_hardcore_total", elapsed);
+set_stat ("played_hardcore_diff"+difficulty, 1);
+set_stat ("duration_hardcore_mode"+mode, elapsed);
+set_stat ("duration_hardcore_diff"+difficulty, 1);
+if (elapsed >= limit)
+{
+set_stat ("completed_hardcore_total", 1);
+set_stat ("completed_hardcore_mode"+mode, 1);
+set_stat ("duration_hardcore_completed", elapsed);
+set_stat ("completed_hardcore_diff"+difficulty, 1);
+}
+else
+{
+if (exited)
+{
+set_stat ("quit_hardcore_total", 1);
+set_stat ("quit_hardcore_mode"+mode, 1);
+set_stat ("quit_hardcore_diff"+difficulty, 1);
+set_stat ("duration_hardcore_quit", elapsed);
+}
+else
+{
+set_stat ("lost_hardcore_total", 1);
+set_stat ("lost_hardcore_mode"+mode, 1);
+set_stat ("lost_hardcore_diff"+difficulty, 1);
+set_stat ("duration_hardcore_lost", elapsed);
+}
+}
+if (mode == 3) set_stat ("longest_hardcore", elapsed, true);
+else if (mode == 4) set_stat ("longest_auto_hardcore", elapsed, true);
+}
+if (autoplay) return;
+if (gratuity > 0)
+{
+set_stat ("gratuity", gratuity);
+set_stat ("most_gratuity_once", most_gratuity_once, true);
+set_stat ("most_gratuity_total", most_gratuity_total, true);
+}
+set_stat ("most_paid", most_paid, true);
+set_stat ("customers_total", spawned);
+set_stat ("customers_most", most, true);
+set_stat ("fled_total", fled_total);
+set_stat ("happy_total", fled_total-fled);
+set_stat ("thrown_total", thrown);
+set_stat ("hurt_total", hurt);
+set_stat ("stunned_total", stunned);
+set_stat ("steps_total", steps);
+set_stat ("served_total", served);
+set_stat ("served_most", served, true);
+set_stat ("puked_total", total_puked);
+set_stat ("puked_most", total_puked, true);
+set_stat ("served_correct", served_correct);
+set_stat ("mistakes_total", mistakes);
+set_stat ("undermeasures", undermeasures);
+set_stat ("dirty_drinks", dirty_drinks);
+set_stat ("single_drinks", single_drinks);
+set_stat ("mixed_drinks", mixed_drinks);
+find_stat("money").content=money;
+set_stat ("earned_most", money, true);
+find_stat("money_total").content=money_total;
+set_stat ("earned_jukebox", earned_jukebox);
+set_stat ("earned_jukebox_once", earned_jukebox, true);
+set_stat ("earned_jukebox_most", earned_jukebox_most_customer, true);
+set_stat ("played_jukebox", played_jukebox);
+set_stat ("played_jukebox_player", played_jukebox_player);
+set_stat ("played_jukebox_customers", played_jukebox_customers);
+set_stat ("trips_total", total_trips);
+set_stat ("falls_total", total_falls);
+set_stat ("patient_total", most_patient, true);
+set_stat ("most_beers_total", most_beers, true);
+set_stat ("longest_total", longest, true);
+set_stat ("washed_total", washed);
+set_stat ("dirty_left_total", say_dirty (false));
+set_stat ("broken_total", broken);
+set_stat ("fallen_total", fallen);
+set_stat ("broken_nonempty", broken_nonempty);
+set_stat ("fallen_nonempty", fallen_nonempty);
+set_stat ("dried", dried);
+set_stat ("replaced_total", replaced);
+set_stat ("helpers_total", helpers);
+set_stat ("pourers_total", pourers);
+set_stat ("givers_total", givers);
+set_stat ("cleaners_total", cleaners);
+set_stat ("barrelers_total", barrelers);
+set_stat ("emptiers_total", emptiers);
+set_stat ("calmers_total", calmers);
+set_stat ("throwers_total", throwers);
+set_stat ("roamers_total", roamers);
+set_stat ("chasers_total", chasers);
+set_stat ("slept_total", slept);
+set_stat ("most_queued", most_queue, true);
+set_stat ("most_hits", most_hits, true);
+set_stat ("player_hits", player.hits);
+set_stat ("most_player_hits", player.hits, true);
+}
+
+void view_stats()
+{
+silence();
+uint l=stats.length(), count=0;
+string[] renders;
+renders.reserve (l);
+int tempres=-1;
+is_statmenu=true;
+while (tempres != 0 and tempres != renders.length())
+{
+renders.resize (0);
+update_runtime();
+uint8 part=1;
+for (uint i=0; i<l; i++)
+if (stats[i].content > 0 or show_empty_stats)
+{
+renders.insert_last (stats[i].render());
+if (stats[i].section!=0) part=stats[i].section;
+renders[renders.length()-1]+="| |"+part;
+if (stats[i].content > 0 and stats[i].name != "runtime" and stats[i].name!="run_times" and stats[i].name!="player_name" and stats[i].name!="player_nameday" and stats[i].name!="player_birthday" and stats[i].name!="profile_days_old") count++;
+}
+if (count == 0)
+{
+say ("Zatím žádné statistiky.", true, false, true);
+is_statmenu=false;
+return;
+}
+renders.insert_at (0, "Pøehled statistik:");
+renders.insert_last ("copy_stats|Zkopírovat statistiky do schránky| |"+stat_sections.length());
+renders.insert_last ("clear_stats|Vymazat statistiky| |"+(stat_sections.length()));
+tempres=make_menu (renders, 1, @menu, true, stat_sections);
+string item=menu.get_item_name (tempres);
+if (instr (item, "copy")) copy_stats();
+else if (instr (item, "clear"))
+{
+bool cleared=clear_stats();
+if (cleared)
+{
+is_statmenu=false;
+return;
+}
+}
+}
+is_statmenu=false;
+}
+
+bool clear_stats()
+{
+wait_keys();
+if (ask ("Chceš opravdu vymazat veškeré statistiky?") == 2) return false;
+uint l=stats.length();
+for (uint i=0; i<l; i++) stats[i].content=0;
+save_stats();
+save_profile();
+say ("Statistiky smazány.", true, false, true);
+return true;
+}
+
+void copy_stats()
+{
+string parsed="";
+uint l=stats.length(), part=0;
+for (uint i=0; i<l; i++)
+if (stats[i].content > 0 or show_empty_stats)
+{
+if (stats[i].section!=0 and part!=stats[i].section)
+{
+part=stats[i].section;
+if (part-1<stat_sections.length()) parsed+="\r\n"+stat_sections[part-1]+":\r\n";
+}
+parsed+=stats[i].render (true)+"\r\n";
+}
+while (parsed[0]=="\r" or parsed[0]=="\n") parsed=string_trim_left (parsed, 1);
+while (parsed[parsed.length()-1]=="\r" or parsed[parsed.length()-1]=="\n") parsed=string_trim_right (parsed, 1);
+if (strip_diacritics) parsed=fuck_czech (parsed);
+clipboard_copy_text (parsed);
+say ("Statistiky zkopírovány.", true, false, true);
+}
+
+void update_customer_stats()
+{
+uint8 c=customers.length();
+most_hits=0;
+for (uint8 i=0; i<c; i++)
+{
+character@ h=customers[i];
+if (h.alive > longest) longest=h.alive;
+if (h.hits > most_hits) most_hits=h.hits;
+}
+}
+
+void update_runtime()
+{
+uint time=runtime.elapsed/1000;
+time*=fps;
+set_stat ("runtime", time);
+runtime.restart();
+}

@@ -1,0 +1,115 @@
+/*
+Basic translation class
+
+This class makes it possible to read language strings from a text file (which can optionally be encrypted) and later extract either of them individually so that you can use it in your game's output.
+Each string must be stored on a separate line, in the following format: key=value
+The key is what you use to refer to it so that it can be found in the internal dictionary and returned for speaking, the value is the textual string itself.
+
+This class can be used in conjunction with the locale class to retrieve the current user's language behind the scenes and thus determine the name of the language file to use this way. For an optimal user experience, this approach is greatly recommended.
+Note that the locale class is not directly included, though.
+A wrapper class around this one, called translation_manager, is also provided in order to automate and simplify the whole process of dealing with translated strings even more.
+
+To do: Error logging of some sort definitely needs to be implemented. We must decide whether to use the existing error_logger class for this purpose or implement one of our own.
+*/
+
+class translation
+{
+uint expected_string_count=0;
+// This can be used to automatically check whether the language file contains the required number of strings. The default value of 0 means that this check is turned off.
+
+translation()
+{
+reset();
+}
+
+translation (uint expected_count)
+{
+reset();
+expected_string_count=expected_count;
+}
+
+void reset()
+{
+expected_string_count=0;
+strings.delete_all();
+}
+
+bool read_strings (string file_name, string encryption_key="")
+{
+// Do not use directly encrypted files. That would mean an extra file (temporary at best) would have to be created somewhere on run-time. Instead, save your language file as plain text (but avoid BGT's text mode as well, always create your files in binary mode) with its contents pre-encrypted using the string_encrypt function, not the file_encrypt one.
+if (!file_exists (file_name)) return false;
+file source;
+if (!source.open (file_name, "rb")) return false;
+string contents=source.read();
+// Free a tiny bit of resources.
+source.close();
+if (contents == "") return false;
+if (encryption_key != "")
+{
+contents=string_decrypt (contents, encryption_key);
+if (contents == "") return false;
+}
+string[] separated=string_split (contents, "\r\n", true);
+if (separated.is_empty()) return false;
+// Clear any previously accumulated strings.
+strings.delete_all();
+string[] halves;
+for (uint x=0; x<separated.length(); x++)
+{
+halves=string_split (separated[x], "=", true);
+if (halves.length() != 2)
+{
+strings.delete_all();
+return false;
+}
+strings.set (halves[0], halves[1]);
+}
+if (expected_string_count > 0 and halves.length() != expected_string_count)
+{
+strings.delete_all();
+return false;
+}
+return true;
+}
+
+uint get_string_count()
+{
+return strings.get_size();
+}
+
+bool add_string (string key, string value)
+{
+if (strings.exists (key)) return false;
+// Overwriting an already existing string is not allowed. Use the replace_string method for that purpose.
+strings.set (key, value);
+if (!strings.exists (key)) return false;
+if (expected_string_count > 0) expected_string_count++;
+return true;
+}
+
+bool remove_string (string key)
+{
+strings.delete (key);
+if (strings.exists (key)) return false;
+// A direct delete call within an existence if check didn't work for some weird reason.
+if (expected_string_count > 0) expected_string_count--;
+return true;
+}
+
+bool replace_string (string key, string new_string)
+{
+if (!strings.exists (key)) return false;
+strings.set (key, new_string);
+return true;
+}
+
+string get_string (string key)
+{
+string value=strings.get (key, value);
+if (value == "") return "";
+return value;
+}
+
+// Internal properties:
+private dictionary strings;
+}
