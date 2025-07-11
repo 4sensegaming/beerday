@@ -1,0 +1,24 @@
+Czech
+Slovak
+Polish
+Croatian
+Serbian
+Hungaran
+Russian
+Ukrainian
+English
+German
+Dutch
+French
+Italian
+Spanish (European)
+Portuguese (European)
+Greek
+Finnish
+Swedish
+Turkish
+Japanese
+Chinese (traditional and simplified)
+Korean
+Thai
+Hindi

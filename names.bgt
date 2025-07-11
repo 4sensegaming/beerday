@@ -1,0 +1,137 @@
+class char_name
+{
+string[] case1, case3, case4;
+uint8 gender;
+bool used=false;
+
+char_name()
+{
+case1.reserve(20);
+case3.reserve(20);
+case4.reserve(20);
+}
+}
+
+char_name@[] names;
+uint used_names=0, available_names=0;
+
+void read_names()
+{
+names.reserve (1000);
+file@ nam=pack.get_file ("names.dat");
+string raw=string_decrypt (nam.read(), scramble());
+string[] entries=string_split (raw, "#", true);
+uint e=entries.length();
+for (uint i=0; i<e; i++)
+{
+string[] singlename=string_split (entries[i], "\r\n", true);
+if (enable_debugging)
+{
+if (singlename.length()!=4)
+{
+warning ("Neplatné jméno na øádku "+(i+1)+": "+entries[i]);
+continue;
+}
+if (singlename[0]!="#m" and singlename[0]!="#f")
+{
+warning ("Jméno "+string_left (entries[i], 15)+" na øádku "+(i+1)+" nemá rod.");
+continue;
+}
+int found1=string_contains (raw, entries[i], 1), found2=string_contains (raw, entries[i], 2);
+if (found1>-1 and found2>-1)
+{
+warning ("Stejné jméno "+string_left (entries[i], 15)+" na pozicích "+(found1+1)+" a "+(found2+1)+".");
+continue;
+}
+}
+char_name new;
+if (singlename[0][1]=="m") new.gender=1;
+else new.gender=2;
+new.case1=string_split (singlename[1], " ", true);
+new.case3=string_split (singlename[2], " ", true);
+new.case4=string_split (singlename[3], " ", true);
+if (enable_debugging and (new.case1.length()!=new.case3.length() or new.case1.length()!=new.case4.length()))
+{
+warning ("Jméno "+string_left (entries[i], 15)+" na øádku "+(i+1)+" nemá stejnì pádù.");
+continue;
+}
+names.insert_last (new);
+}
+available_names=names.length();
+}
+
+void name_customer_randomly (character@ h)
+{
+if (used_names>=available_names)
+{
+used_names=0;
+for (uint i=0; i<available_names; i++) names[i].used=false;
+}
+int chosen=-1;
+while (chosen==-1 or names[chosen].used or (h.sex==1 and names[chosen].gender==2) or (h.sex==2 and names[chosen].gender==1)) chosen=random (0, available_names-1);
+names[chosen].used=true;
+used_names++;
+uint8 chosen_form=random (0, names[chosen].case1.length());
+h.name=names[chosen].case1[chosen_form];
+h.name3=names[chosen].case3[chosen_form];
+h.name4=names[chosen].case4[chosen_form];
+}
+
+void name_customer_manually (character@ h)
+{
+if (!oldpaused) ss_start();
+player.set_append(h);
+string prompt="Zadej jméno pro ";
+if (h.name!="") prompt+=h.name4;
+else prompt+=player.append;
+prompt+=".";
+if (speak_menu_prompt) say (prompt, true, false);
+string old_name=h.name, old_name3=h.name3, old_name4=h.name4;
+input.set_text(old_name);
+string inp=input.run(30);
+silence();
+play_enter();
+if (inp=="")
+{
+say ("Zrušeno.", true, false);
+if (!oldpaused) ss_end();
+return;
+}
+h.name=inp;
+prompt=string_replace (prompt, "jméno", "ètvrtý pád jména (koho, co)", true);
+say (prompt, true, false);
+input.set_text(old_name4);
+inp=input.run(30);
+silence();
+play_enter();
+if (inp=="")
+{
+say ("Zrušeno.", true, false);
+if (!oldpaused) ss_end();
+h.name=old_name;
+return;
+}
+h.name4=inp;
+say ("Hotovo.", true, false);
+if (!oldpaused) ss_end();
+}
+
+character@ name_local_customer (bool silent=false)
+{
+character@ h=null;
+character@[] w=player.count_state(waiting);
+uint8 l=w.length();
+for (uint8 i=0; i<l; i++)
+if (w[i].x==player.x and w[i].y==player.y and w[i].x==w[i].seat_x and w[i].y==w[i].seat_y and queue.find(w[i])>-1)
+{
+@h=@w[i];
+break;
+}
+if (@h==null)
+{
+if (!silent) error ("Tady nesedí nikdo s objednávkou.");
+return h;
+}
+if (!silent) name_customer_manually (h);
+return h;
+}

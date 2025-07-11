@@ -15,11 +15,7 @@ uint ui_help_frames=0;
 int callback (dynamic_menu@ handle, string user_data)
 {
 closekey();
-if (is_readmenu and won.active and !won.playing and !won.paused and foreground)
-{
-won.close();
-return -1;
-}
+if (is_readmenu and won.active and !won.playing and !won.paused and foreground) return -1;
 if (!is_gallery) menu_music();
 else if (is_game and question=="")
 {

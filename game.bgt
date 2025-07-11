@@ -1274,14 +1274,14 @@ return round (base*percentage, 0);
 void game()
 {
 track_time();
-if (enable_lose_check and !is_tutorial and door.closed and !door.playing() and door.frames>=fps/2)
+if (enable_lose_check and !is_tutorial and door.closed and !door.playing() and door.frames>=fps/2 and spawned>0)
 {
-if (spawned>0 and count_active()==0 and (fled >= maxfled or (total_stuns >= maxstunned and stunned!=total_stuns) or (!customers.is_empty() and player.count_state(idle).length()==customers.length()) or customers.is_empty())) lose (1);
-if ((player.count_state(serving).is_empty() and (player.frames>60*fps or spawner>spawn_delay*3)) and (!player.count_state(arriving).is_empty() or !player.count_state(ordering).is_empty() or !player.count_state(waiting).is_empty()) and ((fled<maxfled and total_stuns<maxstunned) or (served_correct==0 and spawned>0)))
+if (mugs.length() ==0) lose();
+if (count_active()==0 and (fled >= maxfled or (total_stuns >= maxstunned and stunned!=total_stuns) or player.count_state(idle).length()==customers.length() or customers.is_empty())) lose (1);
+if (player.count_state(serving).is_empty() and (player.frames>60*fps or spawner>spawn_delay*3) and (!player.count_state(arriving).is_empty() or !player.count_state(ordering).is_empty() or !player.count_state(waiting).is_empty() or !queue.is_empty() or served_correct==0))
 {
 if (!player.carrying.is_empty() or count_clean_mugs()>0 or say_dirty(false)>0) lose(1);
 }
-if (mugs.length() ==0) lose();
 }
 door.act();
 soundtrack();

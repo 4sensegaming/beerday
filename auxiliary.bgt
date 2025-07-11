@@ -1,26 +1,8 @@
+#include "names.bgt"
 class navchar
 {
 string nc="", nca="";
 }
-
-class char_name
-{
-string name="", name4="";
-uint8 gender=0;
-bool used=false;
-
-char_name (string name, string name4, string sex)
-{
-this.name=name;
-this.name4=name4;
-if (sex=="b") gender=0;
-else if (sex=="m") gender=1;
-else gender=2;
-}
-}
-
-char_name@[] names;
-uint used_names=0, available_names=0;
 
 string folder=DIRECTORY_LOCAL_APPDATA+"/4Sense Gaming/Beerday", cpl;
 instance selftest ("Beertender");
@@ -348,41 +330,6 @@ new.nc=singlenav[0];
 new.nca=singlenav[1];
 navchars.insert_last (new);
 }
-}
-
-void read_names()
-{
-names.reserve (1000);
-file@ nam=pack.get_file ("names.dat");
-string raw=string_decrypt (nam.read(), scramble());
-string[] entries=string_split (raw, "\r\n", true);
-uint e=entries.length();
-for (uint i=0; i<e; i++)
-{
-string[] singlename=string_split (entries[i], "\t", true);
-if (enable_debugging)
-{
-if (singlename.length()!=3)
-{
-warning ("Neplatné jméno na øádku "+(i+1)+": "+entries[i]);
-continue;
-}
-if (singlename[2]!="m" and singlename[2]!="f" and singlename[2]!="b")
-{
-warning ("Jméno "+entries[i]+" na øádku "+(i+1)+" nemá validní pøíznak rodu.");
-continue;
-}
-int found1=string_contains (raw, entries[i], 1), found2=string_contains (raw, entries[i], 2);
-if (found1>-1 and found2>-1)
-{
-warning ("Stejné jméno "+entries[i]+" na pozicích "+(found1+1)+" a "+(found2+1)+".");
-continue;
-}
-}
-char_name new (singlename[0], singlename[1], singlename[2]);
-names.insert_last (new);
-}
-available_names=names.length();
 }
 
 bool instr (string source, string part)

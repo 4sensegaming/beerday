@@ -349,6 +349,10 @@ void warning (string wtf, bool quit=false)
 {
 if (!enable_debugging) return;
 bool oldpaused=paused;
+silence();
+if (custbeep.playing) custbeep.stop();
+if (global>-1 and pool.sound_is_playing(global)) pool.destroy_sound(global);
+global=-1;
 if (is_game) pause();
 alert ("Pozor!", wtf+"\r\nBuï tý lásky a upozorni toho vocasa, kterej to programoval. Máš to ve schránce.");
 clipboard_copy_text (wtf);
