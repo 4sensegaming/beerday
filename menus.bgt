@@ -252,7 +252,7 @@ int8 tempres=1;
 bool is_rerun=false;
 while (tempres>0)
 {
-string[] om={"Nabídka online funkcí", "gallery|Hudební síò slávy|Poslechni si všechny legendární a stoprocentnì vážnì mínìné AI songy použité ve høe v pùvodní nesestøíhané podobì a originální kvalitì!|1|2|1", "web|Stránka hry|"+browser+"|2", "discord|Discord server 4Sense Gaming|"+browser+"|2", "changelog|Historie zmìn v jednotlivých verzích|"+browser+"|2", "todo|To do list|Co zbývá na høe ještì udìlat, "+to_lower(browser)+"|2", "contact|Kontaktovat autora|Otevøe ve výchozím webovém prohlížeèi stránku, kde mi mùžeš nahlásit chybu nebo sdìlit jakoukoli jinou zpìtnou vazbu.|2"};
+string[] om={"Nabídka online funkcí", "gallery|Hudební síò slávy|Poslechni si všechny legendární a stoprocentnì vážnì mínìné AI songy použité ve høe v pùvodní nesestøíhané podobì a originální kvalitì!|1|2|1", "web|Stránka hry|"+browser+"|2", "discord|Discord server 4Sense Gaming|"+browser+"|2", "changelog|Historie zmìn v jednotlivých verzích|"+browser+"|2", "roadmap|Orientaèní plán vývoje|"+to_lower(browser)+"|2", "contact|Kontaktovat autora|Otevøe ve výchozím webovém prohlížeèi stránku, kde mi mùžeš nahlásit chybu nebo sdìlit jakoukoli jinou zpìtnou vazbu.|2"};
 if (!postpone_update and update_version!="") om.insert_last ("install_update|Aktualizovat na verzi "+update_version+"| |3");
 else if (!updates and !postpone_update and update_version=="") om.insert_last ("check_update|Vyhledat aktualizace| |3");
 om.insert_last ("redownload|Znovu stáhnout instalaèní soubor nejnovìjší verze|Stáhne se pomocí webového prohlížeèe do stejné složky, kam se ukládají i jiné stažené soubory. Stažený soubor pak staèí spustit a hra se pøeinstaluje na nejnovìjší verzi. Program se ukonèí.|3");
@@ -269,7 +269,7 @@ is_rerun=false;
 else if (instr (item, "web")) external (suri);
 else if (instr (item, "discord")) external ("https://discord.gg/uTq6WRhrJJ");
 else if (instr (item, "changelog")) external (suri+"changelog.html");
-else if (instr (item, "todo")) external (suri+"todo.html");
+else if (instr (item, "roadmap")) external (suri+"roadmap.html");
 else if (instr (item, "contact")) external (suri+"kontakt");
 else if (instr (item, "install"))
 {
