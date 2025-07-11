@@ -109,12 +109,7 @@ puked=0;
 walked=0;
 sitting=false;
 if (is_player) sex=gender;
-else
-{
-sex=random(0,2);
-if (sex==0) sex=1;
-}
-if (sex==3) sex=1;
+else sex=random(1,2);
 id=-1;
 speech.resize(0);
 vocal_slot=-1;
