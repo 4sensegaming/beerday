@@ -80,13 +80,29 @@ h.name4=names[chosen].case4[chosen_form];
 void name_customer_manually (character@ h)
 {
 if (!oldpaused) ss_start();
-player.set_append(h);
-string prompt="Zadej jméno pro ";
-if (h.name!="") prompt+=h.name4;
-else prompt+=player.append;
-prompt+=".";
-if (speak_menu_prompt) say (prompt, true, false);
+string prompt="";
+if (is_player) prompt="Zadej svoje jméno.";
+else prompt="Zadej jméno.";
 string old_name=h.name, old_name3=h.name3, old_name4=h.name4;
+dynamic_menu tempmenu;
+tempmenu.set_callback (callback, "");
+int8 tempres=1;
+string item="";
+bool first=false;
+string[] nm={prompt};
+while(true)
+{
+tempmenu.reset();
+nm.resize(1);
+string case1="První pád (kdo, co)", case3="Tøetí pád (komu, èemu)", case4="Ètvrtý pád (koho, co)";
+if (h.name!="") case1+=": "+h.name;
+if (h.name3!="") case3+=": "+h.name3;
+if (h.name4!="") case4+=": "+h.name4;
+nm.insert_last (case1);
+nm.insert_last (case3);
+nm.insert_last (case4);
+tempres=make_menu (nm, 1, @tempmenu, true, null, first);
+first=true;
 input.set_text(old_name);
 string inp=input.run(30);
 silence();
@@ -98,20 +114,7 @@ if (!oldpaused) ss_end();
 return;
 }
 h.name=inp;
-prompt=string_replace (prompt, "jméno", "ètvrtý pád jména (koho, co)", true);
-say (prompt, true, false);
-input.set_text(old_name4);
-inp=input.run(30);
-silence();
-play_enter();
-if (inp=="")
-{
-say ("Zrušeno.", true, false);
-if (!oldpaused) ss_end();
-h.name=old_name;
-return;
 }
-h.name4=inp;
 say ("Hotovo.", true, false);
 if (!oldpaused) ss_end();
 }
