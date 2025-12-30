@@ -1254,11 +1254,6 @@ string[] optmenu={""};
 if (tempres == -1 and speak_menu_prompt) optmenu[0]="Nastavení profilu";
 uint vertical1=string_contains (genders[gender], "|", 1) +1;
 uint vertical2=genders[gender].length() -string_contains (genders[gender], "|", 2) -1;
-string ni="first_name|";
-if (onboarding) ni+="Zadat køestní jméno|V libovolném tvaru, vèetnì zdrobnìlin. Po uložení profilu už nepùjde zmìnit.";
-else ni+=": "+player_name+"| ";
-ni+="|1|2|1|"+!onboarding;
-optmenu.insert_last (ni);
 string ndi="nameday|";
 if (onboarding) ndi+="Zadat, kdy máš svátek";
 else ndi+=": "+days[name_day-1]+months[name_month-1];
@@ -1339,23 +1334,7 @@ optmenu.insert_last ("continue|Pokraèovat");
 if (tempres == -1) tempres=1;
 tempres=make_menu (optmenu, tempres, tempmenu);
 item=tempmenu.get_item_name (tempres);
-if (instr (item, "first_name"))
-{
-input.set_text (player_name);
-input.allow_escape=!onboarding;
-player_name=input.run (30);
-if (player_name!="")
-{
-uint nl=names.length();
-for (uint i=0; i<nl; i++)
-if (names[i].name==player_name)
-{
-gender=names[i].gender;
-break;
-}
-}
-}
-else if (instr (item, "gender")) gender=set_gender();
+if (instr (item, "gender")) gender=set_gender();
 else if (instr (item, "nameday")) set_date (name_day, name_month);
 else if (instr (item, "birth_day")) set_date (birth_day, birth_month);
 else if (instr (item, "defaults"))
@@ -1364,6 +1343,7 @@ restore_profile_defaults (false);
 return;
 }
 else if (instr (item, "clear")) clear_profile();
+else if (instr (item, "continue") and check_profile()) break;
 }
 }
 
@@ -1869,4 +1849,9 @@ while(true)
 {
 uint dayres=day, monres=month;
 }
+}
+
+bool check_profile()
+{
+return true;
 }

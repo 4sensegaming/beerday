@@ -133,10 +133,10 @@ changed_output();
 while (!sapi.active or sapi.speaking) wait(5);
 }
 while (!is_game_window_active()) wait(5);
+if (output>0) wait(750);
 if (play_intro)
 {
 wait_keys();
-if (output>0) wait(250);
 bool success=say ("4Sense Gaming uvádí:", true, false);
 if (success)
 {
@@ -175,8 +175,8 @@ onboarding=true;
 say_sleep_mode();
 say_first ("F1 kdykoli vyvolá klávesovou nápovìdu, která funguje stejnì jako u odeèítaèù. Zároveò pokud ve vıchozím nastavení v nìkteré nabídce 5 vteøin nestiskneš ádnou klávesu, dozvíš se, kterımi klávesami a jakım zpùsobem se daná nabídka ovládá.");
 say_first ("Klávesa kontextového menu (nebo shift+F10) je uiteènım pomocníkem do zaèátku, jak pøi uèení se všech dostupnıch klávesovıch zkratek, tak pøi zjišování, co všechno se v danou chvíli právì dá zjistit nebo udìlat.");
-profile.set ("player_name", player_name);
-profile.set ("player_name5", player_name5);
+profile_options();
+options();
 profile.set ("name_day", name_day);
 profile.set ("name_month", name_month);
 profile.set ("birth_day", birth_day);
@@ -248,6 +248,12 @@ h.write (history_all);
 h.close();
 }
 }
+}
+if (file_exists (folder+"nvda.dll"))
+{
+screen_reader_stop_speech (4);
+screen_reader_unload_library (4);
+file_delete (folder+"nvda.dll");
 }
 exit();
 }

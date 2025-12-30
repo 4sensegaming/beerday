@@ -32,7 +32,7 @@ if (singlename.length()!=4)
 warning ("Neplatné jméno na øádku "+(i+1)+": "+entries[i]);
 continue;
 }
-if (singlename[0]!="#m" and singlename[0]!="#f")
+if (singlename[0]!="m" and singlename[0]!="f")
 {
 warning ("Jméno "+string_left (entries[i], 15)+" na øádku "+(i+1)+" nemá rod.");
 continue;
@@ -45,7 +45,7 @@ continue;
 }
 }
 char_name new;
-if (singlename[0][1]=="m") new.gender=1;
+if (singlename[0]=="m") new.gender=1;
 else new.gender=2;
 new.case1=string_split (singlename[1], " ", true);
 new.case3=string_split (singlename[2], " ", true);
@@ -80,9 +80,7 @@ h.name4=names[chosen].case4[chosen_form];
 void name_customer_manually (character@ h)
 {
 if (!oldpaused) ss_start();
-string prompt="";
-if (is_player) prompt="Zadej svoje jméno.";
-else prompt="Zadej jméno.";
+string prompt="Zadej jméno.";
 string old_name=h.name, old_name3=h.name3, old_name4=h.name4;
 dynamic_menu tempmenu;
 tempmenu.set_callback (callback, "");
@@ -92,28 +90,72 @@ bool first=false;
 string[] nm={prompt};
 while(true)
 {
-tempmenu.reset();
+tempmenu.reset (false);
+tempmenu.allow_escape=!onboarding;
 nm.resize(1);
-string case1="První pád (kdo, co)", case3="Tøetí pád (komu, èemu)", case4="Ètvrtı pád (koho, co)";
+string case1="case1|První pád (kdo, co)", case3="case3|Tøetí pád (komu, èemu)", case4="case4|Ètvrtı pád (koho, co)";
 if (h.name!="") case1+=": "+h.name;
 if (h.name3!="") case3+=": "+h.name3;
 if (h.name4!="") case4+=": "+h.name4;
 nm.insert_last (case1);
 nm.insert_last (case3);
 nm.insert_last (case4);
+nm.insert_last ("confirm|Potvrdit");
 tempres=make_menu (nm, 1, @tempmenu, true, null, first);
+item=tempmenu.get_item_name (tempres);
 first=true;
-input.set_text(old_name);
+if (tempres>0 and tempres<tempmenu.get_item_count())
+{
+if (item=="case1") input.set_text(old_name);
+else if (item=="case3") input.set_text(old_name3);
+else input.set_text(old_name4);
 string inp=input.run(30);
 silence();
 play_enter();
-if (inp=="")
+if (item=="case1" and inp!="") h.name=inp;
+else if (item=="case3" and inp!="") h.name3=inp;
+else if (inp!="") h.name4=inp;
+}
+else if (tempres==0)
 {
+h.name=old_name;
+h.name3=old_name3;
+h.name4=old_name4;
 say ("Zrušeno.", true, false);
 if (!oldpaused) ss_end();
 return;
 }
-h.name=inp;
+else if (item=="confirm")
+{
+bool proceed=true;
+if (h.name=="")
+{
+say ("Musíš zadat první pád jména.");
+proceed=false;
+}
+else if (h.name3=="")
+{
+say ("Musíš zadat tøetí pád jména.");
+proceed=false;
+}
+else if (h.name4=="")
+{
+say ("Musíš zadat ètvrtı pád jména.");
+proceed=false;
+}
+if (!proceed)
+{
+play_stat ("error");
+continue;
+}
+}
+}
+for (uint i=0; i<available_names; i++)
+if (names[i].case1.find(h.name)>-1)
+{
+if (!names[i].used) used_names++;
+names[i].used=true;
+break;
 }
 say ("Hotovo.", true, false);
 if (!oldpaused) ss_end();

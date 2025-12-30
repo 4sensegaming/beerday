@@ -3,7 +3,6 @@ bool forced_output=false, speak_errors=true, cue=true, play_menu_music=true, pla
 int8 mode=1, selection=selection_unspecified;
 uint history_entries=100, ui_help_delay=5*fps, lastrun_day, lastrun_month, lastrun_year, lastrun_hour, lastrun_minute, run_count, created_day, created_month, created_year, created_hour, created_minute, name_day=0, name_month=0, birth_day=0, birth_month=0;
 uint8 gender=3;
-string player_name="", player_name5="";
 dictionary profile;
 
 bool load_options()

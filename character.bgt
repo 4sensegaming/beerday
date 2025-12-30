@@ -13,7 +13,7 @@ barrel@ has_barrel, wanted_barrel;
 character@ leading, giver;
 bool has_drink, punched, waited_once, said_impatient, is_roaming, is_chasing, said_cantbarrel, said_wontpour, chose_drink, found_mug, sitting;
 uint8 walked, sex;
-string prepend, append, name, name4;
+string prepend, append, name, name3, name4;
 
 // Debugging:
 ~character()
@@ -37,6 +37,7 @@ if (enable_debugging and enable_logging and log!="") write_log (this);
 prepend="";
 append="";
 name="";
+name3="";
 name4="";
 if (!is_player) x=door.x;
 y=0;

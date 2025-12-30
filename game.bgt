@@ -1734,8 +1734,6 @@ if (profile.exists ("lastrun_hour")) profile.get ("lastrun_hour", lastrun_hour);
 if (profile.exists ("lastrun_minute")) profile.get ("lastrun_minute", lastrun_minute);
 if (profile.exists ("run_count")) profile.get ("run_count", run_count);
 if (profile.exists ("is_tutorial")) profile.get ("is_tutorial", is_tutorial);
-if (profile.exists ("player_name")) profile.get ("player_name", player_name);
-if (profile.exists ("player_name5")) profile.get ("player_name5", player_name5);
 if (profile.exists ("gender")) profile.get ("gender", gender);
 if (profile.exists ("name_day")) profile.get ("name_day", name_day);
 if (profile.exists ("name_month")) profile.get ("name_month", name_month);
