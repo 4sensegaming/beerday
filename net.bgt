@@ -1,4 +1,4 @@
-string explorer, motd, uri="http://4sensegaming.cz/beerday/", suri="https://4sensegaming.cz/beerday/", update_version="";
+string explorer, motd, uri="http://bgt.4sensegaming.cz/beerday/", suri="https://bgt.4sensegaming.cz/beerday/", update_version="";
 int motd_day, motd_month, motd_year, motd_hour, motd_minute;
 bool postpone_update=false, is_online=false;
 
