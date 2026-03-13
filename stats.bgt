@@ -69,7 +69,7 @@ return temp.content;
 
 void set_stat (string name, double value, bool overwrite=false)
 {
-if ((is_tutorial or value == 0) and name != "runtime") return;
+if ((is_tutorial or value == 0) and (name != "runtime" and name!="run_times")) return;
 stat@ handle=find_stat (name);
 if (@handle == null) return;
 if (!overwrite) handle.content+=value;
@@ -179,7 +179,6 @@ uint l=stats.length();
 for (uint i=0; i<l; i++)
 if (profile.exists (stats[i].name)) profile.get (stats[i].name, stats[i].content);
 if (profile.exists ("did_tutorial")) profile.get ("did_tutorial", did_tutorial);
-set_stat ("run_times", 1);
 }
 
 void make_stats (bool exited)
@@ -351,17 +350,20 @@ if (stats[i].content > 0 or show_empty_stats)
 renders.insert_last (stats[i].render());
 if (stats[i].section!=0) part=stats[i].section;
 renders[renders.length()-1]+="| |"+part;
-if (stats[i].content > 0 and stats[i].name != "runtime" and stats[i].name!="run_times" and stats[i].name!="player_name" and stats[i].name!="player_nameday" and stats[i].name!="player_birthday" and stats[i].name!="profile_days_old") count++;
+if (stats[i].content > 0 and stats[i].name != "runtime" and stats[i].name!="run_times") count++;
 }
 if (count == 0)
 {
 say ("Zatím žádné statistiky.", true, false, true);
+if (!show_empty_stats)
+{
 is_statmenu=false;
 return;
 }
+}
 renders.insert_at (0, "Pøehled statistik:");
 renders.insert_last ("copy_stats|Zkopírovat statistiky do schránky| |"+stat_sections.length());
-renders.insert_last ("clear_stats|Vymazat statistiky| |"+(stat_sections.length()));
+renders.insert_last ("clear_stats|Vymazat statistiky|Ztratíš veškerý uložený postup, nelze odvolat!|"+(stat_sections.length()));
 tempres=make_menu (renders, 1, @menu, true, stat_sections);
 string item=menu.get_item_name (tempres);
 if (instr (item, "copy")) copy_stats();
@@ -381,7 +383,7 @@ is_statmenu=false;
 bool clear_stats()
 {
 wait_keys();
-if (ask ("Chceš opravdu vymazat veškeré statistiky?") == 2) return false;
+if (ask ("Chceš opravdu vymazat veškeré statistiky? Tím pøijdeš o veškerý dosavadní postup ve høe, to znamená o vydìlané peníze, nakoupené varianty a vylepšení hry, získané odmìny a o všechno ostatní. Budeš muset zaèít hrát znovu od úplného zaèátku, tedy od prvního seznámení s hrou. Tento krok nejde odvolat, ale nevymaže uložená nastavení: Které zvuky se mají a které nemají pøehrávat, co a jakým zpùsobem se má èíst a další.") == 2) return false;
 uint l=stats.length();
 for (uint i=0; i<l; i++) stats[i].content=0;
 save_stats();

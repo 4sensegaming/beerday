@@ -1,7 +1,5 @@
 string explorer, motd, uri="http://4sensegaming.cz/beerday/", suri="https://4sensegaming.cz/beerday/", update_version="";
 int motd_day, motd_month, motd_year, motd_hour, motd_minute;
-const string[] days={"Prvního", "Druhého", "Tøetího", "Ètvrtého", "Pátého", "Šestého", "Sedmého", "Osmého", "Devátého", "Desátého", "Jedenáctého", "Dvanáctého", "Tøináctého", "Ètrnáctého", "Patnáctého", "Šestnáctého", "Sedmnáctého", "osmnáctého", "Devatenáctého", "Dvacátého", "Dvacátého prvního", "Dvacátého druhého", "Dvacátého tøetího", "Dvacátého ètvrtého", "Dvacátého pátého", "Dvacátého šestého", "Dvacátého sedmého", "Dvacátého osmého", "Dvacátého devátého", "Tøicátého", "Tøicátého prvního"};
-const string[] months={"ledna", "února", "bøezna", "dubna", "kvìtna", "èervna", "èervence", "srpna", "záøí", "øíjna", "listopadu", "prosince"};
 bool postpone_update=false, is_online=false;
 
 bool external (string path)
@@ -125,7 +123,7 @@ string[] um={"Je k dispozici aktualizace na verzi "+update_version+" z "+days[up
 int8 tempres=1;
 if (!speak_menu_prompt) speak_menu_prompt=true;
 um.insert_last ("update_to_version|Aktualizovat na verzi "+update_version);
-um.insert_last ("view_changelog|Zobrazit historii zmìn|Otevøe se ve výchozím webovém prohlížeèi");
+um.insert_last ("view_changelog|Zobrazit historii zmìn|"+browser);
 if (!can_write)
 {
 postpone_update=true;
@@ -135,7 +133,7 @@ um.remove_at (1);
 else
 {
 um[0]+=" Teï máš verzi "+version+".";
-if (update_command=="c") um[0]+=" Tato aktualizace musí smazat tvùj profil, protože starý profil není kompatibilní s novou verzí. To znamená, že pøijdeš o veškerá nastavení, statistiky, pøemapované klávesy, prùchod hrou, odemèené varianty a režimy hry i získané trofeje.";
+if (update_command=="c") um[0]+=" Tato aktualizace musí smazat tvùj profil, protože starý profil není kompatibilní s novou verzí. To znamená, že pøijdeš o veškerá nastavení, statistiky, pøemapované klávesy, prùchod hrou, odemèené varianty a režimy hry i získané trofeje a budeš zaèínat znovu od úplného zaèátku jako pøi prvním spuštìní.";
 }
 um.insert_last ("ignore_update|Ignorovat aktualizaci do pøíštího spuštìní");
 is_updatemenu=true;
@@ -156,7 +154,7 @@ else if (instr (item, "update_to_version"))
 {
 if (update_command=="c")
 {
-uint8 a=ask ("Skuteènì chceš "+to_lower (um[1])+" a smazat tak svùj profil?");
+uint8 a=ask ("Skuteènì chceš "+to_lower (um[1])+" a smazat tím svùj profil?");
 if (a==2)
 {
 postpone_update=true;
@@ -184,7 +182,7 @@ wait_keys();
 ss_start();
 if (call_music) menu_music();
 string prompt="Pokraèuj enterem.";
-string helpmsg="Control+c: Zkopírování èteného textu do schránky.\r\nEnter, mezerník nebo escape: Potvrzení, že text byl pøeèten, a pokraèování.\r\nKterákoli jiná klávesa: Zopakování èteného textu.\r\nControl+r: Zobrazení èteného textu v nabídce pro podrobné ètení delšího textu.\r\nF1: Zobrazení tìchto zkratek v nabídce pro podrobné ètení delšího textu.\r\nAlt+F4: Ukonèení programu.\r\nDelete nebo control plus shift plus alt: Umlèení øeèi.";
+string helpmsg="Control+c: Zkopírování pøeèteného textu do schránky.\r\nEnter, mezerník nebo escape: Potvrzení a pokraèování.\r\nKterákoli jiná klávesa: Zopakování textu.\r\nControl+r: Zobrazení textu v seznamu pro pohodlnìjší ètení.\r\nF jedna: Zobrazení tìchto zkratek v seznamu pro pohodlnìjší ètení.\r\nAlt+F4: Ukonèení programu.\r\nDelete nebo control plus shift plus alt: Umlèení øeèi.";
 ui_help_frames=0;
 if (output>0)
 {

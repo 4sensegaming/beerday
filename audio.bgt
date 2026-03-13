@@ -135,7 +135,7 @@ if (frame.elapsed >= 1000/fps)
 frame.restart();
 wait(5);
 closekey();
-if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE))
+if (!onboarding and (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE)))
 {
 if (fade) fadeout();
 else

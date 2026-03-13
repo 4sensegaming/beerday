@@ -25,7 +25,7 @@ if (get_motd()) say_motd (true);
 if (updates) update();
 }
 cleanup();
-if (enable_debugging and (lastrun_day!=DATE_DAY or lastrun_month!=DATE_MONTH or lastrun_year!=DATE_YEAR)) say_first ("Tom's Beerday je zatím v pøedbìžném pøístupu. Je pravdìpodobné, že bìhem hry ještì budeš narážet na  chyby. Jakoukoli pøípadnou chybu mi mùžeš nahlásit pøíslušnou položkou z hlavního menu. Pøedem díky moc.");
+if (enable_debugging and (lastrun_day!=DATE_DAY or lastrun_month!=DATE_MONTH or lastrun_year!=DATE_YEAR)) say_first ("Happy Beerday je zatím v pøedbìžném pøístupu. Je možné, že ještì budeš narážet na  chyby. Jakoukoli pøípadnou chybu mi mùžeš nahlásit pøíslušnou položkou z menu Online funkce. Pøedem díky moc.");
 lastrun_day=DATE_DAY;
 lastrun_month=DATE_MONTH;
 lastrun_year=DATE_YEAR;

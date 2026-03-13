@@ -29,8 +29,8 @@ say_earned	Vydìlané peníze	E	 	Oznámí, kolik už máš obsluhováním zákazníkù celke
 say_given	Poèet obsloužených zákazníkù	gé	 	Oznámí, kolik zákazníkù už v prùbìhu hry dostalo pití.	 
 say_player	Tvoje poloha	tab	 	Pøehraje krátké pípnutí znázoròující tvoji momentální pozici v herním prostoru pøi pohledu shora.	Stereováha znamená pozici na ose x, tedy zleva doprava; výška tónu pak pozici na ose y, tedy èím nižší tón, tím jsi níž na schodech, pøípadnì až úplnì dole ve sklepì.
 say_customers	Souhrn zákazníkù	cé	 	Oznámí, kolik se tu právì nachází zákazníkù a kolik z nich co dìlá.	Pokud máš nìkterého zákazníka nastaveného jako sledovaného, oznámí místo toho informace o nìm.	4
-custmenu	Podrobný pøehled všech zákazníkù	šift plus cé	 	Zobrazí podrobný pøehled všech zákazníkù.	Pozastaví hru. Zároveò uslyšíš pípání z pøíslušné pozice podle vzdálenosti toho kterého zákazníka od støedu herního prostoru. Èím nižší tón, tím níž zákazník je, tedy buï na schodech nebo dole ve sklepì. Pokud nìkterého zákazníka na této obrazovce vybereš, mùžeš ho tak zaèít sledovat nebo mu pøiøadit jméno. Bìhem samotné hry, mimo pøehled, mùžeš sledování ukonèit dalším stiskem této zkratky. Pøehled se sám nikdy nezavøe, vždycky ho musíš zavøít eskejpem.
-read_customer	Podrobné ètení informací o zákazníkovi	kontrol plus er	 	Zobrazí informace o aktuálnì vybraném zákazníkovi z pøehledu v nabídce pro ètení delšího textu.	 
+custmenu	Podrobný pøehled všech zákazníkù	šift plus cé	 	Zobrazí podrobný pøehled všech zákazníkù.	Zapauzuje hru. Zároveò uslyšíš pípání z pøíslušné pozice podle vzdálenosti toho kterého zákazníka od støedu herního prostoru. Èím nižší tón, tím níž zákazník je, tedy buï na schodech nebo dole ve sklepì. Pokud nìkterého zákazníka na této obrazovce vybereš, mùžeš ho tak zaèít sledovat nebo mu pøiøadit jméno. Bìhem samotné hry, mimo pøehled, mùžeš sledování ukonèit dalším stiskem této zkratky. Pøehled se sám nikdy nezavøe, vždycky ho musíš zavøít eskejpem.
+read_customer	Podrobné ètení informací o zákazníkovi	kontrol plus er	 	Zobrazí informace o zákazníkovi z pøehledu v seznamu pro pohodlnìjší ètení.	 
 say_fled		Poèet odešlých zákazníkù		el	 	Oznámí, kolik zákazníkù už za celou dobu odešlo.	 
 say_thrown	Poèet vyhozených ožralù		šift plus el	 	Oznámí, kolik ožralých zákazníkù už v prùbìhu hry vyhodili pomocníci vyhazovaèi.	 
 say_mugs	Kolik máš pùllitrù	em	 	Oznámí, kolik máš u sebe pùllitrù.	 	5
@@ -92,4 +92,4 @@ log_next	Následující položka v historii øeèi	pejdž daun	 	Ve høe se pøesune na n
 say_history	Zopakování vybrané položky v historii øeèi	dvojité vé	 	Zopakuje vybranou položku v historii øeèi.	 
 copy_history	Zkopírování vybrané položky v historii øeèi	kontrol plus dvojité vé	 	Skopíruje vybranou položku v historii øeèi do schránky.	 
 spell_history	Vyhláskování vybrané položky v historii øeèi	šift plus dvojité vé	 	Vyhláskuje vybranou položku v historii øeèi znak po znaku.	 
-read_history	Podrobné ètení vybrané položky v historii øeèi	kontrol plus šift plus dvojité vé	 	Zobrazí vybranou položku v historii øeèi v nabídce pro ètení delšího textu.	 
+read_history	Podrobné ètení vybrané položky v historii øeèi	kontrol plus šift plus dvojité vé	 	Zobrazí vybranou položku v historii øeèi v seznamu pro pohodlnìjší ètení.	 

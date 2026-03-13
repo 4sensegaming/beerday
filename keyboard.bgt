@@ -227,7 +227,11 @@ if (ask ("Ukonèit program?", false, !is_game) == 1)
 stop_menu_music();
 silence (true);
 if (!onboarding) quit();
-else exit();
+else
+{
+delete_nvda();
+exit();
+}
 }
 }
 }

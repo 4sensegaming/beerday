@@ -6,7 +6,7 @@ string nc="", nca="";
 
 string folder=DIRECTORY_LOCAL_APPDATA+"/4Sense Gaming/Beerday", cpl;
 instance selftest ("Beertender");
-bool onboarding=false;
+bool onboarding=false, did_learn_sounds=false, did_stereo_test=false;
 
 void initialize()
 {
@@ -149,7 +149,17 @@ if (frame.elapsed >= 1000/fps)
 {
 frame.restart();
 counter++;
-if (key_down (KEY_LMENU) and key_pressed (KEY_F4)) exit();
+if (key_down (KEY_LMENU) and key_pressed (KEY_F4))
+{
+if (can_write and COMMAND_LINE=="")
+{
+set_stat ("run_times", 1);
+save_stats();
+save_profile();
+}
+delete_nvda();
+exit();
+}
 if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_ESCAPE) or singlekey (KEY_SPACE))
 {
 silence();
@@ -165,30 +175,59 @@ global=play_stat ("start");
 say (title, true, false);
 success=wait_sound (global, true);
 }
-if (success) say ("Na zdraví!", true, false);
+if (success)
+{
+say ("Na zdraví!", true, false);
+if (output>0) wait(750);
+}
 }
 if (global > -1) pool.destroy_sound (global);
 global=-1;
 if (!file_exists (folder+"profile.dat"))
 {
 onboarding=true;
+say_first ("Tato hra nikdy ádnım zpùsobem neodesílá ádná data mnì, vlastnímu serveru ani jakékoli tøetí stranì. Veškerá uloená nastavení zùstávají pouze na tvém vlastním disku, dají se kdykoli smazat, neobsahují ádné osobní údaje a jsou uloena v neèitelné, zašifrované podobì. Hru jsem naprogramoval bez pomoci umìlé inteligence a bez kopírování èi pøebírání cizího kódu.");
 say_sleep_mode();
-say_first ("F1 kdykoli vyvolá klávesovou nápovìdu, která funguje stejnì jako u odeèítaèù. Zároveò pokud ve vıchozím nastavení v nìkteré nabídce 5 vteøin nestiskneš ádnou klávesu, dozvíš se, kterımi klávesami a jakım zpùsobem se daná nabídka ovládá.");
-say_first ("Klávesa kontextového menu (nebo shift+F10) je uiteènım pomocníkem do zaèátku, jak pøi uèení se všech dostupnıch klávesovıch zkratek, tak pøi zjišování, co všechno se v danou chvíli právì dá zjistit nebo udìlat.");
+say_first ("F1 kdykoli vyvolá klávesovou nápovìdu, která funguje stejnì jako u odeèítaèù. Stiskem kterékoli klávesy se dozvíš, co tato klávesa dìlá. Nìkteré klávesy mají i dlouhı popis, kdy se o dané funkci dvojitım rychlım stisknutím pøíslušné klávesy mùeš dozvìdìt víc podrobností. Zároveò pokud ve vıchozím nastavení v nìkteré nabídce 10 vteøin nestiskneš ádnou klávesu, dozvíš se, kterımi klávesami a jakım zpùsobem se daná nabídka ovládá.");
+say_first ("Ne se budeš moct pustit do hraní, vìnuj prosím chvilku nastavení nìkolika údajù, díky kterım se ti hra pøizpùsobí na míru.");
 profile_options();
+say_first ("Díky. Teï si ještì mùeš nastavit ostatní vlastnosti a chování hry, nebo rovnou v následující nabídce vybrat poloku Hotovo. Pokud ti nebude jasné, co nìkteré nastavení dìlá, mùeš si hru nejdøív trochu osahat a k nastavením se vrátit kdykoli pozdìji, klidnì i bìhem samotné hry.");
+say_first ("Za normálních okolností se kadá zmìna nastavení rovnou projeví, take není potøeba nic potvrzovat ani ukládat. Volba Pokraèovat na konci jednotlivıch podnabídek nastavení se zobrazuje pouze teï, pøi prvním spuštìní. Pøi kadém dalším spuštìní se staèí po zmìnì nìkteré volby vrátit do pøedchozí nabídky klávesou escape.");
 options();
 profile.set ("name_day", name_day);
 profile.set ("name_month", name_month);
 profile.set ("birth_day", birth_day);
 profile.set ("birth_month", birth_month);
+created_day=DATE_DAY;
+created_month=DATE_MONTH;
+created_year=DATE_YEAR;
+created_hour=TIME_HOUR;
+created_minute=TIME_MINUTE;
 profile.set ("created_day", created_day);
 profile.set ("created_month", created_month);
 profile.set ("created_year", created_year);
 profile.set ("created_hour", created_hour);
 profile.set ("created_minute", created_minute);
+save_player();
+save_options();
 save_profile();
-onboarding=false;
+if (!did_stereo_test)
+{
+say_first ("Teï si ještì ovìøíme, e máš správnì nasazená sluchátka nebo umístìné reproduktory, aby se správnì pøehrávaly zvuky ve stereu.");
+speakers();
 }
+if (!did_learn_sounds)
+{
+int8 l=ask ("Chceš se rovnou seznámit s nejdùleitìjšími zvuky, které budeš pro hru potøebovat?");
+if (l==1) learn();
+else say_first ("Poloka Seznámení se zvuky je kdykoli dostupná v hlavním menu, v menu nastavení zvuku, anebo pøímo bìhem hry jednak v kontextovém menu a jednak po stisknutí klávesy F3.");
+}
+onboarding=false;
+did_learn_sounds=false;
+did_stereo_test=false;
+say_first ("Tak, to je všechno. Pus se do toho. Hodnì štìstí!");
+}
+set_stat ("run_times", 1);
 }
 
 void say_first (string text)
@@ -200,7 +239,7 @@ wait_reader (text);
 
 void say_sleep_mode()
 {
-if (output==4) say ("Pro optimální chod hry doporuèuji NVDA uspat. Nebude se tak nechtìnì pøerušovat øeè tím, e stiskneš nìkterou klávesu. Pøi opuštìní okna hry NVDA mluvit bude. Reim spánku je bohuel nutné zapínat pokadé ruènì. Pøíslušná klávesová zkratka je NVDA plus šift plus es v desktopovém rozloení klávesnice a NVDA plus šift plus zet v laptopovém. Pokud ale víš, jak na to, mùeš si místo uspávání NVDA vytvoøit konfiguraèní profil se zakázanım pøerušením øeèi pøi psaní a pøi stisknutí enteru.", false, false, true);
+if (output==4) say ("Pro optimální chod hry je nejlepší NVDA po kadém spuštìní uspat. Nebude se tak nechtìnì pøerušovat øeè tím, e stiskneš nìkterou klávesu. Pøíslušná klávesová zkratka je NVDA plus šift plus es v desktopovém rozloení klávesnice a NVDA plus šift plus zet v laptopovém.", false, false, true);
 }
 
 void quit (bool silent=false, bool is_updating=false)
@@ -222,7 +261,7 @@ wait_sound();
 if (menuloop.playing) fadeout (0.5, false);
 }
 if (autoplay) clear_autoplay_earnings();
-if (is_game and !is_updating and !onboarding) make_stats (true);
+if (is_game) make_stats (true);
 if (can_write and !is_updating and !onboarding)
 {
 profile.delete_all();
@@ -249,20 +288,25 @@ h.close();
 }
 }
 }
+delete_nvda();
+exit();
+}
+
+void delete_nvda()
+{
 if (file_exists (folder+"nvda.dll"))
 {
 screen_reader_stop_speech (4);
 screen_reader_unload_library (4);
 file_delete (folder+"nvda.dll");
 }
-exit();
 }
 
 void error (string msg="", bool wait=false, bool interrupt=true)
 {
 if (autoplay) return;
 play_stat ("error");
-if ((speak_errors or is_tutorial) and msg != "") say (msg, interrupt, false, wait);
+if ((speak_errors or is_tutorial or onboarding) and msg != "") say (msg, interrupt, false, wait);
 }
 
 int8 ask (string q, bool cancel=false, bool stop=true)

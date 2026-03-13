@@ -1719,7 +1719,6 @@ profile.set ("lastrun_month", lastrun_month);
 profile.set ("lastrun_year", lastrun_year);
 profile.set ("lastrun_hour", lastrun_hour);
 profile.set ("lastrun_minute", lastrun_minute);
-profile.set ("run_count", run_count);
 profile.set ("is_tutorial", is_tutorial);
 profile.set ("gender", gender);
 }
@@ -1732,7 +1731,6 @@ if (profile.exists ("lastrun_month")) profile.get ("lastrun_month", lastrun_mont
 if (profile.exists ("lastrun_year")) profile.get ("lastrun_year", lastrun_year);
 if (profile.exists ("lastrun_hour")) profile.get ("lastrun_hour", lastrun_hour);
 if (profile.exists ("lastrun_minute")) profile.get ("lastrun_minute", lastrun_minute);
-if (profile.exists ("run_count")) profile.get ("run_count", run_count);
 if (profile.exists ("is_tutorial")) profile.get ("is_tutorial", is_tutorial);
 if (profile.exists ("gender")) profile.get ("gender", gender);
 if (profile.exists ("name_day")) profile.get ("name_day", name_day);

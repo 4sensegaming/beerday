@@ -97,16 +97,8 @@ void say_checked (dynamic_menu_item@ item)
 if (item.checked<2)
 {
 string msg;
-if (item.checked==1)
-{
-if (is_optionsmenu) msg="Zapnuto";
-else msg="Zaškrtnuto";
-}
-else
-{
-if (is_optionsmenu) msg="Vypnuto";
-else msg="Nezaškrtnuto";
-}
+if (item.checked==1) msg="Zapnuto";
+else msg="Vypnuto";
 say (msg, false, false, false, false);
 }
 }
@@ -251,11 +243,6 @@ running=false;
 if (@top_menu==@this) @top_menu=null;
 return 0;
 }
-}
-else if (singlekey (KEY_ESCAPE) and onboarding and question=="")
-{
-play_stat ("error");
-say ("Další postup potvrï tlaèítkem Pokraèovat na konci nabídky.", true, false);
 }
 act=false;
 
