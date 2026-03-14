@@ -89,7 +89,7 @@ if (menuloop.volume < min_music_vol) menuloop.volume=min_music_vol;
 else if (!is_game and !is_learnmenu and menuloop.volume != menuloop_vol) menuloop.volume=menuloop_vol;
 }
 
-void purge_Music()
+void purge_music()
 {
 if (!is_game) garbage_collect();
 if (!play_game_music)
@@ -98,6 +98,7 @@ if (music>-1 and instr (pool.items[music].filename, "music"))
 {
 pool.destroy_sound (music);
 music=-1;
+last_track="";
 }
 }
 }
@@ -260,7 +261,7 @@ void gallery (bool is_jukebox=false)
 {
 if (is_jukebox and !play_game_music)
 {
-error ("V nastavení zvuku máš vypnutou hudbu bìhem hry.");
+error ("V nastavení zvuku máš vypnutou hudbu z jukeboxu.");
 return;
 }
 is_gallery=true;
@@ -518,9 +519,11 @@ string say_jukebox (bool interrupt)
 string rep="";
 if (!interrupt) rep="Jukebox je "+say_distance (radio, 0)+" ";
 else rep="Jukebox. ";
+if (play_game_music)
+{
 if (last_track!="")
 {
-rep+="Právì hraje ";
+rep+="Právì hraje track ";
 uint l=tracklist.length();
 for (uint i=0; i<l; i++)
 if (tracklist[i].filename==last_track)
@@ -567,6 +570,7 @@ rep+=", dohromady za "+earned_jukebox+" korun. Nejvíc v jukeboxu od jednoho záka
 else rep+=".";
 }
 else rep+=" Zatím nikdo nic nepustil.";
+}
 return rep;
 }
 
@@ -578,6 +582,7 @@ pool.destroy_sound (music);
 music=-1;
 }
 playing=0;
+last_track="";
 }
 
 void clear_jukebox()

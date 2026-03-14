@@ -422,7 +422,7 @@ frame.restart();
 string data=downloader.get (uri+resource);
 while (downloader.progress)
 {
-if (get_last_error()<0 or (downloaded<1024 and instr (data, "html")))
+if (get_last_error()<0 or (downloaded<1024 and instr (data, "html")) or (downloaded>0 and data==""))
 {
 data="";
 break;
@@ -466,6 +466,6 @@ if (singlekey (KEY_SPACE)) say (percentage+" %, staženo "+round (downloaded/1024
 }
 }
 }
-if (enable_debugging and data=="" and get_last_error()<0) warning ("Selhalo stahování\r\n"+uri+resource+"\r\nChybová hláška: "+get_last_error_text()+"\r\nStažená data: "+data);
+if (enable_debugging and (data=="" or get_last_error()<0)) warning ("Selhalo stahování\r\n"+uri+resource+"\r\nChybová hláška: "+get_last_error_text()+"\r\nStažená data: "+data);
 return data;
 }

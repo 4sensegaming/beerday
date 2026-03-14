@@ -185,6 +185,11 @@ if (handle.x == handle.seat_x and handle.y == handle.seat_y and handle.state!=le
 else cust+=say_distance (handle.seat_x, handle.seat_y, true, true);
 cust+=" ";
 }
+if (@tracking==@handle and is_custmenu)
+{
+if (handle.sex==1) cust+="Sleduješ ho. ";
+else cust+="Sleduješ ji. ";
+}
 if (handle.help_state==-1)
 {
 cust+=statedesc[handle.state];
@@ -733,16 +738,17 @@ cust.insert_at (0, rep);
 speak_menu_prompt=true;
 custresult=make_menu (cust, custresult, menu, true, sections);
 if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
-is_custmenu=false;
 if (custresult == 0)
 {
 if (is_game and paused and !menuloop.playing and !play_menu_sounds) say ("Zrušeno.", true, false);
+is_custmenu=false;
 break;
 }
 customer_menu (get_customer (menu.get_item_name (custresult)));
 }
 silence_custmenu();
 ss_end();
+is_custmenu=false;
 }
 
 void customer_menu (character@ h)
@@ -760,7 +766,7 @@ else
 {
 items.insert_last ("rename_randomly|Pøejmenovat "+player.append+" náhodnì");
 items.insert_last ("rename_manually|Pøejmenovat "+player.append+" ruènì");
-items.insert_last ("remove|Smazat jméno "+h.name);
+items.insert_last ("remove|Smazat jméno "+h.name+"|Nebude mít ádné jméno.");
 }
 dynamic_menu tempmenu;
 tempmenu.set_callback (callback, "");
@@ -812,9 +818,11 @@ tracker++;
 
 void untrack()
 {
-player.set_append (tracking);
-say ("U nesleduješ "+player.append+".", true, false);
+if (@tracking==null) return;
+character@ h=@tracking;
 @tracking=null;
+player.set_append (h);
+say ("U nesleduješ "+player.append+".", true, false, is_custmenu);
 tracker=0;
 track_x=-127;
 track_y=-127;
@@ -830,19 +838,23 @@ nearby=-1;
 bool start_tracking (character@ handle)
 {
 string rep="";
-if (@tracking != null) rep="U sleduješ jiného zákazníka.";
-else if (handle.state == idle) rep="Zákazníka nelze sledovat, protoe spí.";
-else if (get_distance (0, 0, player.y, handle.y) > 30) rep="Zákazníka nelze sledovat, protoe je pøíliš daleko.";
-else if ((handle.state == opening or handle.state == closing) and handle.leaving > 0) rep="Zákazníka nelze sledovat, protoe právì odešel.";
+if (@tracking != null)
+{
+player.set_append (tracking);
+rep="U sleduješ "+player.append;
+}
+player.set_append (handle);
+if (handle.state == idle) rep=player.append+" nemùeš sledovat, protoe spí.";
+else if (get_distance (0, 0, player.y, handle.y) > 30) rep=player.append+" nelze sledovat, protoe je pøíliš daleko.";
+else if ((handle.state == opening or handle.state == closing) and handle.leaving > 0) rep=player.append+" nelze sledovat, protoe právì odešel.";
 if (rep != "")
 {
 play_stat ("error");
-say (rep, true, false);
+say (rep, true, false, !is_custmenu);
 return false;
 }
 @tracking=handle;
-player.set_append (tracking);
-say ("Sleduješ "+player.append+".", false, false);
+say ("Sleduješ "+player.append+".", true, false, is_custmenu);
 tracker=0;
 track_state=handle.state;
 return true;

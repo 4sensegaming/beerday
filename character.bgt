@@ -703,12 +703,6 @@ if (name!="")
 prepend=sanitize(name)+" ";
 return;
 }
-if (@tracking == @this)
-{
-if (sex==2) prepend="Sledovaná zákaznice ";
-else prepend="Sledovaný zákazník ";
-return;
-}
 int8 ql=queue.length(), l=10, q=queue.find(this);
 if (leaving==3)
 {
@@ -850,12 +844,6 @@ append="";
 if (handle.name4!="")
 {
 append=sanitize (handle.name4);
-return;
-}
-if (@handle==@tracking)
-{
-if (handle.sex==2) append="sledovanou zákaznici";
-else append="sledovaného zákazníka";
 return;
 }
 int8 ql=queue.length(), l=10, q=queue.find(handle);
@@ -3503,11 +3491,10 @@ frames=0;
 frozen=1;
 if (is_player)
 {
-string rep="Poslal";
+string rep="Dal";
 if (gender==2) rep+="a";
 rep+=" jsi ";
-set_append (giver);
-rep+=append+" s pitím.";
+rep+=giver.name3+" do ruky pùllitr.";
 say (rep, false);
 }
 else
@@ -3522,10 +3509,9 @@ rep+=" do ruky pùllitr";
 }
 else
 {
-set_append (giver);
-rep+="poslal";
+rep+="dal";
 if (sex==2) rep+="a";
-rep+=" "+append+" s pitím.";
+rep+=" "+giver.name3+" do ruky pùllitr.";
 }
 say (rep, false);
 }

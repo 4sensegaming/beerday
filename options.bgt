@@ -108,7 +108,7 @@ return true;
 
 void save_options()
 {
-if (!play_menu_music or !play_game_music) purge_Music();
+if (!play_menu_music or !play_game_music) purge_music();
 profile.set ("loudness", loudness);
 profile.set ("menuvol", menuloop_vol);
 profile.set ("vocals_vol", vocals_vol);

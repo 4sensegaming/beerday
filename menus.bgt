@@ -1483,7 +1483,12 @@ item=tempmenu.get_item_name (tempres);
 if (instr (item, "play_game_music"))
 {
 play_game_music=!play_game_music;
-if (!play_game_music) purge_Music();
+if (!play_game_music)
+{
+stop_jukebox();
+clear_jukebox();
+purge_music();
+}
 }
 else if (instr (item, "play_menu_music_in_game")) play_menu_music_in_game=!play_menu_music_in_game;
 else if (instr (item, "intro")) play_intro=!play_intro;

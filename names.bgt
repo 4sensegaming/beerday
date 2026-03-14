@@ -71,7 +71,7 @@ int chosen=-1;
 while (chosen==-1 or names[chosen].used or (h.sex==1 and names[chosen].gender==2) or (h.sex==2 and names[chosen].gender==1)) chosen=random (0, available_names-1);
 names[chosen].used=true;
 used_names++;
-uint8 chosen_form=random (0, names[chosen].case1.length());
+uint8 chosen_form=random (0, names[chosen].case1.length()-1);
 h.name=names[chosen].case1[chosen_form];
 h.name3=names[chosen].case3[chosen_form];
 h.name4=names[chosen].case4[chosen_form];
