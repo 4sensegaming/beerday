@@ -216,7 +216,12 @@ for (uint8 i=0; i<l; i++)
 if (instr (mm[i], "stereo")) mm[i]+=mono_audio;
 else if (instr (mm[i], "music")) mm[i]=string_trim_right (mm[i], 1)+play_menu_music;
 	else if (instr (mm[i], "motd")) mm[i]+=motd=="";
-else if (instr (mm[i], "online")) mm[i]+=!is_online;
+else if (instr (mm[i], "online"))
+{
+if (!is_online) mm[i]+=" Vyžaduje pøipojení k internetu.";
+mm[i]+="|3|2|1|";
+mm[i]+=!is_online;
+}
 else if (instr (mm[i], "profile")) mm[i]+=!file_exists(folder+"profile.dat");
 }
 string[] secs={"", "Zvuk", "Ostatní"};
