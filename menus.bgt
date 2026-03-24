@@ -1327,8 +1327,13 @@ if (!beers.is_empty()) optmenu.insert_last ("opt_clear_drinks|Smazat vybraná piv
 else optmenu.insert_last ("choose_drinks|Vybrat piva|Nelze bìhem hry a pokud se vybírají náhodnì.|1|2|1|"+(is_game or selection==selection_random_change or selection==selection_manual_change or selection==selection_unspecified));
 optmenu.insert_last ("name_customers|Dávat nìkterım zákazníkùm náhodná jména| |1|"+name_customers);
 optmenu.insert_last ("show_lose_tips|Pøi kadé prohøe zobrazit jeden náhodnı tip|Všechny tipy si mùeš kdykoli pøeèíst polokou Zobrazit tipy, jak hrát, z hlavního menu|1|"+show_tips);
-optmenu.insert_last ("random_music|Pøehrávat náhodné písnièky|Je-li vypnuto, nebude z jukeboxu hrát ádná hudba, dokud nìkdo nepustí nìjakou konkrétní písnièku. A dohrají všechny písnièky, které jste pustili ty nebo zákazníci, pøestane jukebox hrát.|2|"+play_random_music+"|0|"+!play_game_music);
-optmenu.insert_last ("customers_jukebox|Zákazníci smìjí pouštìt hudbu|Je-li vypnuto a zároveò je vypnutá i náhodná hudba, nebude z jukeboxu nikdy samo od sebe hrát nic. Ty z nìj ale mùeš nìco pustit kdykoliv, pokud na to máš peníze.|2|"+enable_jukebox+"|0|"+!play_game_music);
+string no_jukebox=" Toto nastavení teï mìnit nemùeš, protoe máš v nastavení zvuku zakázanou veškerou hudbu z jukeboxu.";
+optmenu.insert_last ("random_music|Pøehrávat náhodné písnièky|Je-li vypnuto, nebude z jukeboxu hrát ádná hudba, dokud nìkdo nepustí nìjakou konkrétní písnièku. A dohrají všechny písnièky, které jste pustili ty nebo zákazníci, pøestane jukebox hrát.");
+if (!play_game_music) optmenu[optmenu.length()-1]+=no_jukebox;
+optmenu[optmenu.length()-1]+="|2|"+play_random_music+"|0|"+!play_game_music;
+optmenu.insert_last ("customers_jukebox|Zákazníci smìjí pouštìt hudbu|Je-li vypnuto a zároveò je vypnutá i náhodná hudba, nebude z jukeboxu nikdy samo od sebe hrát nic. Ty z nìj ale mùeš nìco pustit kdykoliv, pokud na to máš peníze.");
+if (!play_game_music) optmenu[optmenu.length()-1]+=no_jukebox;
+optmenu[optmenu.length()-1]+="|2|"+enable_jukebox+"|0|"+!play_game_music;
 optmenu.insert_last ("speak_impatient|Zákazník brzy ztratí trpìlivost| |3|"+say_impatient);
 optmenu.insert_last ("speak_errors|Popisy chyb|Je-li vypnuto, ozve se vdycky, kdy se pokusíš udìlat nìco, co je zrovna neproveditelné, jen zvuk.|3|"+speak_errors);
 optmenu.insert_last("speak_step|Pøedmìty pøi chùzi|Je-li vypnuto, budeš muset pøípadné pùllitry nebo sudy na políèku, kde právì stojíš, zjišovat ruènì mezerníkem.|3|"+speak_step);
