@@ -49,7 +49,7 @@ dm.insert_last ("toggle_autoplay|Automatická hra| |1|"+autoplay);
 dm.insert_last ("AI_log|Výpis ladicích informací|Pro pomocníky. Soubory s pøíponou .log se vytvoøí v aktuální složce, odkud je hra spuštìna.|2|"+enable_logging);
 if (!find_files("*.log").is_empty()) dm.insert_last ("delete_logs|Smazat existující .log soubory| |2");
 dm.insert_last ("activity_check|Kontrola špatné obsluhy|Pøedèasný konec hry|3|"+enable_lose_check);
-dm.insert_last ("angry|Aagresivní zákazníci| |3|"+enable_chasing);
+dm.insert_last ("angry|Agresivní zákazníci| |3|"+enable_chasing);
 dm.insert_last ("leaving|Odcházení zákazníkù| |3|"+enable_fleeing);
 dm.insert_last ("drunkards|Opilci| |3|"+enable_roaming);
 dm.insert_last("sleeping|Usínání| |3|"+enable_idle);
@@ -111,7 +111,7 @@ if (!enable_infinite_patience and !player.count_state(waiting).is_empty()) dm.in
 if (!player.count_state(serving).is_empty() or !player.count_state(giving).is_empty() or !player.count_state(cleaning).is_empty() or !player.count_state(emptiing).is_empty() or !player.count_state(barreling).is_empty() or !player.count_state(throwing).is_empty() or !player.count_state(calming).is_empty()) dm.insert_last ("force_all_helpers_away|Donutit všechny pomocníky pøestat pomáhat| |10");
 if (!barrels.is_empty()) dm.insert_last ("break_barrel|Rozbít první dostupný plný sud ve sklepì| |10");
 if (!mugs.is_empty()) dm.insert_last ("break_mugs|Rozbít všechny pùllitry| |10");
-dm.insert_last ("debug_speech|Sledovat správnost promluv|Je-li zapnuto, zkopíruje každou promluvu pøi jejím vyslovení do schránky.|11|"+debug_speech);
+dm.insert_last ("debug_speech|Sledovat správnost promluv|Každou promluvu pøi jejím vyslovení zkopíruje do schránky.|11|"+debug_speech);
 if (money>0 or money_total>0) dm.insert_last ("clear_money|Smazat veškeré výdìlky| |12");
 result=make_menu (dm, result, @menu, first, null, !first);
 first=false;

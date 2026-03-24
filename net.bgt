@@ -229,7 +229,7 @@ read_menu (helpmsg);
 help_read=true;
 }
 else  if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_ESCAPE) or singlekey (KEY_SPACE)) break;
-else if (keys > 0 and !ctrl and !shift and !alt)
+else if (keys > 0 and !ctrl and !shift and !alt and !key_down (KEY_LWIN) and !key_down (KEY_RWIN))
 {
 say (phrase, true, false);
 wait_keys();

@@ -1,7 +1,7 @@
 class dynamic_menu_item
 {
 string ui_name, name, description;
-uint8 section, checked;
+uint section, checked;
 bool is_submenu, disabled;
 
 dynamic_menu_item()
@@ -17,7 +17,7 @@ disabled=false;
 
 int opCmp (dynamic_menu_item@ other)
 {
-uint8 me=this.section, you=other.section;
+uint me=this.section, you=other.section;
 if (me>you) return 1;
 else if (me==you) return 0;
 return -1;
@@ -27,7 +27,7 @@ return -1;
 class dynamic_menu
 {
 bool wrap, allow_escape, enable_home_and_end, speak_item=false;
-uint8 part, old_part;
+uint part, old_part;
 
 dynamic_menu()
 {
@@ -113,7 +113,39 @@ menu_position=start_position;
 if(start_position<1 && auto_speak_first) return -1;
 int stick_aim=0;
 int stick_last_aim=0;
-if (intro!="" and (speak_menu_prompt or question!="") and !rerun) say (intro, true, false, false, false);
+if (intro!="" and (speak_menu_prompt or question!="") and !rerun)
+{
+say (intro, true, false, false, false);
+if (speak_menu_position)
+{
+string counts="Nabídka má ";
+uint items=this.get_item_count();
+if (@sections!=null)
+{
+uint sections=0, last_part=0;
+for (uint i=0; i<items; i++)
+if (this.item_list[i].section!=last_part)
+{
+sections++;
+last_part=this.item_list[i].section;
+}
+if (sections>1)
+{
+if (sections<5) counts+=sections+" záložky";
+else counts+=sections+" záložek";
+counts+=" a ";
+}
+}
+if (items==1) counts+="jednu položku";
+else if (items<5) counts+=items+" položky";
+else counts+=items+" položek";
+if (counts!="")
+{
+counts+=".";
+say (counts, false, false, false, false);
+}
+}
+}
 else if (!speak_menu_prompt and !rerun and !is_custmenu) silence();
 if (play_menu_sounds and !rerun) play_inmenu();
 if (rerun)
@@ -149,39 +181,29 @@ if(speak_item)
 {
 if (is_custmenu) custchanged=true;
 if (item_list[menu_position-1].is_submenu and play_menu_sounds and play_submenu) play_submenu();
-if (@sections!=null and part!=old_part)
+if (@sections!=null and sections.length()>1 and part!=old_part)
 {
 string section_name=get_section_name (item_list[menu_position-1]);
-bool comma=false;
-int found=-1;
-if (@sections!=null) found=sections.find (section_name);
-if (section_name !="" and section_name!=" ")
-{
-comma=true;
-section_name="Záložka "+section_name;
-}
+if (section_name !="" and section_name!=" ") section_name="Záložka "+section_name;
 if (speak_menu_position)
 {
-if (comma) section_name+=", ";
-if (found>-1) section_name+=(found+1);
-else section_name+=item_list[menu_position-1].section;
-section_name+=" z "+has_sections()+" ";
+if (section_name=="" or section_name==" ") section_name="Nepojmenovaná záložka";
+section_name+=", má ";
 uint l=item_list.length(), count=0;
 for (uint i=0; i<l; i++)
 if (item_list[i].section==item_list[menu_position-1].section) count++;
-if (count==1) section_name+="s jednou položkou";
-else if (count>0 and count<5) section_name+="se "+count+" položkami";
-else if (count>0) section_name+="s "+count+" položkami";
-if (!instr (section_name, "Záložka")) section_name="Záložka "+section_name;
+if (count==1) section_name+="jednu položku.";
+else if (count<5) section_name+=count+" položky.";
+else section_name+=count+" položek.";
 }
-say (section_name, false, false, false, false);
+if (section_name!="" and section_name!=" ") say (section_name, false, false, false, false);
 }
 if (item_list[menu_position-1].ui_name!="") say (item_list[menu_position-1].ui_name, false, false, false, false);
 if (item_list[menu_position-1].disabled) say ("Zamèeno", false, false, false, false);
 if (speak_menu_position)
 {
 string mp="";
-uint8 sec=has_sections();
+uint sec=has_sections();
 if (sec>1) mp+="Položka ";
 mp+=get_position()+" z "+get_item_count();
 say (mp, false, false, false, false);
@@ -200,7 +222,7 @@ old_part=part;
 // Use the act variable for triggering movement up and down, and for choosing ok and cancel.
 bool act=false;
 if(singlekey(KEY_RETURN)||singlekey(KEY_NUMPADENTER))
-if ((!is_statmenu and !is_readmenu) or instr (item_list[menu_position-1].name, "copy") or instr (item_list[menu_position-1].name, "clear") or question!="" or instr (item_list[menu_position-1].name, "http")) act=true;
+if (!is_statmenu and !item_list[menu_position-1].disabled and (!is_readmenu or instr (item_list[menu_position-1].name, "http"))) act=true;
 if(@stick!=null && stick_ok>=0)
 {
 if(stick.button_pressed(stick_ok)) act=true;
@@ -211,12 +233,6 @@ if(menu_position!=0)
 {
 silence();
 if (!is_learnmenu) play_enter();
-if (item_list[menu_position-1].disabled)
-{
-play_stat ("error");
-act=false;
-continue;
-}
 if (item_list[menu_position-1].checked<2)
 {
 if (item_list[menu_position-1].checked==0) item_list[menu_position-1].checked=1;
@@ -231,7 +247,7 @@ return menu_position;
 act=false;
 if(allow_escape==true)
 {
-if(singlekey(KEY_ESCAPE)) act=true;
+if(singlekey(KEY_ESCAPE) or singlekey (KEY_BACK)) act=true;
 if(@stick!=null && stick_cancel>=0)
 {
 if(stick.button_pressed(stick_cancel)) act=true;
@@ -436,7 +452,7 @@ return;
 if (!inc)
 {
 bool proceed=true;
-uint8 search=part;
+uint search=part;
 while (search-1 >0)
 {
 search--;
@@ -467,7 +483,7 @@ uint has_sections()
 return item_list[item_list.length()-1].section;
 }
 
-bool has_section (uint8 number)
+bool has_section (uint number)
 {
 uint l=item_list.length();
 for (uint i=0; i<l; i++)

@@ -75,7 +75,7 @@ if (menuloop.playing) menuloop.stop();
 
 void menu_music()
 {
-if (won.playing or !play_menu_music or (is_game and !play_menu_music_in_game) or onboarding or speaking_tutorial or (!is_game_window_active() and pause_on_blur) or is_updatemenu or is_gallery)
+if (won.playing or !play_menu_music or (is_game and !play_menu_music_in_game) or onboarding or speaking_tutorial or (!foreground and pause_on_blur) or is_updatemenu or is_gallery)
 {
 stop_menu_music();
 return;
@@ -149,6 +149,8 @@ if (!try.is_jingle and used_tracks.find(track)==-1) used_tracks.insert_last (tra
 try.disabled=false;
 if (try.is_jingle) between_jingles=0;
 else between_jingles++;
+set_stat ("jukebox_played_total", 1);
+set_stat ("jukebox_played_duration", try.length);
 }
 
 void play_jukebox()
@@ -178,6 +180,8 @@ try.disabled=false;
 if (try.is_jingle) between_jingles=0;
 else between_jingles++;
 if (used_this_session.find(last_track)==-1) used_this_session.insert_last (last_track);
+set_stat ("jukebox_played_total", 1);
+set_stat ("jukebox_played_duration", try.length);
 }
 
 void load_soundtrack()
@@ -475,7 +479,7 @@ while (tempres>0);
 string count_songs (int8 who)
 {
 string result=" (";
-uint8 count=0;
+uint count=0, unlocked=0;
 double duration=0;
 if (who==-1)
 {
@@ -490,7 +494,25 @@ duration=authors[who].duration;
 if (count==1) result+="jedna písnièka";
 else if (count<5) result+=count+" písnièky";
 else result+=count+" písnièek";
-result+=", "+get_time (true, duration)+")";
+result+=", "+get_time (true, duration)+", ";
+uint l=tracklist.length();
+for (uint i=0; i<l; i++)
+if (who==-1 or tracklist[i].author==authors[who].name)
+if (!tracklist[i].disabled) unlocked++;
+if (unlocked==count)
+{
+if (count==1) result+="je odemèená";
+else if (count<3) result+="obì jsou odemèené";
+else result+="všechny jsou odemèené";
+}
+else if (unlocked==0)
+{
+if (count>1) result+="žádná ";
+result+="není odemèená";
+}
+else if (unlocked==1) result+="jedna je odemèená";
+else if (unlocked<5) result+=unlocked+" jsou odemèené";
+else result+=unlocked+" je odemèených";
 return result;
 }
 

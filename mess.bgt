@@ -24,6 +24,7 @@ if (count_mess(2)+count_mess(3)<max_liquid_mess) said_mess=false;
 if (count_mess_here(messes[i].x, messes[i].y, 2)+count_mess_here(x, y, 3)==1) play ("tidy");
 if (count_mess(2)+count_mess(3)==1) say ("Zaschl poslední nepoøádek.", false);
 dried++;
+set_stat ("dried", 1);
 }
 messes.remove_at (i);
 return;

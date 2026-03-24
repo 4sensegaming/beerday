@@ -1288,7 +1288,7 @@ money_total+=try.price;
 paid_total+=try.price;
 if (paid_total > most_paid) most_paid=paid_total;
 earned_jukebox+=try.price;
-if (!autoplay) set_stat ("earned_jukebox_once", earned_jukebox, true);
+if (!autoplay) set_stat ("jukebox_earned_once", earned_jukebox, true);
 paid_jukebox_total+=try.price;
 paid_jukebox_once+=try.price;
 if (paid_jukebox_total>earned_jukebox_most_customer) earned_jukebox_most_customer=paid_jukebox_total;
@@ -3173,7 +3173,7 @@ if (dirty.find (m) > -1 or @m.drank != null) dirty_drinks++;
 if (m.total >= poured_undermeasure and m.total < poured_full) undermeasures++;
 if (m.total > 0)
 {
-if (!autoplay) set_stat ("solo_"+beers[m.kinds[0]], 1);
+if (!autoplay) set_stat ("single_"+beers[m.kinds[0]], 1);
 if (m.kinds[1] == -1) single_drinks++;
 else
 {

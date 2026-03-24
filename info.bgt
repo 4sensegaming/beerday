@@ -766,7 +766,7 @@ else
 {
 items.insert_last ("rename_randomly|Pøejmenovat "+player.append+" náhodnì");
 items.insert_last ("rename_manually|Pøejmenovat "+player.append+" ruènì");
-items.insert_last ("remove|Smazat jméno "+h.name+"|Nebude mít žádné jméno.");
+items.insert_last ("remove|Smazat jméno "+h.name+"|Zùstane beze jména, ale pùjde to kdykoi zmìnit.");
 }
 dynamic_menu tempmenu;
 tempmenu.set_callback (callback, "");
@@ -1180,11 +1180,13 @@ return count;
 
 void say_game()
 {
-string game=modes[mode-1];
-if (hardcore) game+=", hardcore";
-if (is_tutorial) game+=", tutoriál";
+string game="";
+if (endless) game="Nekoneèná hra";
+else if (freeplay) game="Volná hra";
+else game="Normální hra";
+if (is_tutorial) game+=", seznámení s hrou";
 game+=", "+difficulties[difficulty-1]+" obtížnost.\r\n";
-if (endless) game+="Hraješ "+get_time (false);
+if (endless or freeplay) game+="Hraješ "+get_time (false);
 else game+=get_time();
 if (hardcore)
 {
@@ -1193,7 +1195,7 @@ if (!allow_helpers) game+="Není povolen žádný typ pomocníkù.\r\n";
 else
 {
 game+="Jsou povolení pomocníci na ";
-if (allow_servers) game+="toèení,\n";
+if (allow_servers) game+="toèení,\r\n";
 if (allow_givers) game+="roznášení pití,\r\n";
 if (allow_cleaners) game+="odnášení špinavých pùllitrù,\r\n";
 if (allow_emptiers) game+="odnášení prázdných sudù,\r\n";

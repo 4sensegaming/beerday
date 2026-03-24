@@ -1,43 +1,57 @@
-string[] stat_sections={"Bìh programu", "Poèty her", "Dokonèené", "Prohrané", "Pøerušené", "Odehráno", "Poèty hardcore her", "Dokonèené", "Prohrané", "Pøerušené", "Odehráno", "Nejdelší nekoneèná normální hra", "Nejdelší nekoneèná automatická hra", "Pohyb", "Zákazníci celkovì", "Omráèeno hráèem", "Omráèeno jiným zákazníkem", "Pomocníci", "Zajímaví zákazníci", "Praštìní hráèe", "Vydìláno", "Na dýškách", "Z jukeboxu", "Jukebox celkovì", "Pùllitry", "Sudy", "Nepoøádek", "Rozneseno pití"};
+string[] stats_menu={"Vyber si kategorii statistik", "runtime|Bìh programu", "normal_games|Hry v normálním režimu", "normal_hardcore_games|Hardcore hry v normálním režimu", "endless_games|Hry v nekoneèném režimu", "endless_hardcore_games|Hardcore hry v nekoneèném režimu", "freeplay_games|Hry ve volném režimu", "player|Hráè", "customers|Zákazníci", "money|Peníze", "jukebox|Jukebox", "mugs|Pùllitry", "kegs|Sudy", "mess|Nepoøádek", "served_drinks|Roznesená pití", "copy_stats|Zkopírovat statistiky do schránky", "clear_stats|Vymazat statistiky|Ztratíš veškerý uložený postup, nelze odvolat!"};
+string[] category_sections={
+"",
+"",
+"Zahájené hry;Vyhrané hry;Prohrané hry;Pøerušené hry;Odehraný èas;Nejdelší hry",
+"Zahájené hry;Vyhrané hry;Prohrané hry;Pøerušené hry;Odehraný èas;Nejdelší hry",
+"Zahájené hry;Prohrané hry;Pøerušené hry;Odehraný èas;Nejdelší hry",
+"Zahájené hry;Prohrané hry;Pøerušené hry;Odehraný èas;Nejdelší hry",
+"Zahájené hry;Prohrané hry;Pøerušené hry;Odehraný èas;Nejdelší hry",
+"Pohyb;Kolikrát zákazníci hráèe praštili",
+"Zákazníci celkovì;Pomocníci;Zajímaví zákazníci;Zákazníci omráèení hráèem;Zákazníci omráèení jiným zákazníkem",
+"Celkovì;Na dýškách;Z jukeboxu",
+"",
+"",
+"",
+"",
+"Pití celkovì;"
+};
 
 class stat
 {
 string name="", ui_name="";
 double content;
-uint8 section=0;
+uint8 category=0, section=1;
 
 string render (bool copied=false)
 {
-if (content > 0 or show_empty_stats)
-{
+if (content == 0 and !show_empty_stats) return "";
+string result="";
 if (instr (name, "duration") or instr (name, "longest") or instr (name, "patient") or instr (name, "runtime"))
 {
 bool is_longest=true;
-if (instr (name, "longest") or instr (name, "patient")) is_longest=false;
+if (instr (name, "patient")) is_longest=false;
+if (instr (name, "jukebox")) is_gallery=true;
 if (content > 0)
 {
-if (copied) return ui_name+": "+get_time (is_longest, content, true);
-else return name+"|"+ui_name+": "+get_time (is_longest, content, true);
+if (copied) result=ui_name+": "+get_time (is_longest, content, true);
+else result=name+"|"+ui_name+": "+get_time (is_longest, content, true)+"| |"+section;
 }
 else
 {
-if (copied) return ui_name+": Dosud žádný èas";
-else return name+"|"+ui_name+": Dosud žádný èas.";
+if (copied) result=ui_name+": Dosud žádný èas";
+else result=name+"|"+ui_name+": Dosud žádný èas."+"| |"+section;
 }
 }
-else
-{
-if (copied) return ui_name+": "+content;
-else return name+"|"+ui_name+": "+content;
-}
-}
-if (copied) return "";
-else return " | ";
+else if (copied) result=ui_name+": "+content;
+else result=name+"|"+ui_name+": "+content+"| |"+section;
+is_gallery=false;
+return result;
 }
 
 int opCmp (stat@ handle)
 {
-string this=ui_name, other=handle.ui_name;
+string this=name, other=handle.name;
 if (this > other) return 1;
 else if (this == other) return 0;
 else return -1;
@@ -61,7 +75,7 @@ double get_stat (string name)
 stat@ temp=find_stat (name);
 if (@temp==null)
 {
-if (enable_debugging) warning ("Statistika "+name+" nenalezena.");
+if (enable_debugging) warning ("Statistiku "+name+" se nepovedlo pøeèíst.");
 exit();
 }
 return temp.content;
@@ -71,7 +85,11 @@ void set_stat (string name, double value, bool overwrite=false)
 {
 if ((is_tutorial or value == 0) and (name != "runtime" and name!="run_times")) return;
 stat@ handle=find_stat (name);
-if (@handle == null) return;
+if (@handle == null)
+{
+if (enable_debugging) warning ("Statistiku "+name+" se nepovedlo zapsat.");
+exit();
+}
 if (!overwrite) handle.content+=value;
 else if (value > handle.content) handle.content=value;
 }
@@ -88,33 +106,34 @@ return;
 string[] split=string_split (raw, "\r\n", true);
 uint l=split.length();
 stats.reserve (l);
-uint last_section=1;
 for (uint i=0; i<l; i++)
 {
 string[] single_stat=string_split (split[i], "\t", true);
 uint8 ssl=single_stat.length();
-if ((ssl<2 or ssl>3))
+if (ssl<3 or ssl>4)
 {
-if (enable_debugging) warning ("Nesprávná statistika na øádku "+(i+1)+". Má jen "+ssl+" prvkù.");
+if (enable_debugging) warning ("Nesprávná statistika na øádku "+(i+1)+". Má "+ssl+" prvkù.");
 return;
 }
 stat new;
 new.name=single_stat[0];
 new.ui_name=single_stat[1];
-if (ssl==3) last_section=string_to_number (single_stat[2]);
 new.content=0;
-new.section=last_section;
+new.category=string_to_number (single_stat[2]);
+if (ssl==4) new.section=string_to_number (single_stat[3]);
 stats.insert_last (new);
 }
 l=all_beers.length();
-uint8 nl=non_alco.length();
-for (uint8 i=0; i<l; i++)
+uint nl=non_alco.length();
+uint category=category_sections.length()-1, last_section=2;
+for (uint i=0; i<l; i++)
 {
+category_sections[category]+=all_beers[i]+";";
 stat new;
 new.content=0;
-new.ui_name="Celkem";
-new.name="solo_"+all_beers[i];
-last_section++;
+new.ui_name="Dohromady";
+new.name="single_"+all_beers[i];
+new.category=category;
 new.section=last_section;
 stats.insert_last (new);
 for (uint8 j=0; j<l; j++)
@@ -124,9 +143,11 @@ stat mix;
 mix.content=0;
 mix.name="mixed_"+all_beers[i]+"_"+all_beers[j];
 string mixed_name=all_beers7[j];
-if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="se "+mixed_name;
-else mixed_name="s "+mixed_name;
+if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="Se "+mixed_name;
+else mixed_name="S "+mixed_name;
 mix.ui_name=mixed_name;
+mix.category=category;
+mix.section=last_section;
 stats.insert_last (mix);
 }
 for (uint8 k=0; k<nl; k++)
@@ -135,19 +156,23 @@ stat mix;
 mix.content=0;
 mix.name="mixed_"+all_beers[i]+"_"+non_alco[k];
 string mixed_name=non_alco7[k];
-if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="se "+mixed_name;
-else mixed_name="s "+mixed_name;
+if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="Se "+mixed_name;
+else mixed_name="S "+mixed_name;
 mix.ui_name=mixed_name;
+mix.category=category;
+mix.section=last_section;
 stats.insert_last (mix);
 }
+last_section++;
 }
-for (uint8 i=0; i<nl; i++)
+for (uint i=0; i<nl; i++)
 {
+category_sections[category]+=non_alco[i]+";";
 stat new;
 new.content=0;
-new.ui_name="Celkem";
-new.name="solo_"+non_alco[i];
-last_section++;
+new.ui_name="Dohromady";
+new.name="single_"+non_alco[i];
+new.category=category;
 new.section=last_section;
 stats.insert_last (new);
 for (uint8 j=0; j<l; j++)
@@ -156,11 +181,14 @@ stat mix;
 mix.content=0;
 mix.name="mixed_"+non_alco[i]+"_"+all_beers[j];
 string mixed_name=all_beers7[j];
-if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="se "+mixed_name;
-else mixed_name="s "+mixed_name;
+if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="Se "+mixed_name;
+else mixed_name="S "+mixed_name;
 mix.ui_name=mixed_name;
+mix.category=category;
+mix.section=last_section;
 stats.insert_last (mix);
 }
+last_section++;
 }
 }
 
@@ -169,7 +197,7 @@ void save_stats()
 update_runtime();
 uint l=stats.length();
 for (uint i=0; i<l; i++)
-if (stats[i].content>0) profile.set (stats[i].name, stats[i].content);
+profile.set (stats[i].name, stats[i].content);
 profile.set ("did_tutorial", did_tutorial);
 }
 
@@ -179,6 +207,16 @@ uint l=stats.length();
 for (uint i=0; i<l; i++)
 if (profile.exists (stats[i].name)) profile.get (stats[i].name, stats[i].content);
 if (profile.exists ("did_tutorial")) profile.get ("did_tutorial", did_tutorial);
+}
+
+string prefix_mode()
+{
+string prefix;
+if (endless) prefix="endless_";
+else if (freeplay) prefix="free_";
+else prefix="normal_";
+if (hardcore) prefix+="hardcore_";
+return prefix;
 }
 
 void make_stats (bool exited)
@@ -191,81 +229,23 @@ save_stats();
 return;
 }
 update_customer_stats();
-set_stat ("played_total", 1);
-set_stat ("played_diff"+difficulty, 1);
-set_stat ("duration_total", elapsed);
-set_stat ("duration_diff"+difficulty, elapsed);
-set_stat ("played_mode"+mode, 1);
-set_stat ("duration_mode"+mode, elapsed);
-if (!endless and elapsed >= limit)
-{
-set_stat ("completed_total", 1);
-set_stat ("completed_diff"+difficulty, 1);
-set_stat ("completed_mode"+mode, 1);
-set_stat ("duration_completed", elapsed);
-}
+string prefix=prefix_mode();
+set_stat (prefix+"played_total", 1);
+set_stat (prefix+"played_diff"+difficulty, 1);
+set_stat (prefix+"duration_total", elapsed);
+set_stat (prefix+"duration_diff"+difficulty, elapsed);
+set_stat (prefix+"longest_total", elapsed, true);
+set_stat (prefix+"longest_diff"+difficulty, elapsed, true);
+if (elapsed>=limit) prefix+="completed_";
 else
 {
-if (exited)
-{
-set_stat ("quit_total", 1);
-set_stat ("quit_diff"+difficulty, 1);
-set_stat ("quit_mode"+mode, 1);
-set_stat ("duration_quit", elapsed);
+if (exited) prefix+="quit_";
+else prefix+="lost_";
 }
-else
-{
-set_stat ("lost_total", 1);
-set_stat ("lost_diff"+difficulty, 1);
-set_stat ("lost_mode"+mode, 1);
-set_stat ("duration_lost", elapsed);
-}
-}
-if (mode == 3)
-{
-set_stat ("longest_overall_total", elapsed, true);
-set_stat ("longest_diff"+difficulty, elapsed, true);
-}
-else if (mode == 4)
-{
-set_stat ("longest_auto_overall_total", elapsed, true);
-set_stat ("longest_auto_diff"+difficulty, elapsed, true);
-}
-if (hardcore)
-{
-set_stat ("played_hardcore_total", 1);
-set_stat ("played_hardcore_mode"+mode, 1);
-set_stat ("duration_hardcore_total", elapsed);
-set_stat ("played_hardcore_diff"+difficulty, 1);
-set_stat ("duration_hardcore_mode"+mode, elapsed);
-set_stat ("duration_hardcore_diff"+difficulty, 1);
-if (elapsed >= limit)
-{
-set_stat ("completed_hardcore_total", 1);
-set_stat ("completed_hardcore_mode"+mode, 1);
-set_stat ("duration_hardcore_completed", elapsed);
-set_stat ("completed_hardcore_diff"+difficulty, 1);
-}
-else
-{
-if (exited)
-{
-set_stat ("quit_hardcore_total", 1);
-set_stat ("quit_hardcore_mode"+mode, 1);
-set_stat ("quit_hardcore_diff"+difficulty, 1);
-set_stat ("duration_hardcore_quit", elapsed);
-}
-else
-{
-set_stat ("lost_hardcore_total", 1);
-set_stat ("lost_hardcore_mode"+mode, 1);
-set_stat ("lost_hardcore_diff"+difficulty, 1);
-set_stat ("duration_hardcore_lost", elapsed);
-}
-}
-if (mode == 3) set_stat ("longest_hardcore", elapsed, true);
-else if (mode == 4) set_stat ("longest_auto_hardcore", elapsed, true);
-}
+set_stat (prefix+"total", 1);
+set_stat (prefix+"diff"+difficulty, 1);
+set_stat (prefix+"duration", elapsed);
+set_stat (prefix+"longest", elapsed, true);
 if (autoplay) return;
 if (gratuity > 0)
 {
@@ -292,15 +272,15 @@ set_stat ("undermeasures", undermeasures);
 set_stat ("dirty_drinks", dirty_drinks);
 set_stat ("single_drinks", single_drinks);
 set_stat ("mixed_drinks", mixed_drinks);
-find_stat("money").content=money;
+set_stat ("money", money);
 set_stat ("earned_most", money, true);
 find_stat("money_total").content=money_total;
-set_stat ("earned_jukebox", earned_jukebox);
-set_stat ("earned_jukebox_once", earned_jukebox, true);
-set_stat ("earned_jukebox_most", earned_jukebox_most_customer, true);
-set_stat ("played_jukebox", played_jukebox);
-set_stat ("played_jukebox_player", played_jukebox_player);
-set_stat ("played_jukebox_customers", played_jukebox_customers);
+set_stat ("jukebox_earned", earned_jukebox);
+set_stat ("jukebox_earned_once", earned_jukebox, true);
+set_stat ("jukebox_earned_most", earned_jukebox_most_customer, true);
+set_stat ("jukebox_played_total", played_jukebox);
+set_stat ("jukebox_played_player", played_jukebox_player);
+set_stat ("jukebox_played_customers", played_jukebox_customers);
 set_stat ("trips_total", total_trips);
 set_stat ("falls_total", total_falls);
 set_stat ("patient_total", most_patient, true);
@@ -334,56 +314,76 @@ set_stat ("most_player_hits", player.hits, true);
 void view_stats()
 {
 silence();
-uint l=stats.length(), count=0;
-string[] renders;
-renders.reserve (l);
-int tempres=-1;
-is_statmenu=true;
-while (tempres != 0 and tempres != renders.length())
+if (!show_empty_stats and is_empty_category (-1))
 {
-renders.resize (0);
-update_runtime();
-uint8 part=1;
-for (uint i=0; i<l; i++)
-if (stats[i].content > 0 or show_empty_stats)
-{
-renders.insert_last (stats[i].render());
-if (stats[i].section!=0) part=stats[i].section;
-renders[renders.length()-1]+="| |"+part;
-if (stats[i].content > 0 and stats[i].name != "runtime" and stats[i].name!="run_times") count++;
-}
-if (count == 0)
-{
-say ("Zatím žádné statistiky.", true, false, true);
-if (!show_empty_stats)
-{
-is_statmenu=false;
+say ("Zatím nejsou uloženy žádné statistiky.", true, false, true);
 return;
 }
+dynamic_menu stat_menu;
+int8 tempres=1;
+while (tempres!=0)
+{
+string[] categories=stats_menu;
+uint8 l=categories.length();
+for (uint8 i=1; i<l-2; i++)
+{
+if (is_empty_category (i)) categories[i]+="|V této kategorii zatím nejsou uloženy žádné statistiky.";
+else categories[i]+="| ";
+categories[i]+="|1|2|1";
+if (!show_empty_stats and is_empty_category (i)) categories[i]+="|1";
 }
-renders.insert_at (0, "Pøehled statistik:");
-renders.insert_last ("copy_stats|Zkopírovat statistiky do schránky| |"+stat_sections.length());
-renders.insert_last ("clear_stats|Vymazat statistiky|Ztratíš veškerý uložený postup, nelze odvolat!|"+(stat_sections.length()));
-tempres=make_menu (renders, 1, @menu, true, stat_sections);
-string item=menu.get_item_name (tempres);
+if (is_empty_category (-1))
+{
+categories[categories.length()-2]+="|Zatím nejsou uloženy žádné statistiky.|1|2|0|1";
+categories[categories.length()-1]+=" Zatím nejsou uloženy žádné statistiky.|1|2|1|1";
+}
+else categories[categories.length()-1]+="|1|2|1";
+tempres=make_menu (categories, tempres, stat_menu);
+string item=stat_menu.get_item_name (tempres);
 if (instr (item, "copy")) copy_stats();
 else if (instr (item, "clear"))
 {
 bool cleared=clear_stats();
 if (cleared)
 {
-is_statmenu=false;
-return;
+tempres=1;
+if (!show_empty_stats) break;
 }
 }
+else if (tempres>0) view_category (tempres);
 }
+}
+
+void view_category (uint8 category)
+{
+silence();
+if (is_empty_category (category))
+{
+say ("V této kategorii zatím nejsou uloženy žádné statistiky.", true, false, true);
+if (!show_empty_stats) return;
+}
+uint l=stats.length();
+string[] renders;
+renders.reserve (l);
+renders.resize (0);
+update_runtime();
+renders.insert_last ("Statistiky z kategorie "+string_split (stats_menu[category], "|", true)[1]);
+for (uint i=0; i<l; i++)
+if (stats[i].category==category and (stats[i].content > 0 or show_empty_stats))
+{
+string render=stats[i].render();
+if (render!="") renders.insert_last (render);
+}
+dynamic_menu cat_menu;
+is_statmenu=true;
+make_menu (renders, 1, @cat_menu, true, string_split (category_sections[category], ";", true));
 is_statmenu=false;
 }
 
 bool clear_stats()
 {
 wait_keys();
-if (ask ("Chceš opravdu vymazat veškeré statistiky? Tím pøijdeš o veškerý dosavadní postup ve høe, to znamená o vydìlané peníze, nakoupené varianty a vylepšení hry, získané odmìny a o všechno ostatní. Budeš muset zaèít hrát znovu od úplného zaèátku, tedy od prvního seznámení s hrou. Tento krok nejde odvolat, ale nevymaže uložená nastavení: Které zvuky se mají a které nemají pøehrávat, co a jakým zpùsobem se má èíst a další.") == 2) return false;
+if (ask ("Chceš opravdu vymazat všechny statistiky? Tím pøijdeš o veškerý dosavadní postup ve høe, to znamená o vydìlané peníze, nakoupené varianty a vylepšení hry, získané odmìny a o všechno ostatní. Budeš muset zaèít hrát znovu od úplného zaèátku, tedy od prvního seznámení s hrou. Tento krok nejde odvolat, ale nevymaže uložená nastavení - které zvuky se mají a které nemají pøehrávat, co a jakým zpùsobem se má èíst a další.") == 2) return false;
 uint l=stats.length();
 for (uint i=0; i<l; i++) stats[i].content=0;
 save_stats();
@@ -395,21 +395,27 @@ return true;
 void copy_stats()
 {
 string parsed="";
-uint l=stats.length(), part=0;
+int l=stats.length(), last_category=-1, last_section=-1;
+string[] sections;
 for (uint i=0; i<l; i++)
 if (stats[i].content > 0 or show_empty_stats)
 {
-if (stats[i].section!=0 and part!=stats[i].section)
+if (stats[i].category!=last_category)
 {
-part=stats[i].section;
-if (part-1<stat_sections.length()) parsed+="\r\n"+stat_sections[part-1]+":\r\n";
+last_category=stats[i].category;
+if (parsed!="") parsed+="\r\n";
+parsed+="# "+string_split (stats_menu[last_category], "|", true)[1]+"\r\n";
+sections=string_split (category_sections[last_category], ";", true);
+}
+if (!sections.is_empty() and last_section!=stats[i].section and sections[0]!="")
+{
+last_section=stats[i].section;
+if (sections[last_section-1]!="") parsed+="## "+sections[last_section-1]+"\r\n";
 }
 parsed+=stats[i].render (true)+"\r\n";
 }
-while (parsed[0]=="\r" or parsed[0]=="\n") parsed=string_trim_left (parsed, 1);
-while (parsed[parsed.length()-1]=="\r" or parsed[parsed.length()-1]=="\n") parsed=string_trim_right (parsed, 1);
 if (strip_diacritics) parsed=fuck_czech (parsed);
-clipboard_copy_text (parsed);
+clipboard_copy_text (string_trim_right (parsed, 2));
 say ("Statistiky zkopírovány.", true, false, true);
 }
 
@@ -431,4 +437,16 @@ uint time=runtime.elapsed/1000;
 time*=fps;
 set_stat ("runtime", time);
 runtime.restart();
+if (get_stat ("run_times") ==0) set_stat ("run_times", 1);
+}
+
+bool is_empty_category (int category)
+{
+uint l=stats.length();
+for (uint i=0; i<l; i++)
+{
+if (category==-1 and stats[i].category==1) continue;
+if ((category==-1 or stats[i].category==category) and stats[i].content>0) return false;
+}
+return true;
 }
