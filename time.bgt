@@ -94,6 +94,7 @@ elapsed++;
 if (endless) return;
 if (limit - elapsed <= 60*fps and !timewarn)
 {
+say ("Poslední objednávky.", false, true);
 play_stat ("minleft");
 timewarn=true;
 }

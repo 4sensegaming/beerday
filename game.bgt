@@ -379,7 +379,11 @@ if (limit > 0 and elapsed >= limit)
 cause="Výbornì! Zvládl";
 if (gender==2) cause+="a";
 cause+=" jsi to vydržet celých "+string_trim_right (get_time (false, elapsed), 1)+"! Gratuluju!\r\n";
-if (!is_tutorial) play_stat ("timesup");
+if (!is_tutorial)
+{
+say ("Zavíráme. Na shle.", false, true);
+play_stat ("timesup");
+}
 if (hardcore) cause+="A navíc s dodateènými omezeními, protože ani normální, už tak dost vysoká obtížnost ti evidentnì nebyla dost dobrá. To už je opravdu výkon. Smekám!\r\n";
 }
 else
