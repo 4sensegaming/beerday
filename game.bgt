@@ -359,6 +359,7 @@ if (speak) say ("Pauza.", true, false);
 void resume()
 {
 if (!paused) return;
+garbage_collect();
 if (@tracking == null and tracker == 0) silence();
 if (changed_item_loops) clear_item_loops();
 pool.resume_all();

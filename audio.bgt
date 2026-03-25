@@ -104,11 +104,13 @@ set_sound_master_volume (curvol);
 silence(true);
 if (menuloop.playing) stop_menu_music();
 set_sound_master_volume (loudness);
+garbage_collect();
 }
 
 void fadein (double volume_step=0.5)
 {
 if (loudness <= minvol) return;
+garbage_collect();
 set_sound_master_volume(minvol-10);
 frame.restart();
 while (get_sound_master_volume() < loudness)

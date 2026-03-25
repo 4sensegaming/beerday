@@ -1280,6 +1280,8 @@ played_jukebox_songs++;
 played_jukebox++;
 if (!is_player) played_jukebox_customers++;
 else played_jukebox_player++;
+if (!freeplay)
+{
 play ("coin");
 if (!is_player)
 {
@@ -1293,6 +1295,7 @@ paid_jukebox_total+=try.price;
 paid_jukebox_once+=try.price;
 if (paid_jukebox_total>earned_jukebox_most_customer) earned_jukebox_most_customer=paid_jukebox_total;
 play_stat ("pay");
+}
 }
 frames=0;
 frozen=1;
@@ -1595,6 +1598,8 @@ return;
 }
 if (has_drink)
 {
+if (!freeplay)
+{
 uint8 base;
 if (second_drink == -1) base=prices[drink];
 else base=(prices[drink]/2) +(prices[second_drink]/2);
@@ -1626,6 +1631,7 @@ money_total+=base;
 paid_total+=base;
 if (paid_total > most_paid) most_paid=paid_total;
  play_stat ("pay");
+}
 @leading=null;
 set_state (drinking);
 frames=0;

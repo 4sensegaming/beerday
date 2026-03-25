@@ -190,7 +190,7 @@ const double[] volmenu_values={0, -2, -4, -6, -8, -10, -12, -14, -16, -18, -20, 
 string[] genders={"Nastavení pohlaví", "gender_male|Mu", "gender_female|ena", "gender_undefined|Neuvedeno|Mluvnickı muskı rod"};
 string[] help_items={"Nastav prodlevu", "1_sec|jedna vteøina", "2_sec|dvì vteøiny", "3_sec|3 vteøiny", "4_sec|4 vteøiny", "5_sec|5 vteøin", "10_sec|10 vteøin", "15_sec|15 vteøin", "20_sec|20 vteøin", "25_sec|25 vteøin", "30_sec|30 vteøin", "35_sec|35 vteøin", "40_sec|40 vteøin", "45_sec|45 vteøin", "50_sec|50 vteøin", "55_sec|55 vteøin", "60_sec|60 vteøin"};
 const uint8[] help_values={1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
-const string[] options_menu={"Menu nastavení", "ui_options|Rozhraní| |1|2|1", "audio_options|Zvuk| |1|2|1", "game_options|Hra| |1|2|1", "control_options|Ovládání| |1|2|1", "profile_options|Profil| |1|2|1", "restore_all_defaults|Obnovit všechna vıchozí nastavení"};
+const string[] options_menu={"Nabídka nastavení", "ui_options|Rozhraní| |1|2|1", "audio_options|Zvuk| |1|2|1", "game_options|Hra| |1|2|1", "control_options|Ovládání| |1|2|1", "profile_options|Profil| |1|2|1", "restore_all_defaults|Obnovit všechna vıchozí nastavení"};
 
 const string escape_symbols="<>{}[]@$|&^;+/\\'\"";
 const string[] diacritics={"á", "Á", "è", "È", "ï", "Ï", "é", "É", "ì", "Ì", "í", "Í", "ò", "Ò", "ó", "Ó", "ø", "Ø", "š", "Š", "", "", "ú", "Ú", "ù", "Ù", "ı", "İ", "", ""};

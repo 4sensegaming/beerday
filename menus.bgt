@@ -702,7 +702,7 @@ bool game_menu()
 bool first=true;
 while (true)
 {
-string[] hm={"Jak chceš hrát?"};
+string[] hm={"Nabídka hry"};
 hm.reserve (20);
 hm.insert_last ("difficulty|Obtížnost: "+diff[difficulty]+"| |1|2|1");
 string tutorial="tutorial|První seznámení s hrou|";
