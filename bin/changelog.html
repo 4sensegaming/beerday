@@ -40,6 +40,7 @@
 <li>Další úpravy a doplnění textace a popisů většiny položek ve všech menu (za některé díky Chipotlovi a Blackspellovi), včetně další aktualizace titulků. Prohlédněte si prosím ještě jednou znovu a pořádně všechny nabídky, jako by tohle byla úplně první verze vůbec, a dejte mi vědět, pokud vám cokoli přijde nejednoznačné, nesrozumitelné, kostrbaté nebo prostě divné.</li>
 <li>Znovu upraveny veškeré texty klávesové nápovědy.</li>
 <li>V nabídce zobrazení ovládání se teď čtou i popisy jednotlivých příkazů.</li>
+<li>Optimalizováno a zrychleno zpracování stisknutých kláves ve hře, ve všech menu a při čekání, až pustíte všechny klávesy, než hra udělá něco dalšího. Všude se to teď bude jevit subjektivně rychlejší, ale pořád to funguje tak, jak má, i to čekání. Tahle optimalizace by měla zároveň opravit chybu, kdy občas klávesnice zejména při hře na nejtěžší obtížnost pocitově nereagovala.</li>
 </ul>
 <h4 id="09options">Nastavení</h4>
 <ul aria-labelledby="09 09options">
@@ -63,9 +64,10 @@
 </ul>
 <h4 id="09names">Jména a pojmenování zákazníků</h4>
 <ul aria-labelledby="09 09names">
-<li>Odstranil jsem spoustu až moc exotických jmen, respektive až moc infantilních zdrobnělineček, takže už vám nebudou přicházet zákazníci s náhodnými jmény jako Jenovéfa, Baltazar nebo třeba Kristýnka. ☺</li>
-<li>Přepracoval jsem implementaci náhodného generování jmen. Výsledkem je, že když vám teď přijde například Franta, tak už během stejné hry, respektive do vyčerpání všech dostupných jmen, nikdy nepřijde František nebo Fanda, protože hra ví, že to jsou další tvary stejného jména a že tohle jméno už bylo použito.</li>
-<li>Při ručním pojmenování zákazníka teď zadáváte tři tvary jména - první, třetí a čtvrtý pád.</li>
+<li>Odstranil jsem spoustu až moc exotických jmen, respektive až moc infantilních zdrobnělineček, takže už vám nebudou přicházet zákazníci s náhodnými jmény jako Jenovéfa, Baltazar nebo třeba Kristýnka, což se do hospody fakt moc nehodí. ☺ I tak pořád používám 191 českých jmen a většina z nich má víc tvarů, takže hned tak nedojdou.</li>
+<li>Přepracoval jsem implementaci náhodného generování jmen. Výsledkem je, že když vám teď přijde například Franta, tak už do vyčerpání všech dostupných jmen nikdy nepřijde František nebo Fanda, protože hra ví, že to jsou další tvary stejného jména a že tohle jméno už bylo použito. Zároveň teď náhodné pojmenování bude při přejmenování zákazníka, který se už jednou nějak jmenoval, vybírat pouze mužská nebo pouze ženská jména podle toho, jaké bylo to předchozí.</li>
+<li>Při ručním pojmenování zákazníka teď zadáváte tři tvary jména - první, třetí a čtvrtý pád. Zkoušel jsem i varianty, kdy byste zadali třeba jenom první pád a hra by si už sama dohledala ty zbývající, ale to nefungovalo. Vždycky můžete narazit na jméno nebo tvar jména, který hra nezná, nebo můžete použít takový tvar, u kterého by hra nedokázala sama říct, jestli je to v tomhle případě mužské, nebo ženské jméno - co já vím, třeba Marťa nebo Pája.</li>
+<li>Pokud teď ale ručně přejmenujete například Aleše na Šárku, hra danému zákazníkovi automaticky a bez keců změní pohlaví. Tomu říkám tranzice! 😊</li>
 </ul>
 <h3 id="09new">Nové funkce</h3>
 <ul aria-labelledby="09 09new">

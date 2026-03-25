@@ -53,7 +53,6 @@ screen_reader_set_library_path (NVDA, folder+nvda);
 parse_cmd();
 read_help();
 read_navs();
-read_names();
 read_voices();
 read_tips();
 read_tutorial();
@@ -117,13 +116,13 @@ load_player();
 load_stats();
 load_options();
 if (selection==selection_random_keep or selection==selection_manual_keep) load_drinks();
+read_names();
 }
 if (history_entries>0) history.reserve (history_entries);
 else history.reserve (10000);
 pack.close();
 checkup();
 if (output==0) changed_output();
-if (output>0) wait(750);
 if (play_intro)
 {
 wait_keys();
@@ -140,14 +139,10 @@ double pan=stereo_left, step_interval=random(40,60)*10, step_time=4000;
 dooropen.pan=pan;
 doorbell.pan=pan;
 doorclose.pan=pan;
-frame.restart();
 bool interrupted_intro=false;
 while (start.playing or coin.playing or counter<16)
 {
 wait (5);
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
 if (key_down (KEY_LMENU) and key_pressed (KEY_F4))
 {
 if (can_write and COMMAND_LINE=="")
@@ -161,6 +156,7 @@ exit();
 }
 if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_ESCAPE) or singlekey (KEY_SPACE))
 {
+silence();
 fadeout (0.5, false, true);
 interrupted_intro=true;
 break;
@@ -176,6 +172,7 @@ if (counter==1 and start.position>=1800)
 say ("4Sense Gaming", true, false);
 counter=2;
 }
+if ((counter<2 or counter>4) and output>0) screen_reader_stop_speech (output);
 if (counter==2 and start.position>=3200)
 {
 say ("Uvádí", true, false);
@@ -219,19 +216,20 @@ if (doorbell.playing) doorbell.pause();
 if (doorclose.playing) doorclose.pause();
 if (step.playing) step.pause();
 if (start.playing) start.pause();
+if (coin.playing) coin.pause();
 while (!is_game_window_active()) wait(5);
 if (doorbell.paused) doorbell.play();
 if (dooropen.paused) dooropen.play();
 if (doorclose.paused) doorclose.play();
 if (step.paused) step.play();
 if (start.paused) start.play();
-}
+if (coin.paused) coin.play();
 }
 }
 if (!interrupted_intro)
 {
 say (title, true, false);
-wait (1000);
+wait_delay();
 }
 }
 if (global > -1) pool.destroy_sound (global);
@@ -317,6 +315,7 @@ save_player();
 save_stats();
 save_options();
 if (!beers.is_empty() and (selection==selection_random_keep or selection==selection_manual_keep)) save_drinks();
+save_names();
 save_profile();
 if ((save_history or copy_history) and !history.is_empty())
 {
@@ -584,4 +583,16 @@ void read_credits()
 {
 file@ creds=pack.get_file ("credits.dat");
 credits=string_decrypt (creds.read(), scramble());
+}
+
+void wait_delay (double delay=600)
+{
+timer waiter;
+while (waiter.elapsed<delay)
+{
+wait(5);
+if (keys_down().length()>0) break;
+}
+wait_keys();
+silence (true);
 }

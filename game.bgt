@@ -1840,19 +1840,8 @@ set_sound_master_volume (loudness);
 if (!from_game)
 {
 say ("Tak ahoj a zase pøíštì!", true, false, output==0);
-if (output>0)
-{
-timer waiter;
-while (waiter.elapsed<1000)
-{
-wait(5);
-if (keys_down().length()>0)
-{
-silence(true);
-break;
-}
-}
-}
+if (output>0) wait_delay (1000);
+
 }
 }
 

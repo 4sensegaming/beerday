@@ -17,7 +17,6 @@ uint used_names=0, available_names=0;
 
 void read_names()
 {
-names.reserve (1000);
 file@ nam=pack.get_file ("names.dat");
 string raw=string_decrypt (nam.read(), scramble());
 string[] entries=string_split (raw, "#", true);
@@ -55,6 +54,7 @@ if (enable_debugging and (new.case1.length()!=new.case3.length() or new.case1.le
 warning ("Jméno "+string_left (entries[i], 15)+" na øádku "+(i+1)+" nemá stejnì pádù.");
 continue;
 }
+if (profile.exists ("name"+i+"_used")) new.used=true;
 names.insert_last (new);
 }
 available_names=names.length();
@@ -68,7 +68,7 @@ used_names=0;
 for (uint i=0; i<available_names; i++) names[i].used=false;
 }
 int chosen=-1;
-while (chosen==-1 or names[chosen].used or (h.sex==1 and names[chosen].gender==2) or (h.sex==2 and names[chosen].gender==1)) chosen=random (0, available_names-1);
+while (chosen==-1 or names[chosen].used or h.sex!=names[chosen].gender) chosen=random (0, available_names-1);
 names[chosen].used=true;
 used_names++;
 uint8 chosen_form=random (0, names[chosen].case1.length()-1);
@@ -197,4 +197,10 @@ return h;
 }
 if (!silent) name_customer_manually (h);
 return h;
+}
+
+void save_names()
+{
+for (uint i=0; i<available_names; i++)
+if (names[i].used) profile.set ("name"+i+"_used", 1);
 }
