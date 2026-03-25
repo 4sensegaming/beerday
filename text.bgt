@@ -27,6 +27,7 @@ selection_start=-1;
 selection_end=-1;
 clear_echo();
 running=false;
+get_characters();
 frames=0;
 numbers_only=false;
 allow_escape=true;
@@ -54,6 +55,7 @@ selection_end=buffer.length()-1;
 
 string run (uint max=255)
 {
+wait_keys();
 running=true;
 frame.restart();
 while (true)
@@ -68,7 +70,6 @@ if (allow_escape and singlekey (KEY_ESCAPE))
 {
 wait_keys();
 reset();
-running=false;
 help_read=false;
 return "";
 }
@@ -215,6 +216,7 @@ continue;
 }
 }
 running=false;
+wait_keys();
 return concat();
 }
 

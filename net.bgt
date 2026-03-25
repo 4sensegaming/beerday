@@ -182,7 +182,7 @@ wait_keys();
 ss_start();
 if (call_music) menu_music();
 string prompt="Pokraèuj enterem.";
-string helpmsg="Control+c: Zkopírování pøeèteného textu do schránky.\r\nEnter, mezerník nebo escape: Potvrzení a pokraèování.\r\nKterákoli jiná klávesa: Zopakování textu.\r\nControl+r: Zobrazení textu v seznamu pro pohodlnìjší ètení.\r\nF jedna: Zobrazení tìchto zkratek v seznamu pro pohodlnìjší ètení.\r\nAlt+F4: Ukonèení programu.\r\nDelete nebo control plus shift plus alt: Umlèení øeèi.";
+string helpmsg="Kontrol plus cé: Zkopírování pøeèteného textu do schránky.\r\nEnter, mezerník nebo escape: Potvrzení a pokraèování.\r\nKterákoli jiná klávesa: Zopakování textu.\r\nKontrol plus er: Zobrazení textu v seznamu pro pohodlnìjší ètení.\r\nEf jedna: Zobrazení tìchto zkratek v seznamu pro pohodlnìjší ètení.\r\nAlt plus ef ètyøi: Ukonèení programu.\r\nDylít nebo kontrol plus šift plus alt: Umlèení øeèi.";
 ui_help_frames=0;
 if (output>0)
 {
@@ -196,6 +196,7 @@ wait (5);
 if (frame.elapsed >= 1000/fps)
 {
 frame.restart();
+closekey();
 if (speak_ui_help)
 {
 ui_help_frames++;
@@ -207,7 +208,6 @@ say (helpmsg, false, false);
 help_read=true;
 }
 }
-closekey();
 if (lone (KEY_C) and ctrl and !shift and !alt)
 {
 string copy_text=sanitize (phrase);
@@ -239,8 +239,8 @@ wait_keys();
 silence();
 wait_keys();
 help_read=false;
-ss_end();
 if (call_music) menu_music();
+ss_end();
 }
  
 void download_update()

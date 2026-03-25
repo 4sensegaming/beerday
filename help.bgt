@@ -16,19 +16,16 @@ for (uint xl=0; xl<e; xl++)
 {
 command new;
 string[] sep=string_split (entries[xl], "\t", true);
-if (enable_debugging and (sep.length()<6 or sep.length()>7))
-{
-warning ("Chyba pøi parsování nápovìdy. Øádek "+(xl+1)+", zkratka:\r\n"+entries[xl]);
-continue;
-}
+uint8 sl=sep.length();
 new.ui_name=sep[0];
 new.name=sep[1];
 new.combo=sep[2];
-new.combo2=sep[3];
-new.desc=sep[4];
-new.longdesc=sep[5];
-if (sep.length()==7) new.section=string_to_number (sep[6]);
+if (sl>3 and sep[3]!="" and sep[3]!=" ") new.combo2=sep[3];
+if (sl>4 and sep[4]!="" and sep[4]!=" ") new.desc=sep[4];
+if (sl>5 and sep[5]!="" and sep[5]!=" ") new.longdesc=sep[5];
+if (sl>6 and sep[6]!="" and sep[6]!=" " and sep[6]!="0") new.section=string_to_number (sep[6]);
 shortcuts.insert_last (new);
+if (enable_debugging and (new.name=="" or new.name==" " or new.ui_name=="" or new.ui_name==" " or new.combo=="" or new.combo==" ")) warning ("Chyba pøi parsování nápovìdy. Øádek "+(xl+1)+", zkratka:\r\n"+entries[xl]);
 }
 }
 
@@ -36,7 +33,9 @@ void help()
 {
 ss_start();
 keyhelp=true;
-say ("Klávesová nápovìda zapnuta.", true, false);
+string help_on="Klávesová nápovìda zapnuta.";
+if (is_optionsmenu) help_on+=" Do nabídky nastavení ovládání se vrátíš klávesou ef jedna.";
+say (help_on, true, false);
 uint8 count=0;
 string lastkey="";
 uint counter=0;
@@ -83,10 +82,14 @@ if (keylist == shortcuts[yl].combo or keylist == shortcuts[yl].combo2)
 {
 if (count == 2)
 {
-if (shortcuts[yl].longdesc == " ") say ("Tato zkratka nemá žádný dlouhý popis.", true, false);
+if (shortcuts[yl].longdesc=="" or shortcuts[yl].longdesc==" ") say ("Tato zkratka nemá žádný dlouhý popis.", true, false);
 else say (shortcuts[yl].longdesc, true, false);
 }
-else say (shortcuts[yl].desc, false, false);
+else
+{
+if (shortcuts[yl].desc!="" and shortcuts[yl].desc!=" ") say (shortcuts[yl].desc, false, false);
+else say (shortcuts[yl].name, false, false);
+}
 break;
 }
 if (yl == shortcuts.length() -1 and keylist != shortcuts[yl].combo and keylist != shortcuts[yl].combo2)

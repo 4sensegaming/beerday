@@ -75,9 +75,11 @@ else wait_reader (phrase);
 return true;
 }
 
-void fadeout (double volume_step=0.5, bool enable_close=true)
+void fadeout (double volume_step=0.5, bool enable_close=true, bool forced=false)
 {
 if (loudness <= minvol) return;
+if (!forced)
+{
 uint l=pool.items.length(), count=0;
 for (uint i=0; i<l; i++)
 if (pool.sound_is_playing(i)) count++;
@@ -85,6 +87,7 @@ l=things.items.length();
 for (uint i=0; i<l; i++)
 if (things.sound_is_playing(i)) count++;
 if (count==0 and !menuloop.playing and !won.playing and !is_gallery) return;
+}
 frame.restart();
 while (get_sound_master_volume()>minvol)
 {
@@ -303,15 +306,15 @@ turn.play();
 
 void play_enter()
 {
-if (!play_menu_sounds or (is_gallery and question!="")) return;
 silence_menu();
+if (!play_menu_sounds or (is_gallery and question!="")) return;
 enter.play();
 }
 
 void play_esc()
 {
-if (!play_menu_sounds or (is_gallery and question!="")) return;
 silence_menu();
+if (!play_menu_sounds or (is_gallery and question!="")) return;
 esc.play();
 }
 

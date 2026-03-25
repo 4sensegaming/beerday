@@ -1199,7 +1199,7 @@ while (door.playing()) wait(5);
 double closing_vol=0;
 if (player.state==closing) closing_vol=0;
 else closing_vol=-30;
-if (player.state==closing) leave();
+if (player.state==closing) leave (true);
 if (global>-1) pool.destroy_sound (global);
 global=pool.play_stationary_extended (endsound+ext, false, 0, 0, closing_vol, 100, true);
 frame.restart();
@@ -1208,7 +1208,6 @@ while (pool.sound_is_playing (global))
 if (frame.elapsed >= 1000/fps)
 {
 frame.restart();
-closekey();
 for (uint i=0; i<pool.items.length(); i++)
 {
 if (pool.sound_is_playing(i))
@@ -1768,35 +1767,83 @@ allow_messy=true;
 hardcore=false;
 }
 
-void leave()
+void leave (bool from_game)
 {
-uint8 paces=random (7, 18);
-double curvol=get_sound_master_volume(), vol=curvol, volume_step=round (absolute(minvol/paces), 0);
-int8 x=left_edge-1;
-if (random(0,1)==1) play_stat ("smoke");
-timer closer;
-for (uint8 i=0; i<=paces; i++)
+if (!from_game) wait_keys();
+uint8 walked=0, paces=random (7, 18);
+double vol=get_sound_master_volume(), volume_step=round (absolute(minvol/paces), 0), step_interval=random(4,7)*100;
+int8 x=door.x;
+sound smoke, burp, puke;
+smoke.load ("smoke"+ext);
+puke.load ("puke"+ext);
+timer closer, pacer;
+if (!from_game)
 {
+play_stat ("dooropen");
+door.clean();
+door.slot=door.play ("doorbell");
+}
+while (walked<paces)
+{
+wait(5);
+if (!from_game)
+{
+if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE) or (key_down (KEY_LMENU) and key_pressed (KEY_F4)))
+{
+fadeout (0.5, false);
+return;
+}
+}
 pool.update_listener_2d (x, 0);
 things.update_listener_2d (x, 0);
-if (closer.elapsed>=1000 and (!player.count_state(opening).is_empty() or !player.count_state(closing).is_empty()) and !door.playing() and vol<=-20)
+if (closer.running and (!from_game or closer.elapsed>=500) and (!player.count_state(opening).is_empty() or !player.count_state(closing).is_empty() or !from_game) and !door.playing() and vol<=-20)
+{
+if (from_game)
 {
 pool.destroy_all();
 things.destroy_all();
-door.play ("doorclose");
+}
+play_stat ("doorclose");
 closer.restart();
 closer.pause();
 }
+if (pacer.elapsed>=step_interval)
+{
 play_stat ("floor");
 x-=step_size;
 vol-=volume_step;
 set_sound_master_volume (vol);
-wait (random(4,7)*100);
-if (random(0,8)==8) play_stat ("burp");
+walked++;
+pacer.restart();
+if (!smoke.playing and random(0,3)==3) smoke.play();
+if (!burp.playing and random(0,6)==6)
+{
+burp.load (randomize ("burp") +ext);
+burp.play();
+}
+if (!puke.playing and random(0,10)==10) puke.play();
+}
 }
 pool.destroy_all();
 things.destroy_all();
-set_sound_master_volume (curvol);
+burp.close();
+smoke.close();
+puke.close();
+set_sound_master_volume (loudness);
+if (!from_game)
+{
+say ("Tak ahoj a zase pøíštì!", true, false);
+timer waiter;
+while (waiter.elapsed<1000)
+{
+wait(5);
+if (keys_down().length()>0)
+{
+silence(true);
+break;
+}
+}
+}
 }
 
 void clear_earnings()

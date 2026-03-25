@@ -200,14 +200,7 @@ if (section_name!="" and section_name!=" ") say (section_name, false, false, fal
 }
 if (item_list[menu_position-1].ui_name!="") say (item_list[menu_position-1].ui_name, false, false, false, false);
 if (item_list[menu_position-1].disabled) say ("Zamèeno", false, false, false, false);
-if (speak_menu_position)
-{
-string mp="";
-uint sec=has_sections();
-if (sec>1) mp+="Položka ";
-mp+=get_position()+" z "+get_item_count();
-say (mp, false, false, false, false);
-}
+if (speak_menu_position) say (get_position()+" z "+get_item_count(), false, false, false, false);
 say_checked (item_list[menu_position-1]);
 if (item_list[menu_position-1].description!="") say (item_list[menu_position-1].description, false, false, false, false);
 if (item_list[menu_position-1].is_submenu and speak_submenu) say ("podnabídka", false, false, false, false);
@@ -350,6 +343,7 @@ if(enable_home_and_end==true)
 {
 if(inc and keys==1)
 {
+wait_keys();
 if (menu_position!=1)
 {
 play_move();
@@ -363,6 +357,7 @@ else play_stat ("edge", false, false, menu_sounds_vol);
 }
 if(dec and keys==1)
 {
+wait_keys();
 if (menu_position!=item_count)
 {
 play_move();

@@ -81,12 +81,12 @@ stop_menu_music();
 return;
 }
 if (!menuloop.playing and (!menuloop.paused or !is_learnmenu or global==-1 or !pool.sound_is_playing(global))) menuloop.play_looped();
-if ((is_game or is_learnmenu) and menuloop.volume !=menuloop_vol-10 and menuloop_vol!=min_music_vol)
+if ((is_game or is_learnmenu or is_readmenu or is_statmenu) and menuloop.volume !=menuloop_vol-10 and menuloop_vol!=min_music_vol)
 {
 menuloop.volume=menuloop_vol-10;
 if (menuloop.volume < min_music_vol) menuloop.volume=min_music_vol;
 }
-else if (!is_game and !is_learnmenu and menuloop.volume != menuloop_vol) menuloop.volume=menuloop_vol;
+else if (!is_game and !is_learnmenu and !is_readmenu and !is_statmenu and menuloop.volume != menuloop_vol) menuloop.volume=menuloop_vol;
 }
 
 void purge_music()
