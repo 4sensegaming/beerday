@@ -158,13 +158,9 @@ if (auto_speak_first and !rerun) speak_item=true;
 if (is_custmenu and !rerun) custchanged=true;
 running=true;
 if (@top_menu!=@this) @top_menu=@this;
-frame.restart();
 while(true)
 {
 wait(5);
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
 // Invoke the user callback.
 if(@callback_handle!=null)
 {
@@ -368,7 +364,6 @@ if (is_custmenu) custchanged=true;
 continue;
 }
 else play_stat ("edge", false, false, menu_sounds_vol);
-}
 }
 }
 }

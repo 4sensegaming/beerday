@@ -128,20 +128,21 @@ if (play_intro)
 {
 wait_keys();
 uint8 counter=0;
-sound start, dooropen, doorbell, step, here, doorclose;
-start.load ("start"+ext);
-dooropen.load ("dooropen"+ext);
-doorbell.load ("doorbell"+ext);
-here.load ("pipe"+ext);
-doorclose.load ("doorclose"+ext);
+sound start, dooropen, doorbell, step, here, doorclose, coin;
+start.stream ("start"+ext);
+dooropen.stream ("dooropen"+ext);
+doorbell.stream ("doorbell"+ext);
+here.stream ("pipe"+ext);
+doorclose.stream ("doorclose"+ext);
+coin.stream (randomize ("coin") +ext);
 start.play();
-double pan=stereo_left, step_interval=450, step_time=3700;
+double pan=stereo_left, step_interval=random(40,60)*10, step_time=4000;
 dooropen.pan=pan;
 doorbell.pan=pan;
 doorclose.pan=pan;
 frame.restart();
 bool interrupted_intro=false;
-while (start.playing)
+while (start.playing or coin.playing or counter<16)
 {
 wait (5);
 if (frame.elapsed >= 1000/fps)
@@ -172,15 +173,20 @@ counter=1;
 }
 if (counter==1 and start.position>=1800)
 {
-say ("4Sense Gaming uvádí", true, false);
+say ("4Sense Gaming", true, false);
 counter=2;
 }
 if (counter==2 and start.position>=3200)
 {
-doorclose.play();
+say ("Uvádí", true, false);
 counter=3;
 }
-for (uint8 i=3; i<13; i++)
+if (counter==3 and start.position>=3400)
+{
+doorclose.play();
+counter=4;
+}
+for (uint8 i=4; i<14; i++)
 if (counter==i and start.position>=step_time)
 {
 step.close();
@@ -189,15 +195,22 @@ step.pan=pan;
 if (step.pan<stereo_center)
 {
 step.play();
+step_interval=random(40,60)*10;
 step_time+=step_interval;
 pan+=(stereo_right/10);
 }
 counter++;
-if (counter==13)
+if (counter==14)
 {
 step.play();
 here.play();
+counter=15;
 }
+}
+if (counter==15 and !doorbell.playing and !step.playing and !here.playing)
+{
+coin.play();
+counter=16;
 }
 if (!is_game_window_active())
 {

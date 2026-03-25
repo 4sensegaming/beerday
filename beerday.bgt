@@ -36,10 +36,10 @@ frame.restart();
 while (true)
 {
 wait (5);
+keyboard();
 if (frame.elapsed >= 1000/fps)
 {
 frame.restart();
-keyboard();
 if (!paused) game();
 }
 }

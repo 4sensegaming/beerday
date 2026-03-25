@@ -388,7 +388,10 @@ if (hardcore) cause+="A navíc s dodateènými omezeními, protože ani normální, už 
 }
 else
 {
-cause="Tak konèí tvoje nedlouhá a neslavná kariéra hospodského. Snad pøíštì.\r\n";
+cause="Tak konèí tvoje nedlouhá a neslavná kariéra barman";
+if (gender==1 or gender==0) cause+="a";
+else cause+="ky";
+cause+=". Snad pøíštì.\r\n";
 if (player.health <= 0)
 {
 if (((player.fell_from > bottom and player.y<0) or player.state==falldown) and !player.punched)
@@ -1775,7 +1778,7 @@ void leave (bool from_game)
 {
 if (!from_game) wait_keys();
 uint8 walked=0, paces=random (7, 18);
-double vol=get_sound_master_volume(), volume_step=round (absolute(minvol/paces), 0), step_interval=random(4,7)*100;
+double vol=get_sound_master_volume(), volume_step=round (absolute(minvol/paces), 0), step_interval=random(40,60)*10;
 int8 x=door.x;
 sound smoke, burp, puke;
 smoke.load ("smoke"+ext);
@@ -1800,7 +1803,7 @@ return;
 }
 pool.update_listener_2d (x, 0);
 things.update_listener_2d (x, 0);
-if (closer.running and (!from_game or closer.elapsed>=500) and (!player.count_state(opening).is_empty() or !player.count_state(closing).is_empty() or !from_game) and !door.playing() and vol<=-20)
+if (closer.running and closer.elapsed>=2000 and (!player.count_state(opening).is_empty() or !player.count_state(closing).is_empty() or !from_game))
 {
 if (from_game)
 {
@@ -1836,7 +1839,9 @@ puke.close();
 set_sound_master_volume (loudness);
 if (!from_game)
 {
-say ("Tak ahoj a zase pøíštì!", true, false);
+say ("Tak ahoj a zase pøíštì!", true, false, output==0);
+if (output>0)
+{
 timer waiter;
 while (waiter.elapsed<1000)
 {
@@ -1845,6 +1850,7 @@ if (keys_down().length()>0)
 {
 silence(true);
 break;
+}
 }
 }
 }

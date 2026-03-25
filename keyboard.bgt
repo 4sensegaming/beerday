@@ -255,15 +255,10 @@ return false;
 void wait_keys()
 {
 garbage_collect();
-frame.restart();
 while (true)
 {
 wait(5);
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
 if (keys_down().length() == 0) break;
-}
 }
 keys=0;
 ui_help_frames=0;
