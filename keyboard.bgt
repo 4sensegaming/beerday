@@ -254,11 +254,10 @@ return false;
 
 void wait_keys()
 {
-garbage_collect();
 while (true)
 {
-wait(5);
-if (keys_down().length() == 0) break;
+if (keys_down().is_empty()) break;
+wait(1);
 }
 keys=0;
 ui_help_frames=0;

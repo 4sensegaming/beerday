@@ -131,7 +131,7 @@ sound start, dooropen, doorbell, step, here, doorclose, coin;
 start.stream ("start"+ext);
 dooropen.stream ("dooropen"+ext);
 doorbell.stream ("doorbell"+ext);
-here.stream ("pipe"+ext);
+here.stream ("collidejukebox"+ext);
 doorclose.stream ("doorclose"+ext);
 coin.stream (randomize ("coin") +ext);
 start.play();
@@ -172,7 +172,7 @@ if (counter==1 and start.position>=1800)
 say ("4Sense Gaming", true, false);
 counter=2;
 }
-if ((counter<2 or counter>4) and output>0) screen_reader_stop_speech (output);
+if ((counter<2 or counter>4 and is_game_window_active()) and output>0) screen_reader_stop_speech (output);
 if (counter==2 and start.position>=3200)
 {
 say ("Uvádí", true, false);
@@ -297,7 +297,7 @@ void quit (bool silent=false, bool is_updating=false)
 {
 if (!silent)
 {
-silence();
+silence (play_outro);
 pause(false);
 if (play_outro)
 {

@@ -654,6 +654,7 @@ found=current;
 }
 else
 {
+wait_keys();
 play_move();
 handle.menu_position=found+1;
 handle.part=handle.item_list[handle.menu_position-1].section;

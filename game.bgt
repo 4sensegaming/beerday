@@ -1841,7 +1841,6 @@ if (!from_game)
 {
 say ("Tak ahoj a zase pøíštì!", true, false, output==0);
 if (output>0) wait_delay (1000);
-
 }
 }
 
