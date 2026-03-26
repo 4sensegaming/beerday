@@ -909,7 +909,7 @@ optmenu.insert_last ("strip_diacritics|Zobrazovat texty bez diakritiky|bez hacku
 optmenu.insert_last ("check_updates|Kontrolovat aktualizace pøi spuštìní|Pokud toto nastavení vypneš, budeš muset aktualizovat ruènì z hlavního menu a podnabídky Online funkce.|1|"+updates);
 optmenu.insert_last ("pause_on_blur|Zapauzovat hru pøi pøepnutí do jiného okna|Pøi návratu do okna hry ji budeš muset ruènì odpauzovat|1|"+pause_on_blur);
 optmenu.insert_last ("show_empty_stats|Zobrazovat statistiky s nulovou hodnotou|Vypnutím tohoto nastavení skryješ v nabídce Statistiky všechny položky, které ještì nemají žádný záznam. Toto nastavení má vliv i na kopírování statistik do schránky.|1|"+show_empty_stats);
-optmenu.insert_last ("speak_menu_prompt|Pøi otevøení nabídky oznámit její název a poèet položek| |2|"+speak_menu_prompt);
+optmenu.insert_last ("speak_menu_prompt|Pøi otevøení nabídky oznámit její název|Pokud máš zároveò zapnuté ètení pozic položek, oznámí se pøi otevøení nabídky i poèet záložek.|2|"+speak_menu_prompt);
 optmenu.insert_last ("speak_menu_position|Èíst pozice položek| |2|"+speak_menu_position);
 optmenu.insert_last ("speak_submenu|Slovní upozornìní, že položka má podnabídku| |2|"+speak_submenu);
 optmenu.insert_last ("menu_wrap|Cyklické nabídky|Pøehled všech zákazníkù, seznam pro pohodlnìjší ètení a nabídka pøi odpovìdi na otázku nejsou cyklické nikdy.|2|"+menu_wrap);

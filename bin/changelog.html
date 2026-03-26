@@ -35,12 +35,13 @@
 <li>Zamčené (neaktivní) položky menu teď při stisknutí enteru nevydávají vůbec žádný zvuk.</li>
 <li>V menu se teď do předchozí nabídky můžete kromě escapu vrátit i backspacem, aby se dala menu ovládat jednou rukou.</li>
 <li>Pokud máte zapnuté čtení pozic položek v nabídkách, tj. např. &quot;položka 4 z 8&quot;, a daná nabídka je rozdělena do více záložek, nebude už při vstupu do jiné záložky řečeno, kolikátá záložka z kolika to je, ale jenom kolik má položek.</li>
-<li>Pokud máte zapnuté čtení pozic položek v nabídkách a zároveň čtení názvu nabídky při jejím otevření, uslyšíte nově spolu s názvem nabídky i celkový souhrn, kolik má celá nabídka dohromady záložek a kolik položek. Záložky budou uvedeny opět pouze v případě, že jich je víc než jedna.</li>
+<li>Pokud máte zapnuté čtení pozic položek v nabídkách a zároveň čtení názvu nabídky při jejím otevření, uslyšíte spolu s názvem nabídky i, kolik má záložek. Záložky budou uvedeny opět pouze v případě, že jich je víc než jedna.</li>
 <li>Další obrovská spousta drobných vylepšení odezvy v nabídkách a celkového chování nabídek, kterých si většinou nejspíš ani nevšimnete, ale mě by to bez nich iritovalo. 😊 🤦‍♂</li>
 <li>Další úpravy a doplnění textace a popisů většiny položek ve všech menu (za některé díky Chipotlovi a Blackspellovi), včetně další aktualizace titulků. Prohlédněte si prosím ještě jednou znovu a pořádně všechny nabídky, jako by tohle byla úplně první verze vůbec, a dejte mi vědět, pokud vám cokoli přijde nejednoznačné, nesrozumitelné, kostrbaté nebo prostě divné.</li>
 <li>Znovu upraveny veškeré texty klávesové nápovědy.</li>
 <li>V nabídce zobrazení ovládání se teď čtou i popisy jednotlivých příkazů.</li>
 <li>Optimalizováno a zrychleno zpracování stisknutých kláves ve hře, ve všech menu a při čekání, až pustíte všechny klávesy, než hra udělá něco dalšího. Všude se to teď bude jevit subjektivně rychlejší, ale pořád to funguje tak, jak má, i to čekání. Tahle optimalizace by měla zároveň opravit chybu, kdy občas klávesnice zejména při hře na nejtěžší obtížnost pocitově nereagovala.</li>
+<li>Opravena chyba, kdy se program zasekl při pokusu přehrát poslední zvuk v pořadí v nabídce seznámení se zvuky.</li>
 </ul>
 <h4 id="09options">Nastavení</h4>
 <ul aria-labelledby="09 09options">
@@ -70,13 +71,16 @@
 <li>Pokud teď ale ručně přejmenujete například Aleše na Šárku, hra danému zákazníkovi automaticky a bez keců změní pohlaví. Tomu říkám tranzice! 😊</li>
 <li>Použitá jména se teď ukládají do profilu, podobně jako třeba použité písničky z jukeboxu, takže si je hra bude pamatovat i při příštím spuštění, až dokud se nevyčerpají všechna.</li>
 </ul>
-<h3 id="09new">Nové funkce</h3>
+<h3 id="09new">Významné/viditelné novinky</h3>
 <ul aria-labelledby="09 09new">
 <li>Přidáno obrovské množství náhodných a kontextových hlášek zákazníků podle činnosti, kterou zrovna dělají. Kód je v podstatě hotový, ale zatím jsou teda reálně napsané jenom hlášky pro situaci, kdy zákazník čeká, až ho obsloužíte. Použijí se pouze s podporovanými Sapi 5 hlasy pro nastavený jazyk hry (zatím pořád máme jenom češtinu, takže nic nastavovat nejde) a pouze, pokud máte aspoň jeden takový hlas nainstalovaný. Je to obrovská novinka, jeden z highlightů téhle verze a neskutečné oživení hry, celé to teď má úplně jinou imerzi, ale vy nemusíte dělat vůbec nic. ☺ Dokonce to ani nepotřebuje žádné nastavení, kromě úrovně hlasitosti těchto hlášek v nastavení zvuku. Prostě pokud žádný známý, podporovaný Sapi 5 hlas pro daný jazyk nainstalovaný nemáte, hra se o to vůbec nebude pokoušet a zákazníci zůstanou dál němí, jako byli vždycky. ☺ Pokud daná hláška už namluvená je (například už nějakou dobu hrajete, ale pak v nové verzi přibyly nějaké další), nebude je hra při každém spuštění vytvářet vždycky znovu všechny, ale vytvoří si jenom ty nové. Nebojte, je to celkem dost inteligentní a optimalizované. Pokud si smažete profil (z hlavního menu nebo z menu Nastavení ➡ Profil), smažou se i všechny existující vytvořené hlášky. Ona se tím teď nově smaže celá datová složka hry ☺ a při příštím spuštění si ji hra vytvoří znovu od nuly.</li>
 <li>Načítání zvuků je teď rozdělené na tři fáze (načítání standardních zvuků hry, namluvení hlášek zákazníků, pokud některé chybí, a nakonec načtení i těchto hlášek), program teď jde konečně ukončit zkratkou alt+F4 i během načítání zvuků a další interní, ale významné optimalizace celého procesu načítání. Taky jsem přišel na, myslím, docela kreativní způsob, jak zajistit, abyste během načítání nemuseli jen tak sedět na prázdno a čumět do blba. Však uvidíte. ☺</li>
 <li>Předělal jsem a velice výrazně zjednodušil, zlogičtěl a zefektivnil v podstatě celé hlavní menu, prohlédněte si ho znovu od začátku a opravdu pořádně! Aneb když coby slepej nemůžete dělat plnohodnotného UX designera, tak si tu potřebu saturujete aspoň ve vlastní hře. 😊 Zároveň na konci menu přibyla nová položka &quot;Zobrazit tipy, jak hrát&quot;. Pokud tak někdo bude mít vypnuté výchozí zobrazování tipů při prohře nebo se hrou teprve začíná, myslím, že tyhle tipy neuškodí a můžou se hodit, a takhle je k nim snadnější přístup ke všem najednou. Je to další mechanismus, jak se hru naučit, kromě kontextového menu, klávesové nápovědy a hlavně tutoriálu (až ho spravím ☺ ).</li>
 <li>S tím souvisí i změna filozofie všech menu, kdy se teď budou všude, kde je to možné a dává to smysl, zobrazovat vždycky všechny položky, které dané menu může mít, jen prostě budou zamčené, pokud je zrovna není možné aktivovat (smazat profil, když ještě žádný nemáte, měnit nastavení, jako je obtížnost, režim hry a způsob vybírání pití, během hry, používat online funkce, když nejste připojení k internetu, zopakovat poslední zprávu dne, když jste ještě žádnou nedostali, atd.).</li>
 <li>Přidán nový režim volné hry (díky Chipotlovi). V tomto režimu můžete hrát, jak dlouho chcete, zákazníci mají nekonečnou trpělivost, hra nehlídá, jestli flákáte obsluhu, a můžete si nastavit, jestli zákazníci můžou odcházet, naštvat se, ožrat se, zvracet, zakopávat nebo usnout.</li>
+<li>Přidán nový zvuk (včetně nabídky seznámení se zvuky) pro získání odměny za úspěch (achievementu) a nahrazen starý zvuk pro dokončení nákupu. Zatím ale nejsou využité přímo ve hře.</li>
+<li>Přidána nová animace při spuštění programu, která se přehraje, pokud ji máte zapnutou v nastavení zvuku. Uslyšíte ji určitě minimálně při onboardingu. Nejspíš mi dáte sami za pravdu, že ta stará byla už opravdu hodně stará, hodně trapná a hodně statická. ☺ Součástí animace je i úplně nový zvuk úvodní znělky - nové, původní řekněme logo 4Sense Gaming.</li>
+<li>Podobně se teď bude nově přehrávat animace při ukončení programu, pokud ji máte v nastavení zvuku zapnutou. Je to ta samá animace, jako když při hře odejdete dveřmi z hospody pryč, ale v tomto případě je trochu upravená - například při ukončení programu se dá přerušit enterem, mezerníkem, escapem nebo zkratkou alt+F4, ale při předčasném ukončení hry odchodem ne. Zároveň jsem tuhle animaci při té příležitosti ještě celkově vylepšil.</li>
 </ul>
 <h3 id="09music">Hudba</h3>
 <ul aria-labelledby="09 09music">
@@ -90,13 +94,6 @@
 <li>Opravena chyba, kdy pokud jste během hry vypnuli v nastavení zvuku hudbu z jukeboxu, aktuální track nepřestal hned hrát.</li>
 <li>Při procházení autorů v hudební síni slávy je teď u každého kromě počtu a celkové délky všech jeho písniček uveden i počet těch, které jsou už odemčené.</li>
 <li>Přidána statistika, jak dlouhé jsou celkem všechny písničky, které už ve hře zazněly.</li>
-</ul>
-<h3 id="09audio">Zvuk</h3>
-<ul aria-labelledby="09 09audio">
-<li>Přidány nové zvuky (včetně nabídky seznámení se zvuky) pro získání odměny za úspěch (achievementu) a pro dokončení nákupu, které ale zatím nejsou využité přímo ve hře.</li>
-<li>Opravena chyba, kdy se program zasekl při pokusu přehrát poslední zvuk v pořadí v nabídce seznámení se zvuky.</li>
-<li>Přidána nová animace při spuštění programu, která se přehraje, pokud ji máte zapnutou v nastavení zvuku. Uslyšíte ji určitě minimálně při onboardingu. Nejspíš mi dáte sami za pravdu, že ta stará byla už opravdu hodně stará, hodně trapná a hodně statická. ☺ Součástí animace je i úplně nový zvuk úvodní znělky, řekněme nové logo 4Sense Gaming.</li>
-<li>Podobně se teď bude nově přehrávat animace při ukončení programu, pokud ji máte v nastavení zvuku zapnutou. Je to ta samá animace, jako když při hře odejdete dveřmi z hospody pryč, ale v tomto případě je trochu upravená - například při ukončení programu se dá přerušit enterem, mezerníkem, escapem nebo zkratkou alt+F4, ale při předčasném ukončení hry odchodem ne. Zároveň jsem tuhle animaci při té příležitosti ještě celkově vylepšil.</li>
 </ul>
 <h3 id="09gameplay">Hra</h3>
 <ul aria-labelledby="09 09gameplay">
@@ -113,7 +110,7 @@
 </ul>
 <h3 id="09other">Ostatní</h3>
 <ul aria-labelledby="09 09other">
-<li>Místo veřejného to do listu, který byl dostupný na serveru a na který vedla položka v menu, se teď zobrazuje <a href="roadmap.html">roadmapa</a> (orientační plán dalšího vývoje, méně technický, méně detailní, ale srozumitelnější). Koho by případně zajímaly detaily a technikálie, může si prohlédnout <a href="https://github.com/4sensegaming/beerday/issues">issues na GitHubu</a>. Pokud by se vám chtělo <a href="https://github.com/4sensegaming/beerday/issues/new">nahlašovat chyby ideálně rovnou tam</a>, můžete, ale samozřejmě mi můžete úplně v pohodě psát i do skupiny 4Sense Testing nebo i soukromě. Soukromě je to ale nejmíň vyhovující varianta pro mě, protože bych to pak už měl roztříštěné na moc různých místech. Dík!</li>
+<li>Místo veřejného to do listu, který byl dostupný na serveru a na který vedla položka v menu, se teď zobrazuje <a href="roadmap.html">roadmapa</a> (ne tak detailní, ale zato srozumitelnější orientační plán dalšího vývoje). Koho by případně zajímaly detaily, může si prohlédnout <a href="https://github.com/4sensegaming/beerday/issues">issues na GitHubu</a>. Pokud by se vám chtělo <a href="https://github.com/4sensegaming/beerday/issues/new">nahlašovat chyby ideálně rovnou tam</a>, můžete, ale samozřejmě mi můžete úplně v pohodě psát i do skupiny 4Sense Testing nebo i soukromě. Soukromě je to ale nejmíň vyhovující varianta pro mě, protože bych to pak už měl roztříštěné na moc různých místech. Dík!</li>
 <li>Hra přejmenována na Happy Beerday. Původní název Tom's Beerday už je dávno irelevantní (z časových i nomenklaturních důvodů 😊 ) a navíc to stejně byl jenom interní vtípek, kterému by většina normálních lidí nerozuměla.</li>
 </ul>
 </article>
