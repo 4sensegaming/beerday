@@ -118,32 +118,28 @@ if (intro!="" and (speak_menu_prompt or question!="") and !rerun)
 say (intro, true, false, false, false);
 if (speak_menu_position)
 {
-string counts="Nabídka má ";
-uint items=this.get_item_count();
+uint items=get_item_count();
+string summary;
+if (items==1) summary="Jedna položka";
+else if (items<5) summary=items+" položky";
+else summary=items+" položek";
 if (@sections!=null)
 {
 uint sections=0, last_part=0;
 for (uint i=0; i<items; i++)
-if (this.item_list[i].section!=last_part)
+if (item_list[i].section!=last_part)
 {
 sections++;
-last_part=this.item_list[i].section;
+last_part=item_list[i].section;
 }
 if (sections>1)
 {
-if (sections<5) counts+=sections+" záložky";
-else counts+=sections+" záložek";
-counts+=" a ";
+if (sections<5) summary+=" ve "+sections+" záložkách";
+else summary+=" v "+sections+" záložkách";
 }
 }
-if (items==1) counts+="jednu položku";
-else if (items<5) counts+=items+" položky";
-else counts+=items+" položek";
-if (counts!="")
-{
-counts+=".";
-say (counts, false, false, false, false);
-}
+summary+=".";
+say (summary, false, false, false, false);
 }
 }
 else if (!speak_menu_prompt and !rerun and !is_custmenu) silence();
