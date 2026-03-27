@@ -223,7 +223,7 @@ else cust+="obsloužený.";
 if (handle.state == waiting and handle.frozen == 0 and @handle.seen_mug == null)
 {
 cust+=" ";
-if (enable_infinite_patience) cust+="Má nekoneènou trpìlivost.";
+if (enable_infinite_patience and !freeplay) cust+="Má nekoneènou trpìlivost.";
 else
 {
 uint w=round (handle.frames/(handle.patience/100), 0);
@@ -1190,59 +1190,72 @@ say (rep, true, false);
 return count;
 }
 
-void say_game()
+string say_game (bool speak=true)
 {
 string game="";
-if (endless) game="Nekoneèná hra";
-else if (freeplay) game="Volná hra";
-else game="Normální hra";
-if (is_tutorial) game+=", seznámení s hrou";
-game+=", "+difficulties[difficulty-1]+" obtížnost.\r\n";
-if (endless or freeplay) game+="Hraješ "+get_time (false);
-else game+=get_time();
+if (is_game)
+{
+if (is_tutorial) game="Seznámení s hrou ";
+else
+{
+if (endless) game="Nekoneèná ";
+else if (freeplay) game="Volná ";
+else game="Normální ";
+if (hardcore) game+="hardcore ";
+game+="hra ";
+}
+game+="na "+difficulties[difficulty-1]+" obtížnost. ";
+if (endless or freeplay) game+="Hraješ "+get_time (false)+" ";
+else game+=get_time()+" ";
+}
 if (hardcore)
 {
-game+="\r\n";
-if (!allow_helpers) game+="Není povolen žádný typ pomocníkù.\r\n";
+if (!allow_helpers or (!allow_servers and !allow_givers and !allow_cleaners and !allow_emptiers and !allow_barrelers and !allow_throwers and !allow_calmers)) game+="Není povolen žádný typ pomocníkù.\r\n";
+else if (allow_servers and allow_givers and allow_cleaners and allow_emptiers and allow_barrelers and allow_throwers and allow_calmers) game+="Jsou povoleny všechny typy pomocníkù.\r\n";
 else
 {
 game+="Jsou povolení pomocníci na ";
-if (allow_servers) game+="toèení,\r\n";
-if (allow_givers) game+="roznášení pití,\r\n";
-if (allow_cleaners) game+="odnášení špinavých pùllitrù,\r\n";
-if (allow_emptiers) game+="odnášení prázdných sudù,\r\n";
-if (allow_barrelers) game+="nošení nových sudù,\r\n";
-if (allow_throwers) game+="vyhazování ožralù,\r\n";
-if (allow_calmers) game+="pacifikování agresivních zákazníkù,\r\n";
-game=append_and (game);
+if (allow_servers) game+="toèení, \r\n";
+if (allow_givers) game+="roznášení pití, \r\n";
+if (allow_cleaners) game+="odnášení špinavých pùllitrù, \r\n";
+if (allow_emptiers) game+="odnášení prázdných sudù, \r\n";
+if (allow_barrelers) game+="nošení nových sudù, \r\n";
+if (allow_throwers) game+="vyhazování ožralù, \r\n";
+if (allow_calmers) game+="pacifikování agresivních zákazníkù, \r\n";
+game=append_and (game, true);
 }
 if (!allow_trips or !allow_falls or !allow_messy or !allow_fallen or !allow_broken or !allow_fled or !allow_mistakes or !allow_stunned or !allow_playerhits)
 {
-game+="\r\nHra skonèí pøi ";
-if (!allow_trips) game+="zakopnutí,\r\n";
-if (!allow_falls) game+="pádu ze schodù,\r\n";
-if (!allow_fled) game+="odchodu zákazníka,\r\n";
-if (!allow_messy) game+="odchodu všech zákazníkù kvùli nepoøádku,\r\n";
-if (!allow_mistakes) game+="chybì pøi obsluze,\r\n";
-if (!allow_stunned) game+="praštìní zákazníka,\r\n";
-if (!allow_playerhits) game+="praštìní hráèe,\r\n";
-if (!allow_broken) game+="rozbití pùllitru,\r\n";
-if (!allow_fallen) game+="rozbití sudu,\r\n";
-game=append_and (game);
+if (game!="") game+="\r\n ";
+game+="Hra skonèí pøi ";
+if (!allow_trips) game+="zakopnutí, \r\n";
+if (!allow_falls) game+="pádu ze schodù, \r\n";
+if (!allow_fled) game+="odchodu zákazníka, \r\n";
+if (!allow_messy) game+="odchodu všech zákazníkù kvùli nepoøádku, \r\n";
+if (!allow_mistakes) game+="chybì pøi obsluze, \r\n";
+if (!allow_stunned) game+="praštìní zákazníka, \r\n";
+if (!allow_playerhits) game+="praštìní hráèe, \r\n";
+if (!allow_broken) game+="rozbití pùllitru, \r\n";
+if (!allow_fallen) game+="rozbití sudu, \r\n";
+game=append_and (game, false);
 }
 }
-say (game, true, false);
+if (speak) say (game, true, false);
+return game;
 }
 
-string append_and (string source)
+string append_and (string source, bool helpers)
 {
 string[] split=string_split (source, "\r\n", true);
 uint8 l=split.length();
-if (l<3) return source;
+split[l-1]=string_replace (split[l-1], ", ", "", false);
+if (l>=2) split[l-2]=string_replace (split[l-2], ", ", " ", false);
+if (helpers and l>1 and (allow_servers or allow_givers or allow_cleaners or allow_emptiers or allow_barrelers or allow_throwers or allow_calmers)) split[l-1]="a "+split[l-1];
+if (l>2)
+{
+if (!helpers) split[l-1]="nebo "+split[l-1];
+}
 source="";
-split[l-1]=string_trim_right (split[l-1], 1);
-split[l-2]=string_trim_right (split[l-2], 1);
-split[l-2]+=" nebo ";
-for (uint8 i=0; i<l; i++) source+=split[i]+" ";
-return string_trim_right (source, 1)+".";
+for (uint8 i=0; i<l; i++) source+=split[i];
+return source+".";
 }

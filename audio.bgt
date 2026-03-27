@@ -32,6 +32,7 @@ return file;
 
 void silence (bool full=false)
 {
+get_characters();
 if (output == 0 and sapi.speaking) sapi.stop();
 else if (output > 0 and foreground) screen_reader_stop_speech (output);
 if (full)

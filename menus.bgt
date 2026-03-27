@@ -37,7 +37,6 @@ handle.speak_item=true;
 else if (singlekey (KEY_SPACE))
 {
 silence();
-get_characters();
 if (question!="") say (question, true, false, false, !is_updatemenu);
 else
 {
@@ -707,11 +706,21 @@ hm.reserve (20);
 hm.insert_last ("difficulty|Obtížnost: "+diff[difficulty]+"| |1|2|1");
 string tutorial="tutorial|První seznámení s hrou|";
 if (!did_tutorial) tutorial+="Dokud tohoto prùvodce nedokonèíš, nemùžeš toto nastavení vypnout a zaèít tak hrát opravdu na ostro. Zatím nehotové.";
+if (endless or hardcore or freeplay)
+{
+if (tutorial!="") tutorial+=" ";
+tutorial+="Seznámení s hrou nemùžeš zapnout, když máš zároveò zapnutou hardcore, nekoneènou nebo volnou hru.";
+}
 else tutorial+=" ";
-tutorial+="|1|"+is_tutorial+"|0|0";
+tutorial+="|1|"+is_tutorial+"|0|"+(hardcore or endless or freeplay);
 hm.insert_last (tutorial);
-hm.insert_last ("endless|Nekoneèná hra|Hra nikdy neskonèí výhrou, ale døív nebo pozdìji nakonec stejnì prohraješ.|1|"+endless);
-hm.insert_last ("freeplay|Volná hra|Uvolnìná hra, ve které o nic nejde a jen tak si užíváš atmosféru. Hra v tomto režimu nemá žádné èasové omezení, zákazníci mají nekoneènou trpìlivost a hra nehlídá, jestli obsluhuješ poctivì, nebo na to kašleš. Zákazníci ale poøád mùžou odejít nebo se naštvat, pokud je obsloužíš jiným pitím, než které chtìli, a mùžou zvracet, zakopávat, usnout nebo zaèít dìlat bordel, pokud už toho dost vypili. Pùllitry, døez, pípa, pomocníci i všechny ostatní prvky hry zùstávají beze zmìny. Ale pozor, peníze, které si vydìláš v tomto režimu, ti nezùstanou.|1|"+freeplay);
+if (!is_tutorial)
+{
+hm.insert_last ("hardcore|Hardcore hra|Jestli už je na tebe obyèejná hra moc lehká, mùžeš si v hardcore høe níže zapnout další omezující podmínky, za kterých okamžitì prohráváš. Hardcore hru mùžeš kombinovat se všemi režimy kromì volné hry.|1|"+hardcore+"|0|"+freeplay);
+hm.insert_last ("endless|Nekoneèná hra|Hra nikdy neskonèí výhrou, ale døív nebo pozdìji nakonec stejnì prohraješ.|1|"+endless+"|0|"+freeplay);
+hm.insert_last ("freeplay|Volná hra|Uvolnìná hra, ve které o nic nejde a jen tak si užíváš atmosféru. Hra v tomto režimu nemá žádné èasové omezení, takže nikdy neskonèí sama od sebe, zákazníci mají nekoneènou trpìlivost a hra na rozdíl od ostatních režimù nehlídá, jestli obsluhuješ. Zároveò si mùžeš nastavit, jestli zákazníci smí odcházet, naštvat se, zvracet, zakopávat, usnout nebo se ožrat a zaèít dìlat bordel. Ale pozor, ve volné høe zákazníci nikdy nic neplatí. Volná hra nejde kombinovat s nekoneènou hrou, protože už stejnì nekoneèná je, jen má jiná pravidla, ani s hardcore hrou.|1|"+freeplay+"|0|"+(endless or hardcore));
+if (hardcore)
+{
 hm.insert_last ("allow_helpers|Povolit pomocníky| |2|"+allow_helpers);
 hm.insert_last ("allow_servers|Na toèení| |2|"+allow_servers+"|0|"+!allow_helpers);
 hm.insert_last ("allow_givers|Na roznášení pití| |2|"+allow_givers+"|0|"+!allow_helpers);
@@ -729,14 +738,30 @@ hm.insert_last ("gameover_hit_customer|Když praštíš zákazníka| |3|"+!allow_stunn
 hm.insert_last ("gameover_hit_player|Když tì nìkdo praští| |3|"+!allow_playerhits);
 hm.insert_last ("gameover_break_mug|Když se rozbije pùllitr| |3|"+!allow_broken);
 hm.insert_last ("gameover_break_barrel|Když se rozbije sud| |3|"+!allow_fallen);
+}
+}
 hm.insert_last ("opt_set_drink_selection|Jak vybrat piva na èepu");
 if (selection!=selection_unspecified) hm[hm.length()-1]+=": "+to_lower (string_trim_left (selection_menu[selection], string_contains (selection_menu[selection], "|", 1)+1));
 hm[hm.length()-1]+="|Urèuje, jestli se piva, která chceš mít na èepu, budou mìnit každou hru a jestli je vybereš ruènì, nebo se vyberou náhodnì.|4|2|1";
 if (!beers.is_empty()) hm.insert_last ("opt_clear_drinks|Smazat vybraná piva|Nelze, pokud se vybírají náhodnì.|4|2|0|"+(selection==selection_random_change or selection==selection_manual_change));
 else hm.insert_last ("choose_drinks|Vybrat piva|Nelze, pokud se vybírají náhodnì.|4|2|1|"+(selection==selection_random_change or selection==selection_manual_change or selection==selection_unspecified));
 hm.insert_last ("other_options|Ostatní nastavení hry|Na které události bìhem hry chceš dostávat slovní upozornìní. Zatím nehotové.|4|2|1");
-hm.insert_last ("start|Spustit hru| |5");
-string[] secs={"", "Pomocníci (hardcore hra)", "Kdy hra skonèí prohrou (hardcore hra)", "", ""};
+string start="start|Spustit ";
+if (is_tutorial) start+="seznámení s hrou";
+else
+{
+if (endless) start+="nekoneènou ";
+else if (freeplay) start+="volnou ";
+else start+="normální ";
+if (hardcore) start+="hardcore ";
+start+="hru";
+}
+start+=" na "+diff[difficulty]+" obtížnost|";
+if (hardcore) start+=say_game (false);
+else start+=" ";
+start+="|4";
+hm.insert_last (start);
+string[] secs={"Režim hry", "Pomocníci v hardcore høe", "Kdy konèí hardcore hra prohrou", "Obecná nastavení"};
 int8 tempres=make_menu (hm, gameres, menu, first, secs, !first);
 first=false;
 if (tempres==0) return false;
@@ -744,14 +769,22 @@ gameres=tempres;
 string itn=menu.get_item_name (gameres);
 if (instr (itn, "start"))
 {
-if (allow_helpers and !allow_servers and !allow_givers and !allow_cleaners and !allow_barrelers and !allow_emptiers and !allow_throwers and !allow_calmers)
+if (hardcore and allow_helpers and !allow_servers and !allow_givers and !allow_cleaners and !allow_barrelers and !allow_emptiers and !allow_throwers and !allow_calmers)
 {
 play_stat ("error");
-say ("Není povolen žádný typ pomocníkù. Buï nìkteré z nich povol, nebo zakaž i samotnou možnost pomocníkù jako takovou.", true, false);
+say ("V hardcore høe nemáš povolený žádný typ pomocníkù. Buï nìkteré z nich povol, nebo zakaž samotnou možnost pomocníkù jako takovou.", true, false, true);
+first=true;
 }
 else if ((!allow_mistakes and !allow_fled and !allow_stunned) or (!allow_stunned and !allow_trips and !allow_falls and !allow_broken and !allow_fallen))
 {
-if (ask ("S touto kombinací omezení bude hra pravdìpodobnì nedohratelná. Chceš ji hrát i tak?") ==1) break;
+if (ask ("S touto kombinací omezení bude hardcore hra pravdìpodobnì nedohratelná. Chceš ji hrát i tak?") ==1) break;
+else first=true;
+}
+else if (hardcore and allow_helpers and allow_servers and allow_givers and allow_cleaners and allow_emptiers and allow_barrelers and allow_throwers and allow_calmers and allow_trips and allow_falls and allow_broken and allow_fallen and allow_fled and allow_stunned and allow_messy and allow_mistakes and allow_playerhits)
+{
+play_stat ("error");
+say ("V hardcore høe nemáš nastavená vùbec žádná omezení nad rámec bìžné hry. Buï nìkteré z nich zapni, nebo vypni i samotnou hardcore hru jako takovou.", true, false, true);
+first=true;
 }
 else break;
 }
@@ -802,6 +835,7 @@ first=true;
 }
 else if (instr (itn, "endless")) endless=!endless;
 else if (instr (itn, "free")) freeplay=!freeplay;
+else if (instr (itn, "hardcore")) hardcore=!hardcore;
 }
 }
 return true;
@@ -1441,7 +1475,6 @@ string results="Výchozí nastavení hry obnovena.";
 if (!is_game)
 {
 difficulty=1;
-mode=1;
 selection=selection_unspecified;
 clear_drinks();
 allow_helpers=true;
@@ -1461,7 +1494,9 @@ allow_stunned=true;
 allow_broken=true;
 allow_fallen=true;
 allow_playerhits=true;
-is_tutorial=true;
+hardcore=false;
+endless=false;
+freeplay=false;
 }
 say_impatient=true;
 show_tips=true;
