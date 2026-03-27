@@ -11,7 +11,7 @@ if (ask ("Ukonèit tuto hru?", false, false) == 1)
 is_game=false;
 pool.destroy_all();
 things.destroy_all();
-if (autoplay or freeplay) clear_earnings();
+if (autoplay or freeplay or is_tutorial) clear_earnings();
 make_stats (true);
 reset_objects();
 autoplay=false;

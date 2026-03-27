@@ -1182,7 +1182,7 @@ cause+=" od zákazníkù ránu.";
 cause+="\r\n";
 }
 cause=sanitize(cause);
-if (autoplay or freeplay) clear_earnings();
+if (autoplay or freeplay or is_tutorial) clear_earnings();
 while (sapi.speaking) wait(5);
 uint p=pool.items.length();
 for (uint i=0; i<p; i++)

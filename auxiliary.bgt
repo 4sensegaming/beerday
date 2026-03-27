@@ -306,7 +306,7 @@ leave (false);
 }
 if (menuloop.playing) fadeout (0.5, false);
 }
-if (autoplay or freeplay) clear_earnings();
+if (autoplay or freeplay or is_tutorial) clear_earnings();
 if (is_game) make_stats (true);
 if (can_write and !is_updating and !onboarding)
 {
