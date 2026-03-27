@@ -1821,6 +1821,7 @@ play_stat ("floor");
 x-=step_size;
 vol-=volume_step;
 set_sound_master_volume (vol);
+if (vol<=minvol) break;
 walked++;
 pacer.restart();
 if (!smoke.playing and random(0,3)==3) smoke.play();

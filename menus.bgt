@@ -880,7 +880,7 @@ if (is_custmenu) msg+="Kontrol plus er: Zobrazení informací o vybraném zákazníko
 if (top_menu.item_list[0].name=="play") msg+="Eskejp nebo alt plus ef ètyøi: Ukonèení programu.\r\n";
 else
 {
-if (question=="" or top_menu.get_item_count()==3) msg+="Eskejp nebo bekspejs: Návrat do pøedchozí nabídky.\r\n";
+if (!onboarding and (question=="" or top_menu.get_item_count()==3)) msg+="Eskejp nebo bekspejs: Návrat do pøedchozí nabídky.\r\n";
 if (question!="Ukonèit program?") msg+="Alt plus ef ètyøi: Ukonèení programu.\r\n";
 }
 msg+="Písmena abecedy: ";
