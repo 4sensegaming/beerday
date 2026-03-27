@@ -704,21 +704,12 @@ while (true)
 string[] hm={"Nabídka hry"};
 hm.reserve (20);
 hm.insert_last ("difficulty|Obtížnost: "+diff[difficulty]+"| |1|2|1");
-string tutorial="tutorial|První seznámení s hrou|";
-if (!did_tutorial) tutorial+="Dokud tohoto prùvodce nedokonèíš, nemùžeš toto nastavení vypnout a zaèít tak hrát opravdu na ostro. Zatím nehotové.";
-if (endless or hardcore or freeplay)
-{
-if (tutorial!="") tutorial+=" ";
-tutorial+="Seznámení s hrou nemùžeš zapnout, když máš zároveò zapnutou hardcore, nekoneènou nebo volnou hru.";
-}
-else tutorial+=" ";
-tutorial+="|1|"+is_tutorial+"|0|"+(hardcore or endless or freeplay);
-hm.insert_last (tutorial);
+hm.insert_last ("tutorial|První seznámení se hrou|Dokud tohoto prùvodce nedokonèíš, nemùžeš toto nastavení vypnout a zaèít tak hrát opravdu na ostro (než pøidám obchod, tak ještì mùžeš). Seznámení se hrou nefunguje spoleènì s nekoneènou, volnou ani hardcore hrou. Samotné hraní tutoriálu je ještì poøád rozbité.|1|"+is_tutorial+"|0|"+(hardcore or endless or freeplay));
 if (!is_tutorial)
 {
-hm.insert_last ("hardcore|Hardcore hra|Jestli už je na tebe obyèejná hra moc lehká, mùžeš si v hardcore høe níže zapnout další omezující podmínky, za kterých okamžitì prohráváš. Hardcore hru mùžeš kombinovat se všemi režimy kromì volné hry.|1|"+hardcore+"|0|"+freeplay);
-hm.insert_last ("endless|Nekoneèná hra|Hra nikdy neskonèí výhrou, ale døív nebo pozdìji nakonec stejnì prohraješ.|1|"+endless+"|0|"+freeplay);
-hm.insert_last ("freeplay|Volná hra|Uvolnìná hra, ve které o nic nejde a jen tak si užíváš atmosféru. Hra v tomto režimu nemá žádné èasové omezení, takže nikdy neskonèí sama od sebe, zákazníci mají nekoneènou trpìlivost a hra na rozdíl od ostatních režimù nehlídá, jestli obsluhuješ. Zároveò si mùžeš nastavit, jestli zákazníci smí odcházet, naštvat se, zvracet, zakopávat, usnout nebo se ožrat a zaèít dìlat bordel. Ale pozor, ve volné høe zákazníci nikdy nic neplatí. Volná hra nejde kombinovat s nekoneènou hrou, protože už stejnì nekoneèná je, jen má jiná pravidla, ani s hardcore hrou.|1|"+freeplay+"|0|"+(endless or hardcore));
+hm.insert_last ("endless|Nekoneèná hra|Hra nikdy neskonèí výhrou, ale døív nebo pozdìji nakonec stejnì prohraješ. Nekoneènou hru nejde kombinovat s volnou hrou.|1|"+endless+"|0|"+freeplay);
+hm.insert_last ("freeplay|Volná hra|Uvolnìná hra, ve které o nic nejde a jen tak si užíváš atmosféru. Hra v tomto režimu nemá žádné èasové omezení, takže nikdy neskonèí sama od sebe, zákazníci mají nekoneènou trpìlivost a hra na rozdíl od ostatních režimù nehlídá, jestli je obsluhuješ. Zároveò si mùžeš nastavit, jestli zákazníci smí odcházet, naštvat se, zvracet, zakopávat, usnout nebo se ožrat a zaèít dìlat bordel. Ale pozor, ve volné høe zákazníci nikdy nic neplatí. Volná hra nejde kombinovat s nekoneènou hrou, protože už stejnì nekoneèná je, jen má jiná pravidla, ani s hardcore hrou.|1|"+freeplay+"|0|"+(endless or hardcore));
+hm.insert_last ("hardcore|Hardcore hra|Jestli už je na tebe obyèejná hra moc lehká, mùžeš si níže zapnout další omezení navíc oproti normální høe. Hardcore hru mùžeš kombinovat se všemi režimy kromì volné hry.|1|"+hardcore+"|0|"+freeplay);
 if (hardcore)
 {
 hm.insert_last ("allow_helpers|Povolit pomocníky| |2|"+allow_helpers);
@@ -745,9 +736,9 @@ if (selection!=selection_unspecified) hm[hm.length()-1]+=": "+to_lower (string_t
 hm[hm.length()-1]+="|Urèuje, jestli se piva, která chceš mít na èepu, budou mìnit každou hru a jestli je vybereš ruènì, nebo se vyberou náhodnì.|4|2|1";
 if (!beers.is_empty()) hm.insert_last ("opt_clear_drinks|Smazat vybraná piva|Nelze, pokud se vybírají náhodnì.|4|2|0|"+(selection==selection_random_change or selection==selection_manual_change));
 else hm.insert_last ("choose_drinks|Vybrat piva|Nelze, pokud se vybírají náhodnì.|4|2|1|"+(selection==selection_random_change or selection==selection_manual_change or selection==selection_unspecified));
-hm.insert_last ("other_options|Ostatní nastavení hry|Na které události bìhem hry chceš dostávat slovní upozornìní. Zatím nehotové.|4|2|1");
+hm.insert_last ("other_options|Ostatní nastavení hry|Na které události bìhem hry chceš dostávat slovní upozornìní. Vìtšina plánovaných nastavení tohoto typu zatím chybí.|4|2|1");
 string start="start|Spustit ";
-if (is_tutorial) start+="seznámení s hrou";
+if (is_tutorial) start+="seznámení se hrou";
 else
 {
 if (endless) start+="nekoneènou ";
@@ -1265,8 +1256,8 @@ string[] optmenu={""};
 if (tempres == -1 and speak_menu_prompt) optmenu[0]="Nastavení ovládání";
 optmenu.insert_last ("keyhelp|Klávesová nápovìda|Každá klávesa, kterou stiskneš, øekne, co dìlá pøi høe. Bìhem samotné hry mùžeš tuto nápovìdu kdykoli otevøít klávesou ef jedna.");
 optmenu.insert_last ("view_controls|Zobrazit ovládání| |1|2|1");
-optmenu.insert_last ("remap|Pøemapovat ovládání|Zatím nehotové.|1|2|1");
-if (!onboarding) optmenu.insert_last ("restore_control_defaults|Obnovit výchozí ovládání|Zatím nehotové.");
+optmenu.insert_last ("remap|Pøemapovat ovládání|Zatím nic nedìlá.|1|2|1");
+if (!onboarding) optmenu.insert_last ("restore_control_defaults|Obnovit výchozí ovládání|Zatím nic nedìlá.");
 else optmenu.insert_last ("continue|Pokraèovat");
 if (tempres == -1) tempres=1;
 tempres=make_menu (optmenu, tempres, tempmenu);

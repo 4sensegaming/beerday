@@ -1195,7 +1195,7 @@ string say_game (bool speak=true)
 string game="";
 if (is_game)
 {
-if (is_tutorial) game="Seznámení s hrou ";
+if (is_tutorial) game="Seznámení se hrou ";
 else
 {
 if (endless) game="Nekoneèná ";
