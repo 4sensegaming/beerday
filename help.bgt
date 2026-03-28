@@ -50,7 +50,7 @@ if (speak_ui_help)
 {
 ui_help_frames++;
 if (ui_help_frames<=ui_help_delay and keys>0) ui_help_frames=0;
-if (ui_help_frames==ui_help_delay and keys==0) say ("Libovolná klávesa dvakrát za sebou: Pøeète dlouhý popis zkratky, pokud ho daná zkratka má.", true, false);
+if (ui_help_frames==ui_help_delay and keys==0) say ("Libovolná klávesa nebo kombinace kláves: Vysvìtlí, co tato zkratka dìlá ve høe. Nìkteré zkratky mají navíc i dlouhý popis s více informacemi, který zjistíš, když danou zkratku stiskneš dvakrát rychle za sebou.", true, false);
 }
 menu_music();
 closekey();

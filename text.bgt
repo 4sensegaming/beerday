@@ -182,7 +182,7 @@ frames=0;
 if (frames>=fps/2 and echo_smart and smart!="" and keys==0)
 {
 if (smart.length()==1) spell(smart);
-else say (smart, false, false);
+else say (smart, true, false);
 smart="";
 frames=0;
 said_max=false;
@@ -215,6 +215,7 @@ continue;
 }
 }
 }
+silence();
 running=false;
 wait_keys();
 return concat();

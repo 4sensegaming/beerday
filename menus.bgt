@@ -198,7 +198,7 @@ handle.add_item_tts (name, ui_name, description, string_to_number (section), str
 }
 if (@sections!=null) @handle.sections=@sections;
 ui_help_frames=0;
-if (autospeak) help_read=false;
+if (autospeak and !rerun) help_read=false;
 get_characters();
 return handle.run (which[0], start, autospeak, rerun);
 }
@@ -750,9 +750,9 @@ start+="hru";
 start+=" na "+diff[difficulty]+" obtížnost|";
 if (hardcore) start+=say_game (false);
 else start+=" ";
-start+="|4";
+start+="|5";
 hm.insert_last (start);
-string[] secs={"Režim hry", "Pomocníci v hardcore høe", "Kdy konèí hardcore hra prohrou", "Obecná nastavení"};
+string[] secs={"Režim hry", "Pomocníci v hardcore høe", "Kdy konèí hardcore hra prohrou", "Obecná nastavení", ""};
 int8 tempres=make_menu (hm, gameres, menu, first, secs, !first);
 first=false;
 if (tempres==0) return false;
@@ -1576,7 +1576,7 @@ optmenu.insert_last ("queue_vol|Hlasitost krokù zákazníkù, kteøí èekají ve front
 optmenu.insert_last ("order_vol|Hlasitost krokù zákazníkù, kteøí si ještì neobjednali: "+get_volume (order_steps_vol)+"| |5|2|1|"+(!play_steps or !order_steps));
 optmenu.insert_last ("other_vol|Hlasitost krokù všech ostatních zákazníkù: "+get_volume (other_steps_vol)+"| |5|2|1|"+(!play_steps or !other_steps));
 optmenu.insert_last ("restore_volumes|Obnovit výchozí nastavení všech hlasitostí| |5");
-optmenu.insert_last ("learn_sounds|Seznámení se zvuky|Obsahuje klíèové zvuky, které potøebuješ znát. Bìhem hry mùžeš tuto nabídku kdykoli otevøít klávesou ef 3 nebo z kontextového menu.|6|2|1");
+optmenu.insert_last ("learn_sounds|Seznámení se zvuky|Obsahuje klíèové zvuky, které potøebuješ znát. Bìhem hry mùžeš nabídku seznámení se zvuky kdykoli otevøít klávesou ef 3 nebo z kontextového menu.|6|2|1");
 if (!onboarding) optmenu.insert_last ("restore_audio_defaults|Obnovit všechna výchozí nastavení zvuku| |6");
 else optmenu.insert_last ("continue|Pokraèovat| |6");
 string[] secs={"Které zvuky pøehrávat", "Které zvuky krokù pøehrávat", "Nastavení pøehrávání ve stereu", "Nastavení hlasitostí", "Nastavení hlasitostí krokù", ""};
