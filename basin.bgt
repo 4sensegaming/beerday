@@ -34,6 +34,7 @@ say ("Domyl se poslední pùllitr.", false);
 }
 else say ("Domyl se pùllitr.", false);
 frames=0;
+time_since_served=0;
 washed++;
 }
 }

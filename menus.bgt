@@ -305,7 +305,7 @@ void read_menu (string text, string separators="\r\n")
 {
 read_text=text;
 string[] split=string_split (text, separators, false);
-split.insert_at (0, "Nabídka pro ètení delšího textu");
+split.insert_at (0, "Seznam pro pohodlnìjší ètení delšího textu");
 ss_start();
 bool old_read=is_readmenu;
 is_readmenu=true;

@@ -349,16 +349,17 @@ return;
 if (frames < percent (speed, 90))
 {
 steps++;
+time_since_walked=0;
 if (mess_here (x, y)) trip_mess();
 else trip();
 return;
 }
+steps++;
 switch (dir)
 {
 case 0:
 if (x == stairs and y < 0 and y > bottom)
 {
-steps++;
 trip();
 return;
 }
@@ -367,7 +368,6 @@ break;
 case 1:
 if (x == stairs and y < 0 and y > bottom)
 {
-steps++;
 trip();
 return;
 }
@@ -386,6 +386,7 @@ break;
 }
 step();
 frames=0;
+time_since_walked=0;
 }
 
 void trip (bool describe=true)
@@ -517,6 +518,7 @@ lose();
 return true;
 }
 if (!target.is_roaming and !target.is_chasing) total_stuns++;
+else time_since_served=0;
 }
 else if (!allow_playerhits)
 {
@@ -651,7 +653,7 @@ set_state (fleeing);
 return;
 }
 if (!is_player and enable_jukebox and ((state==waiting and frames<percent (patience, 90) and drank_total>0 and waited_once) or state==drinking) and (play_game_music and (jukebox_interval==0 or frames>=jukebox_interval) and count_state(wanting_jukebox).is_empty() and count_state(jukeboxing).is_empty() and hits==0 and used_jukebox<use_jukebox)) decide_jukebox();
-if (!enable_infinite_patience and !is_player and help_state>-1 and !active() and frames>=patience and (state!=calming or @leading==null) and (state!=throwing or @leading==null) and @hand==null and @has_barrel==null and @wanted_mug==null and @wanted_barrel==null and missing==-1)
+if (!enable_infinite_patience and !freeplay and !is_player and help_state>-1 and !active() and frames>=patience and (state!=calming or @leading==null) and (state!=throwing or @leading==null) and @hand==null and @has_barrel==null and @wanted_mug==null and @wanted_barrel==null and missing==-1)
 {
 set_prepend();
 say (prepend+"nemá s èím pomáhat, takže si jde znovu objednat.", false);
@@ -1346,6 +1348,7 @@ if (help_state > -1) state=help_state;
 else state=prev_state;
 prev_state=tripped;
 if ((is_player or help_state>-1) and punched) punched=false;
+time_since_walked=0;
 }
 }
 
@@ -1636,6 +1639,7 @@ if (paid_total > most_paid) most_paid=paid_total;
 @leading=null;
 set_state (drinking);
 frames=0;
+time_since_served=0;
 return;
 }
 if (queue.find (this) == -1 and !has_drink and @seen_mug == null and @leading != null and get_distance (leading.x, faucet.x, leading.y, faucet.y) <= 10)
@@ -1644,7 +1648,7 @@ frames=0;
 set_state (arriving);
 return;
 }
-if (!enable_infinite_patience and !is_tutorial and frames >= patience and !has_drink and x==seat_x and y==seat_y)
+if (!enable_infinite_patience and !is_tutorial and !freeplay and frames >= patience and !has_drink and x==seat_x and y==seat_y)
 {
 waited_once=false;
 if (enable_chasing and drank >= anger and prev_state!=chasing and random (0, 1) == 1)
@@ -2250,6 +2254,7 @@ rep+=" "+append+".";
 say (rep, false);
 frozen=1;
 frames=0;
+time_since_served=0;
 once_transition=(fps*3)+10;
 @leading=null;
 }
@@ -3293,7 +3298,11 @@ else if (inc and faucet.pipe == beers.length() -1)
 if (is_player) error (beers[beers.length()-1]+" je poslední kohout.");
 return;
 }
-if (frozen > 0 or state == tripped) return;
+if ((frozen > 0 and (transition>0 or once_transition>0)) or state == tripped)
+{
+if (is_player) error ("Takhle rychle to nestíháš.");
+return;
+}
 if (inc) faucet.pipe++;
 else faucet.pipe--;
 if (is_player) say (say_pipe (true, false), true, false);
