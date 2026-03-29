@@ -24,7 +24,7 @@ mess@[] messes;
 string[] beers, beers4, beers7, used_greetings;
 uint8[] prices;
 
-uint trip_time, sleep_time, all_speed, longest, money, money_total=0, most_patient, mug_path, steps, spawner, spawn_delay, min_drink_time, max_drink_time, wash_time, flushed, flusher, replaced, gratuity, most_gratuity_once, most_gratuity_total, most_paid, max_liquid_mess, puke_count, total_puked, min_price, max_price, time_since_walked, time_since_served;
+uint trip_time, sleep_time, all_speed, longest, money, money_total=0, most_patient, mug_path, steps, spawner, spawn_delay, min_drink_time, max_drink_time, wash_time, flushed, flusher, replaced, gratuity, most_gratuity_once, most_gratuity_total, most_paid, max_liquid_mess, puke_count, total_puked, min_price, max_price, time_since_served;
 int8 bottom, stairs, toilet, toiletslot, total_trips;
 uint max, ceiling, aggression, difficulty=1, mug_count, barrel_count, broken, fallen, broken_nonempty, fallen_nonempty, beer_count, maxfled, maxstunned, faucet_distance, helpers, pourers, givers, throwers, cleaners, barrelers, emptiers, calmers, trance, fled, fled_total, hurt, thrown, stunned, total_stuns, most, served, served_correct, undermeasures, dirty_drinks, single_drinks, mixed_drinks, most_beers, washed, total_falls, hit_interval, mistakes, roamers, chasers, slept, most_queue, most_hits, spawned, dried;
 bool paused=false, autoplay, allow_helpers=true, allow_servers=true, allow_givers=true, allow_cleaners=true, allow_barrelers=true, allow_emptiers=true, allow_calmers=true, allow_throwers=true, allow_fled=true, allow_stunned=true, allow_trips=true, allow_falls=true, allow_broken=true, allow_fallen=true, allow_mistakes=true, allow_playerhits=true, allow_messy=true, hardcore=false, endless=false, freeplay=false, said_helpers=false, is_game=false;
@@ -157,7 +157,6 @@ break;
 }
 min_drink_time=25;
 max_price=min_price+20;
-time_since_walked=0;
 time_since_served=0;
 if (endless) limit=0;
 @mission=null;
@@ -942,7 +941,7 @@ else cause+=" "+calmers+" pacifikovalo agresivní zákazníky.";
 cause+="\r\n";
 }
 }
-else if (allow_helpers) cause+=" Nikdo se ti nerozhodl pomoct. Hm, to asi nìco vypovídá o celkové spokojenosti zákazníkù.\r\n";
+else if (allow_helpers) cause+=" Nikdo se ti nerozhodl pomoct.\r\n";
 if (spawned > 0)
 {
 if (spawned == 1) cause+=" Stihl pøijít jen jeden zákazník.";
@@ -1311,7 +1310,7 @@ if (mugs.length() ==0) lose();
 if (!freeplay)
 {
 if (count_active()==0 and (fled >= maxfled or (total_stuns >= maxstunned and stunned!=total_stuns) or player.count_state(idle).length()==customers.length() or customers.is_empty())) lose (1);
-if (player.count_state(serving).is_empty() and (time_since_served>120*fps or time_since_walked>25*fps) and (!player.count_state(arriving).is_empty() or !player.count_state(ordering).is_empty() or !player.count_state(waiting).is_empty() or !queue.is_empty() or served==0))
+if (player.count_state(serving).is_empty() and time_since_served>90*fps and !queue.is_empty())
 {
 if (!player.carrying.is_empty() or count_clean_mugs()>0 or say_dirty(false)>0) lose(1);
 }
@@ -1346,7 +1345,7 @@ if (is_tutorial) run_tutorial();
 
 void action()
 {
-if (player.frozen>0 and player.frozen<player.frames and (player.transition>0 or player.once_transition>0))
+if (player.frozen>0 and (player.transition>0 or player.once_transition>0))
 {
 error ("Takhle rychle to nestíháš!");
 return;

@@ -92,8 +92,10 @@ void track_time()
 {
 elapsed++;
 if (endless or freeplay) return;
-time_since_walked++;
+if (!is_gallery)
+{
 time_since_served++;
+}
 if (limit - elapsed <= 60*fps and !timewarn)
 {
 say ("Poslední objednávky.", false, true);

@@ -349,7 +349,6 @@ return;
 if (frames < percent (speed, 90))
 {
 steps++;
-time_since_walked=0;
 if (mess_here (x, y)) trip_mess();
 else trip();
 return;
@@ -386,7 +385,6 @@ break;
 }
 step();
 frames=0;
-time_since_walked=0;
 }
 
 void trip (bool describe=true)
@@ -665,9 +663,9 @@ state=-1;
 prev_state=-1;
 set_state (arriving);
 }
-if (use_vocals and !is_player)
+if (use_vocals and !is_player and frozen==0)
 {
-if (vocal_interval==0) vocal_interval=random (30, 300) *fps;
+if (vocal_interval==0) vocal_interval=random (15, 70) *fps;
 if (!speech.is_empty() and (vocal_slot==-1 or !pool.sound_is_playing (vocal_slot)))
 {
 set_sound_decryption_key ("", false);
@@ -1131,6 +1129,7 @@ else if (what==cleaning and count_clean_mugs()==0) say (prepend+"teï odnáší špin
 prev_state=state;
 state=what;
 if (state == idle or state == drinking or leaving>1 or count_mess(2)+count_mess(3)>=max_liquid_mess or (help_state>-1 and prev_state!=mugging and prev_state!=serving and prev_state!=piping and prev_state!=giving and prev_state!=cleaning and prev_state!=emptiing and prev_state!=barreling and prev_state!=throwing and prev_state!=calming and prev_state!=disposing)) disrefer();
+vocal_elapsed=0;
 }
 
 void run_state()
@@ -1348,7 +1347,6 @@ if (help_state > -1) state=help_state;
 else state=prev_state;
 prev_state=tripped;
 if ((is_player or help_state>-1) and punched) punched=false;
-time_since_walked=0;
 }
 }
 
@@ -3133,6 +3131,7 @@ if (said_impatient) said_impatient=false;
 int8 order=queue.find (this);
 if (order == -1)
 {
+if (queue.is_empty()) time_since_served=0;
 queue.insert_last (this);
 if (queue.length() > most_queue) most_queue=queue.length();
 set_patience();
@@ -3154,6 +3153,7 @@ queue.remove_at (order);
 if (full) has_drink=false;
 }
 frames=0;
+if (queue.is_empty()) time_since_served=0;
 }
 
 void check_drink()
@@ -3298,7 +3298,7 @@ else if (inc and faucet.pipe == beers.length() -1)
 if (is_player) error (beers[beers.length()-1]+" je poslední kohout.");
 return;
 }
-if (frozen > 0 and frozen<frames and (transition>0 or once_transition>0 or state == tripped))
+if (frozen > 0 and (transition>0 or once_transition>0 or state == tripped))
 {
 if (is_player) error ("Takhle rychle to nestíháš.");
 return;
