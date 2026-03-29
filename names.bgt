@@ -163,6 +163,18 @@ play_stat ("error");
 say ("Musíš zadat ètvrtý pád jména.", true, false, true);
 proceed=false;
 }
+uint l=customers.length();
+for (uint i=0; i<l; i++)
+if (@customers[i]!=@h and customers[i].name==h.name)
+{
+string msg="";
+if (customers[i].sex==1) msg="Zákazník";
+else msg="Zákaznice";
+msg+=" se jménem "+h.name+" už tady je. Každý zákazník by mìl mít jedineèné jméno. Zadej prosím jiné.";
+say (msg, true, false, true);
+proceed=false;
+break;
+}
 if (proceed) break;
 }
 }

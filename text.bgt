@@ -177,7 +177,7 @@ word="";
 char="";
 frames.restart();
 }
-if (frames.elapsed>=fps/2 and echo_smart and smart!="" and keys==0)
+if (frames.elapsed>=500 and echo_smart and smart!="" and keys==0)
 {
 if (smart.length()==1) spell(smart);
 else say (smart, true, false);
