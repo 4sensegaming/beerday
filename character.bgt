@@ -716,8 +716,8 @@ else if (leaving==1 and state!=opening and state!=closing)
 {
 if (health<=attack)
 {
-if (sex==2) prepend="Utíkající zákaznice ";
-else prepend="Utíkající zákazník ";
+if (sex==2) prepend="Utíkající zranìná zákaznice ";
+else prepend="Utíkající zranìný zákazník ";
 }
 else
 {
@@ -3298,7 +3298,7 @@ else if (inc and faucet.pipe == beers.length() -1)
 if (is_player) error (beers[beers.length()-1]+" je poslední kohout.");
 return;
 }
-if ((frozen > 0 and (transition>0 or once_transition>0)) or state == tripped)
+if (frozen > 0 and frozen<frames and (transition>0 or once_transition>0 or state == tripped))
 {
 if (is_player) error ("Takhle rychle to nestíháš.");
 return;
