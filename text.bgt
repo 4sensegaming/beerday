@@ -5,7 +5,7 @@ int index=0, old_index=0, selection_start=-1, selection_end=-1;
 string char="", word="", smart="";
 bool echo_chars=false, echo_words=false, echo_smart=true, running=false, said_max=true, numbers_only=false, allow_escape=true;
 input_callback@ callback;
-uint frames=0;
+timer frames;
 
 text()
 {
@@ -28,7 +28,7 @@ selection_end=-1;
 clear_echo();
 running=false;
 get_characters();
-frames=0;
+frames.restart();
 numbers_only=false;
 allow_escape=true;
 if (completely)
@@ -56,27 +56,26 @@ selection_end=buffer.length()-1;
 string run (uint max=255)
 {
 wait_keys();
+help_read=false;
+ui_help_timer.restart();
 running=true;
-frame.restart();
 while (true)
 {
 wait(5);
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
 closekey();
 if (@callback!=null) callback();
 if (allow_escape and singlekey (KEY_ESCAPE))
 {
 wait_keys();
 reset();
+ui_help_timer.restart();
 help_read=false;
 return "";
 }
 else if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER))
 {
 wait_keys();
-help_read=false;
+reset_ui_help();
 break;
 }
 else if ((up or down) and keys<=2 and !ctrl and !alt)
@@ -151,7 +150,6 @@ else if (lone (KEY_C) and ctrl and !shift and !alt) copy();
 else if (lone (KEY_X) and ctrl and !shift and !alt) cut();
 else if (lone (KEY_V) and ctrl and !shift and !alt) paste();
 char=get_characters();
-frames++;
 if (char!="")
 {
 if (numbers_only and !string_is_digits (char))
@@ -177,14 +175,14 @@ char="";
 word="";
 }
 char="";
-frames=0;
+frames.restart();
 }
-if (frames>=fps/2 and echo_smart and smart!="" and keys==0)
+if (frames.elapsed>=fps/2 and echo_smart and smart!="" and keys==0)
 {
 if (smart.length()==1) spell(smart);
 else say (smart, true, false);
 smart="";
-frames=0;
+frames.restart();
 said_max=false;
 }
 if (max>0 and keys==0 and !said_max and smart=="")
@@ -214,10 +212,10 @@ continue;
 }
 }
 }
-}
 silence();
 running=false;
 wait_keys();
+reset_ui_help();
 return concat();
 }
 

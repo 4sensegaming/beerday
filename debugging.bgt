@@ -22,13 +22,6 @@ autoplay=!autoplay;
 player.state=-1;
 player.prev_state=-1;
 player.help_state=-1;
-switch (mode)
-{
-case 1: mode=2; break;
-case 2: mode=1; break;
-case 3: mode=4; break;
-case 4: mode=3; break;
-}
 }
 
 void debug_menu()
@@ -57,27 +50,27 @@ dm.insert_last ("allow_helpers|Pomocníci| |2|"+allow_helpers);
 dm.insert_last ("infinite_waiting|Nekoneèná trpìlivost| |2|"+enable_infinite_patience);
 dm.insert_last ("simulate_win|Nasimulovat 5 vteøin pøed výhrou| |3");
 if (count_mess(2)+count_mess(3)<max_liquid_mess) dm.insert_last ("make_full_mess|Vygenerovat maximum nepoøádku| |3");
-dm.insert_last ("spawn_customer|Vygenerovat nového zákazníka| |4|2|0|"+customers.length()>=max);
-dm.insert_last ("max_customers|Vygenerovat maximum zákazníkù| |4|2|0|"+customers.length()>=max);
+dm.insert_last ("spawn_customer|Vygenerovat nového zákazníka| |4|2|0|"+(customers.length()>=max));
+dm.insert_last ("max_customers|Vygenerovat maximum zákazníkù| |4|2|0|"+(customers.length()>=max));
 dm.insert_last ("new_customers|Pøicházení nových zákazníkù| |4|"+enable_new_customers);
 dm.insert_last ("move_player_to_door|Pøesunout hráèe ke dveøím| |5|2|0|"+(player.x==door.x&&player.y==door.y));
 dm.insert_last ("move_player_to_faucet|Pøesunout hráèe k pípì| |5|2|0|"+(player.x==faucet.x&&player.y==faucet.y));
 dm.insert_last ("move_player_to_sink|Pøesunout hráèe ke døezu| |5|2|0|"+(player.x==sink.x&&player.y==sink.y));
 dm.insert_last ("move_player_to_stairs|Pøesunout hráèe na schody| |5|2|0|"+(player.x==stairs&&player.y==0));
 dm.insert_last ("move_player_to_jukebox|Pøesunout hráèe k jukeboxu| |5|2|0|"+(player.x==radio&&player.y==0));
-dm.insert_last ("ordering_to_faucet|Pøesunout všechny zákazníky bez objednávky k pípì| |5|2|0|"+player.count_state(arriving).is_empty());
-dm.insert_last ("first_customer_wait|Pøesunout prvního zákazníka s objednávkou na místo a zaèít èekat| |5|2|0|"+queue.is_empty());
-dm.insert_last ("serve_first|Obsloužit prvního èekajícího zákazníka| |5|2|0|"+queue.is_empty());
-dm.insert_last ("all_customers_wait|Pøesunout všechny zákazníky s objednávkou na místo a zaèít èekat| |5|2|0|"+queue.length()>1);
-dm.insert_last ("serve_all|Obsloužit všechny èekající zákazníky| |5|2|0|"+queue.length()>1);
-dm.insert_last ("play_jukebox|Donutit prvního èekajícího zákazníka pustit jukebox| |6|2|0|"+player.count_state(waiting).is_empty());
+dm.insert_last ("ordering_to_faucet|Pøesunout všechny zákazníky bez objednávky k pípì| |5|2|0|"+(player.count_state(arriving).is_empty()));
+dm.insert_last ("first_customer_wait|Pøesunout prvního zákazníka s objednávkou na místo a zaèít èekat| |5|2|0|"+(queue.is_empty()));
+dm.insert_last ("serve_first|Obsloužit prvního èekajícího zákazníka| |5|2|0|"+(queue.is_empty()));
+dm.insert_last ("all_customers_wait|Pøesunout všechny zákazníky s objednávkou na místo a zaèít èekat| |5|2|0|"+(queue.length()>1));
+dm.insert_last ("serve_all|Obsloužit všechny èekající zákazníky| |5|2|0|"+(queue.length()>1));
+dm.insert_last ("play_jukebox|Donutit prvního èekajícího zákazníka pustit jukebox| |6|2|0|"+(player.count_state(waiting).is_empty()));
 character@[]@ drinkers=player.count_state(drinking);
 uint8 dl=drinkers.length();
 dm.insert_last ("finish_drink_first|Donutit prvního pijícího zákazníka dopít| |6|2|0|"+dl==0);
-dm.insert_last ("force_helper_first|Donutit prvního pijícího zákazníka zaèít pomáhat| |6|2|0|"+dl==0);
-dm.insert_last ("make_first_drunk|Donutit prvního pijícího zákazníka zaèít dìlat bordel| |6|2|0|"+dl==0);
-dm.insert_last ("finish_drink_all|Donutit všechny pijící zákazníky dopít| |6|2|0|"+dl<=1);
-dm.insert_last ("make_all_drunk|Donutit všechny pijící zákazníky zaèít dìlat bordel| |6|2|0|"+dl<=1);
+dm.insert_last ("force_helper_first|Donutit prvního pijícího zákazníka zaèít pomáhat| |6|2|0|"+(dl==0));
+dm.insert_last ("make_first_drunk|Donutit prvního pijícího zákazníka zaèít dìlat bordel| |6|2|0|"+(dl==0));
+dm.insert_last ("finish_drink_all|Donutit všechny pijící zákazníky dopít| |6|2|0|"+(dl<=1));
+dm.insert_last ("make_all_drunk|Donutit všechny pijící zákazníky zaèít dìlat bordel| |6|2|0|"+(dl<=1));
 dm.insert_last ("pipe_empty|Vyprázdnit aktuální kohoutek na pípì|Na pùl pùllitru|7|2|0|"+(faucet.amounts[faucet.pipe]<=full_mug/2));
 dm.insert_last ("all_pipes_empty|Vyprázdnit všechny kohoutky na pípì|Na pùl pùllitru|7");
 dm.insert_last ("pipe_refill|Doplnit aktuální kohoutek na pípì| |7|2|0|"+faucet.amounts[faucet.pipe]<=full_mug);
@@ -92,12 +85,6 @@ dm.insert_last ("break_barrel|Rozbít první dostupný plný sud ve sklepì| |9|2|0|"
 dm.insert_last ("break_mugs|Rozbít všechny pùllitry| |9|2|0|"+mugs.is_empty());
 dm.insert_last ("debug_speech|Sledovat správnost promluv|Každou promluvu pøi jejím vyslovení zkopíruje do schránky.|10|"+debug_speech);
 dm.insert_last ("clear_money|Smazat veškeré výdìlky| |10|2|0|"+(money>0 or money_total>0));
-for (uint i=0; i<dm.length(); i++)
-if (string_is_digits (dm[i]))
-{
-dm.remove_at (i);
-i--;
-}
 result=make_menu (dm, result, @menu, first, null, !first);
 first=false;
 string item=menu.get_item_name (result);

@@ -113,7 +113,7 @@ string update_command="";
 if (l==7) update_command=split[6];
 if (update_version == version and update_day == build_day and update_month == build_month and update_year == build_year and update_hour == build_hour and update_minute == build_minute)
 {
-if (!silent) say ("Nainstalovaná verze "+version+" z "+days[update_day-1]+" "+months[update_month-1]+" "+update_year+" je aktuální.", true, false);
+if (!silent) say ("Stávající verze "+version+" z "+days[update_day-1]+" "+months[update_month-1]+" "+update_year+" je poøád aktuální.", true, false);
 return;
 }
 string real_minute;
@@ -183,7 +183,7 @@ ss_start();
 if (call_music) menu_music();
 string prompt="Pokraèuj enterem.";
 string helpmsg="Kontrol plus cé: Zkopírování pøeèteného textu do schránky.\r\nEnter, mezerník nebo escape: Potvrzení a pokraèování.\r\nKterákoli jiná klávesa: Zopakování textu.\r\nKontrol plus er: Zobrazení textu v seznamu pro pohodlnìjší ètení.\r\nEf jedna: Zobrazení tìchto zkratek v seznamu pro pohodlnìjší ètení.\r\nAlt plus ef ètyøi: Ukonèení programu.\r\nDylít nebo kontrol plus šift plus alt: Umlèení øeèi.";
-ui_help_frames=0;
+reset_ui_help();
 if (output>0)
 {
 if (play_sr_prompt) play_stat ("sr");
@@ -199,13 +199,14 @@ frame.restart();
 closekey();
 if (speak_ui_help)
 {
-ui_help_frames++;
-if (ui_help_frames<=ui_help_delay and keys>0)  ui_help_frames=0;
-if (ui_help_frames==ui_help_delay and keys==0 and !help_read)
+if (ui_help_timer.elapsed<ui_help_delay and keys>0)  ui_help_timer.restart();
+if (ui_help_timer.elapsed>=ui_help_delay and keys==0 and !help_read)
 {
 if (is_custmenu) silence_custmenu();
 say (helpmsg, false, false);
 help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
 }
 }
 if (lone (KEY_C) and ctrl and !shift and !alt)

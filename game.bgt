@@ -35,10 +35,6 @@ uint8 single_most_gender, single_drank_gender, single_longest_gender;
 void reset ()
 {
 reset_debugging();
-if (mode == 2 or mode == 4) autoplay=true;
-else autoplay=false;
-if (mode == 3 or mode == 4) endless=true;
-else endless=false;
 if (!preloads.is_empty())
 {
 wait_keys();
@@ -277,6 +273,14 @@ played_jukebox=0;
 played_jukebox_player=0;
 played_jukebox_customers=0;
 use_jukebox=random (1, difficulty);
+if (freeplay)
+{
+limit=0;
+enable_lose_check=false;
+enable_infinite_patience=true;
+enable_roaming=free_roam;
+enable_idle=free_sleep;
+}
 if (preloads.is_empty()) preload_audio();
 if (play_logo)
 {
@@ -505,30 +509,42 @@ if (!allow_barrelers) cause+="Na nošení nových sudù\r\n";
 if (!allow_throwers) cause+="Na vyhazování ožralù\r\n";
 if (!allow_calmers) cause+="Na pacifikování agresivních zákazníkù\r\n";
 }
-if (!allow_trips) cause+="Nesmìl";
+if (!allow_trips)
+{
+cause+="Nesmìl";
 if (gender==2) cause+="a";
 cause+=" jsi zakopnout\r\n";
-if (!allow_falls) cause+="Nesmìl";
+}
+if (!allow_falls)
+{
+cause+="Nesmìl";
 if (gender==2) cause+="a";
 cause+=" jsi spadnout ze schodù\r\n";
-if (!allow_stunned) cause+="Nesmìl";
+}
+if (!allow_stunned)
+{
+cause+="Nesmìl";
 if (gender==2) cause+="a";
 cause+=" jsi omráèit žádného zákazníka\r\n";
+}
 if (!allow_playerhits) cause+="Nikdo tì nesmìl praštit\r\n";
 if (!allow_fled) cause+="Nikdo nesmìl odejít\r\n";
-if (!allow_mistakes) cause+="Nesmìl";
+if (!allow_mistakes)
+{
+cause+="Nesmìl";
 if (gender==2) cause+="a";
 cause+=" jsi udìlat žádnou chybu pøi obsluze\r\n";
+}
 if (!allow_broken) cause+="Nesmìl se rozbít žádný pùllitr\r\n";
 if (!allow_fallen) cause+="Nesmìl se rozbít žádný sud\r\n";
 if (!allow_messy) cause+="Nesmìli zaèít odcházet zákazníci kvùli nepoøádku\r\n";
 }
-if (endless or elapsed < limit)
+if (endless or freeplay or elapsed < limit)
 {
 cause+=" Vydržel";
 if (gender==2) cause+="a";
 cause+=" jsi celkem "+get_time (false, elapsed)+"\r\n";
-if (!endless)
+if (!endless and !freeplay)
 {
 cause+=" Do konce limitu "+get_time();
 if (instr (cause, "hodina") or instr (cause, "minuta") or instr (cause, "vteøina")) cause=string_replace (cause, "Zbývá", "zbývala ještì", true);
@@ -665,9 +681,9 @@ else if (mistakes == served)
 if (served == 1) cause+=". A navíc ještì špatné. To už pøestává všechno.";
 else if (served < 5)
 {
-cause+=". Jen "+served+" pití a ještì špatnì. Dìlat ";
-if (gender==2) cause+="hospodskou";
-else cause+="hospodského";
+cause+=". Jen "+served+" pití a ještì špatnì. Dìlat barman";
+if (gender==2) cause+="ku";
+else cause+="a";
 cause+=" pro tebe evidentnì není to pravé. Zkus tøeba práci testera zdravotních matrací nebo tak nìco.";
 }
 else cause+=". Tolik roznesených pití a všechna špatnì? Co u toho dìláš, prosím tì?";
@@ -1017,7 +1033,7 @@ cause+=" Nebyl";
 if (gender==2) cause+="a";
 cause+=" jsi vùbec zranìn";
 if (gender==2) cause+="á";
-else cause+="á";
+else cause+="ý";
 cause+=".";
 }
 else if (player.health >= 75)
@@ -1322,7 +1338,7 @@ void action()
 {
 if (player.frozen>0 and player.transition>0 and player.frozen<player.transition)
 {
-error ("Musíš poèkat, než dokonèíš pøedchozí akci.");
+error ("Takhle rychle to nestíháš!");
 return;
 }
 if (player.state == tripped or player.state == falldown or player.state == fleeing or player.state == opening or player.state == closing) return;

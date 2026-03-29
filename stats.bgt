@@ -236,7 +236,7 @@ set_stat (prefix+"duration_total", elapsed);
 set_stat (prefix+"duration_diff"+difficulty, elapsed);
 set_stat (prefix+"longest_total", elapsed, true);
 set_stat (prefix+"longest_diff"+difficulty, elapsed, true);
-if (elapsed>=limit) prefix+="completed_";
+if (elapsed>=limit and !endless and !freeplay) prefix+="completed_";
 else
 {
 if (exited) prefix+="quit_";

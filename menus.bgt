@@ -10,7 +10,7 @@ int custslot=-1;
 uint8 custcounter=0;
 navchar[] navchars;
 bool oldpaused=false, custchanged=false, is_learnmenu=false, is_custmenu=false, is_conmenu=false, is_optionsmenu=false, is_readmenu=false, is_statmenu=false, is_gallery=false, is_updatemenu=false, is_namemenu=false, help_read=false;
-uint ui_help_frames=0;
+timer ui_help_timer;
 
 int callback (dynamic_menu@ handle, string user_data)
 {
@@ -160,9 +160,8 @@ else if (!ctrl and !shift) say (read_text, true, false, false, false);
 if (question=="") nav (handle);
 if (speak_ui_help and foreground)
 {
-if (ui_help_frames==ui_help_delay and keys==0 and !sapi.speaking) ui_help (true);
-ui_help_frames++;
-if (keys>0 and ui_help_frames<=ui_help_delay) ui_help_frames=0;
+if (ui_help_timer.elapsed>=ui_help_delay and keys==0 and !sapi.speaking) ui_help (true);
+if (keys>0 and ui_help_timer.elapsed<ui_help_delay) ui_help_timer.restart();
 }
 return 0;
 }
@@ -197,7 +196,7 @@ if (is_gallery and !is_game and description=="" and disabled) description="Ještì
 handle.add_item_tts (name, ui_name, description, string_to_number (section), string_to_number (checkbox), submenu, disabled);
 }
 if (@sections!=null) @handle.sections=@sections;
-ui_help_frames=0;
+ui_help_timer.restart();
 if (autospeak and !rerun) help_read=false;
 get_characters();
 return handle.run (which[0], start, autospeak, rerun);
@@ -335,15 +334,6 @@ diffm.insert_last (diff[i]+"|"+diff[i]+"|"+diff_desc[i]);
 uint8 actual_diff=difficulty;
 actual_diff=make_menu (diffm, actual_diff);
 if (actual_diff>0) difficulty=actual_diff;
-}
-
-void set_mode()
-{
-uint8 l=modemenu.length();
-int8 actual_mode=1;
-if (mode>0 and mode<l) actual_mode=mode;
-int8 tempres=make_menu (modemenu, actual_mode);
-if (tempres>0)mode=tempres;
 }
 
 void speakers()
@@ -653,7 +643,6 @@ found=current;
 }
 else
 {
-wait_keys();
 play_move();
 handle.menu_position=found+1;
 handle.part=handle.item_list[handle.menu_position-1].section;
@@ -708,35 +697,42 @@ hm.insert_last ("tutorial|První seznámení se hrou|Dokud tohoto prùvodce nedokonè
 if (!is_tutorial)
 {
 hm.insert_last ("endless|Nekoneèná hra|Hra nikdy neskonèí výhrou, ale døív nebo pozdìji nakonec stejnì prohraješ. Nekoneènou hru nejde kombinovat s volnou hrou.|1|"+endless+"|0|"+freeplay);
-hm.insert_last ("freeplay|Volná hra|Uvolnìná hra, ve které o nic nejde a jen tak si užíváš atmosféru. Hra v tomto režimu nemá žádné èasové omezení, takže nikdy neskonèí sama od sebe, zákazníci mají nekoneènou trpìlivost a hra na rozdíl od ostatních režimù nehlídá, jestli je obsluhuješ. Zároveò si mùžeš nastavit, jestli zákazníci smí odcházet, naštvat se, zvracet, zakopávat, usnout nebo se ožrat a zaèít dìlat bordel. Ale pozor, ve volné høe zákazníci nikdy nic neplatí. Volná hra nejde kombinovat s nekoneènou hrou, protože už stejnì nekoneèná je, jen má jiná pravidla, ani s hardcore hrou.|1|"+freeplay+"|0|"+(endless or hardcore));
 hm.insert_last ("hardcore|Hardcore hra|Jestli už je na tebe obyèejná hra moc lehká, mùžeš si níže zapnout další omezení navíc oproti normální høe. Hardcore hru mùžeš kombinovat se všemi režimy kromì volné hry.|1|"+hardcore+"|0|"+freeplay);
+hm.insert_last ("freeplay|Volná hra|Uvolnìná hra, ve které o nic nejde a jen tak si užíváš atmosféru. Hra v tomto režimu nemá žádné èasové omezení, takže nikdy neskonèí sama od sebe, zákazníci mají nekoneènou trpìlivost a hra na rozdíl od ostatních režimù nehlídá, jestli je obsluhuješ. Zároveò si mùžeš nastavit, jestli zákazníci smí zvracet, zakopávat, usnout nebo zaèít dìlat bordel, když se ožerou. Ale pozor, ve volné høe zákazníci nikdy nic neplatí. Volná hra nejde kombinovat s nekoneènou hrou, protože už stejnì nekoneèná je, jen má jiná pravidla, ani s hardcore hrou.|1|"+freeplay+"|0|"+(endless or hardcore));
+if (freeplay)
+{
+hm.insert_last ("allow_sleeping|Zákazníci mùžou usínat| |2|"+free_sleep);
+hm.insert_last ("allow_tripping|Zákazníci mùžou zakopávat|Zákazníci, kteøí pijí nealko, nezakopávají nikdy.|2|"+free_trip);
+hm.insert_last ("allow_puking|Zákazníci mùžou zvracet| |2|"+free_puke);
+hm.insert_last ("allow_roaming|Ožralí zákazníci mùžou zaèít dìlat bordel| |2|"+free_roam);
+}
 if (hardcore)
 {
-hm.insert_last ("allow_helpers|Povolit pomocníky| |2|"+allow_helpers);
-hm.insert_last ("allow_servers|Na toèení| |2|"+allow_servers+"|0|"+!allow_helpers);
-hm.insert_last ("allow_givers|Na roznášení pití| |2|"+allow_givers+"|0|"+!allow_helpers);
-hm.insert_last ("allow_cleaners|Na odnášení špinavých pùllitrù| |2|"+allow_cleaners+"|0|"+!allow_helpers);
-hm.insert_last ("allow_emptiers|Na odnášení prázdných sudù| |2|"+allow_emptiers+"|0|"+!allow_helpers);
-hm.insert_last ("allow_barrelers|Na nošení nových sudù| |2|"+allow_barrelers+"|0|"+!allow_helpers);
-hm.insert_last ("allow_bouncers|Na vyhazování ožralù| |2|"+allow_throwers+"|0|"+!allow_helpers);
-hm.insert_last ("allow_calmers|Na pacifikování agresivních zákazníkù| |2|"+allow_calmers+"|0|"+!allow_helpers);
-hm.insert_last ("gameover_trip|Když zakopneš| |3|"+!allow_trips);
-hm.insert_last ("gameover_fall|Když spadneš ze schodù| |3|"+!allow_falls);
-hm.insert_last ("gameover_fled|Když odejde nespokojený zákazník| |3|"+!allow_fled);
-hm.insert_last ("gameover_mistake|Když nìkoho obsloužíš špatnì| |3|"+!allow_mistakes);
-hm.insert_last ("gameover_leave_all|Když odejdou všichni zákazníci kvùli nepoøádku| |3|"+!allow_messy);
-hm.insert_last ("gameover_hit_customer|Když praštíš zákazníka| |3|"+!allow_stunned);
-hm.insert_last ("gameover_hit_player|Když tì nìkdo praští| |3|"+!allow_playerhits);
-hm.insert_last ("gameover_break_mug|Když se rozbije pùllitr| |3|"+!allow_broken);
-hm.insert_last ("gameover_break_barrel|Když se rozbije sud| |3|"+!allow_fallen);
+hm.insert_last ("allow_helpers|Povolit pomocníky| |3|"+allow_helpers);
+hm.insert_last ("allow_servers|Na toèení| |3|"+allow_servers+"|0|"+!allow_helpers);
+hm.insert_last ("allow_givers|Na roznášení pití| |3|"+allow_givers+"|0|"+!allow_helpers);
+hm.insert_last ("allow_cleaners|Na odnášení špinavých pùllitrù| |3|"+allow_cleaners+"|0|"+!allow_helpers);
+hm.insert_last ("allow_emptiers|Na odnášení prázdných sudù| |3|"+allow_emptiers+"|0|"+!allow_helpers);
+hm.insert_last ("allow_barrelers|Na nošení nových sudù| |3|"+allow_barrelers+"|0|"+!allow_helpers);
+hm.insert_last ("allow_bouncers|Na vyhazování ožralù| |3|"+allow_throwers+"|0|"+!allow_helpers);
+hm.insert_last ("allow_calmers|Na pacifikování agresivních zákazníkù| |3|"+allow_calmers+"|0|"+!allow_helpers);
+hm.insert_last ("gameover_trip|Když zakopneš| |4|"+!allow_trips);
+hm.insert_last ("gameover_fall|Když spadneš ze schodù| |4|"+!allow_falls);
+hm.insert_last ("gameover_fled|Když odejde nespokojený zákazník| |4|"+!allow_fled);
+hm.insert_last ("gameover_mistake|Když nìkoho obsloužíš špatnì| |4|"+!allow_mistakes);
+hm.insert_last ("gameover_leave_all|Když odejdou všichni zákazníci kvùli nepoøádku| |4|"+!allow_messy);
+hm.insert_last ("gameover_hit_customer|Když praštíš zákazníka| |4|"+!allow_stunned);
+hm.insert_last ("gameover_hit_player|Když tì nìkdo praští| |4|"+!allow_playerhits);
+hm.insert_last ("gameover_break_mug|Když se rozbije pùllitr| |4|"+!allow_broken);
+hm.insert_last ("gameover_break_barrel|Když se rozbije sud| |4|"+!allow_fallen);
 }
 }
 hm.insert_last ("opt_set_drink_selection|Jak vybrat piva na èepu");
 if (selection!=selection_unspecified) hm[hm.length()-1]+=": "+to_lower (string_trim_left (selection_menu[selection], string_contains (selection_menu[selection], "|", 1)+1));
-hm[hm.length()-1]+="|Urèuje, jestli se piva, která chceš mít na èepu, budou mìnit každou hru a jestli je vybereš ruènì, nebo se vyberou náhodnì.|4|2|1";
-if (!beers.is_empty()) hm.insert_last ("opt_clear_drinks|Smazat vybraná piva|Nelze, pokud se vybírají náhodnì.|4|2|0|"+(selection==selection_random_change or selection==selection_manual_change));
-else hm.insert_last ("choose_drinks|Vybrat piva|Nelze, pokud se vybírají náhodnì.|4|2|1|"+(selection==selection_random_change or selection==selection_manual_change or selection==selection_unspecified));
-hm.insert_last ("other_options|Ostatní nastavení hry|Na které události bìhem hry chceš dostávat slovní upozornìní. Vìtšina plánovaných nastavení tohoto typu zatím chybí.|4|2|1");
+hm[hm.length()-1]+="|Urèuje, jestli se piva, která chceš mít na èepu, budou mìnit každou hru a jestli je vybereš ruènì, nebo se vyberou náhodnì.|5|2|1";
+if (!beers.is_empty()) hm.insert_last ("opt_clear_drinks|Smazat vybraná piva|Nelze, pokud se vybírají náhodnì.|5|2|0|"+(selection==selection_random_change or selection==selection_manual_change));
+else hm.insert_last ("choose_drinks|Vybrat piva|Nelze, pokud se vybírají náhodnì.|5|2|1|"+(selection==selection_random_change or selection==selection_manual_change or selection==selection_unspecified));
+hm.insert_last ("other_options|Ostatní nastavení hry|Na které události bìhem hry chceš dostávat slovní upozornìní. Vìtšina plánovaných nastavení tohoto typu zatím chybí.|5|2|1");
 string start="start|Spustit ";
 if (is_tutorial) start+="seznámení se hrou";
 else
@@ -748,11 +744,11 @@ if (hardcore) start+="hardcore ";
 start+="hru";
 }
 start+=" na "+diff[difficulty]+" obtížnost|";
-if (hardcore) start+=say_game (false);
+if (hardcore or freeplay) start+=say_game (false);
 else start+=" ";
-start+="|5";
+start+="|6";
 hm.insert_last (start);
-string[] secs={"Režim hry", "Pomocníci v hardcore høe", "Kdy konèí hardcore hra prohrou", "Obecná nastavení", ""};
+string[] secs={"Režim hry", "Nastavení volné hry", "Pomocníci v hardcore høe", "Kdy konèí hardcore hra prohrou", "Obecná nastavení", ""};
 int8 tempres=make_menu (hm, gameres, menu, first, secs, !first);
 first=false;
 if (tempres==0) return false;
@@ -789,7 +785,7 @@ else if (instr (itn, "emptiers")) allow_emptiers=!allow_emptiers;
 else if (instr (itn, "barrelers")) allow_barrelers=!allow_barrelers;
 else if (instr (itn, "bouncers")) allow_throwers=!allow_throwers;
 else if (instr (itn, "calmers")) allow_calmers=!allow_calmers;
-else if (instr (itn, "trip")) allow_trips=!allow_trips;
+else if (instr (itn, "over_trip")) allow_trips=!allow_trips;
 else if (instr (itn, "fall")) allow_falls=!allow_falls;
 else if (instr (itn, "leave")) allow_messy=!allow_messy;
 else if (instr (itn, "break_barrel")) allow_fallen=!allow_fallen;
@@ -827,6 +823,10 @@ first=true;
 else if (instr (itn, "endless")) endless=!endless;
 else if (instr (itn, "free")) freeplay=!freeplay;
 else if (instr (itn, "hardcore")) hardcore=!hardcore;
+else if (instr (itn, "allow_sleeping")) free_sleep=!free_sleep;
+else if (instr (itn, "allow_tripping")) free_trip=!free_trip;
+else if (instr (itn, "allow_puking")) free_puke=!free_puke;
+else if (instr (itn, "allow_roaming")) free_roam=!free_roam;
 }
 }
 return true;
@@ -835,36 +835,46 @@ return true;
 void wait_answered (bool play_sound=true)
 {
 if (!onboarding and play_sound) play_enter();
-help_read=false;
+reset_ui_help();
 }
 
 void ui_help (bool speak)
 {
 if (@top_menu is null or (speak and help_read)) return;
 string msg="";
-ui_help_frames=0;
+ui_help_timer.restart();
+ui_help_timer.pause();
 bool old_help=speak_ui_help;
 if (!speak) speak_ui_help=false;
-msg="Šipka dolù, šipka doprava nebo tab: ";
-if (is_readmenu) msg+="Následující øádek";
-else msg+="Následující položka";
-msg+=".\r\nŠipka nahoru, šipka doleva nebo šift plus tab: ";
-if (is_readmenu) msg+="Pøedchozí øádek";
-else msg+="Pøedchozí položka";
+msg="Šipka dolù, šipka doprava nebo tab: Následující ";
+if (is_readmenu) msg+="øádek";
+else if (question!="") msg+="odpovìï";
+else msg+="položka";
+msg+=".\r\nŠipka nahoru, šipka doleva nebo šift plus tab: Pøedchozí ";
+if (is_readmenu) msg+="øádek";
+else if (question!="") msg+="odpovìï";
+else msg+="položka";
 msg+=".\r\n";
 if (!is_readmenu and top_menu.has_sections()>1) msg+="Kontrol plus šipka dolù, kontrol plus šipka doprava nebo kontrol plus tab: Následující záložka.\r\nKontrol plus šipka nahoru, kontrol plus šipka doleva nebo kontrol plus šift+tab: Pøedchozí záložka.\r\n";
 msg+="Mezerník: Zopakování ";
 if (is_readmenu) msg+="aktuálního øádku.\r\n";
-else if (question!="") msg+="znìní otázky a ";
+else if (question!="") msg+="znìní otázky a vybrané odpovìdi.\r\n";
 else msg+="vybrané položky.\r\n";
-if (is_learnmenu) msg+="Enter: Pøehrání vybraného zvuku. Pokud má zvuk více variant, budou se pøehrávat náhodnì.\r\n";
+if (is_learnmenu) msg+="Enter: Pøehrání vybraného zvuku. Pokud má zvuk víc variant, budou se pøehrávat náhodnì.\r\n";
 else if (is_custmenu) msg+="Enter: Nabídka akcí pro vybraného zákazníka.\r\n";
-else if (!is_statmenu and !is_readmenu) msg+="Enter: Potvrzení vybrané položky.\r\n";
+else if (!is_statmenu)
+{
+if (question!="") msg+="Enter: Potvrzení vybrané odpovìdi.\r\n";
+else if (is_readmenu and @top_menu!=null and top_menu.get_item_description (top_menu.get_position())!="") msg+="Enter: Otevøení vybraného odkazu.\r\n";
+else if (!is_readmenu) msg+="Enter: Potvrzení vybrané položky.\r\n";
+}
 msg+="Houm: ";
 if (is_readmenu) msg+="První øádek.\r\n";
+else if (question!="") msg+="První odpovìï.\r\n";
 else msg+="První položka.\r\n";
 msg+="End: ";
 if (is_readmenu) msg+="Poslední øádek.\r\n";
+else if (question!="") msg+="Poslední odpovìï.\r\n";
 else msg+="Poslední položka.\r\n";
 if (top_menu.get_item_count()>10)
 {
@@ -899,15 +909,17 @@ if (speak and !help_read)
 {
 say (msg, false, false, false);
 help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
 }
 else if (!speak and read_text!=msg)
 {
 wait_keys();
-ui_help_frames=0;
 string old_text=read_text;
 read_menu (msg);
 help_read=true;
-ui_help_frames=0;
+ui_help_timer.restart();
+ui_help_timer.pause();
 read_text=old_text;
 }
 }
@@ -941,7 +953,7 @@ optmenu.insert_last ("menu_wrap|Cyklické nabídky|Pøehled všech zákazníkù, seznam
 optmenu.insert_last ("speak_ui_help|Èíst kontextovou nápovìdu k ovládání|Pokud je toto nastavení zapnuté a urèitou dobu nestiskneš v nìkteré nabídce žádnou klávesu, jednou se automaticky pøeètou klávesové zkratky pro ovládání dané obrazovky. Tyto zkratky si také mùžeš kdykoli zobrazit v seznamu pro pohodlnìjší ètení klávesou ef jedna.|2|"+speak_ui_help);
 optmenu.insert_last ("set_ui_help_delay|Prodleva pøed pøeètením kontextové nápovìdy k ovládání");
 optmenu[optmenu.length()-1]+=": ";
-uint uhd=round (ui_help_delay/fps, 0);
+uint uhd=round (ui_help_delay/1000, 0);
 if (uhd==1) optmenu[optmenu.length()-1]+="jedna vteøina";
 else if (uhd<5) optmenu[optmenu.length()-1]+=uhd+" vteøiny";
 else optmenu[optmenu.length()-1]+=uhd+" vteøin";
@@ -1036,7 +1048,7 @@ old_prompt=true;
 speak_menu_position=true;
 menu_wrap=false;
 speak_ui_help=true;
-ui_help_delay=10*fps;
+ui_help_delay=5*1000;
 use_history=true;
 history_entries=100;
 reset_history=true;
@@ -1059,7 +1071,7 @@ void set_history_size()
 {
 wait_keys();
 silence();
-if (speak_ui_help and ui_help_frames<ui_help_delay) ui_help_frames=0;
+reset_ui_help();
 say ("Zadej èíslem maximální velikost historie øeèi. 0 znamená neomezenou velikost.", true, false);
 input.set_text (""+history_entries);
 input.numbers_only=true;
@@ -1086,8 +1098,8 @@ void set_ui_help_delay()
 {
 silence();
 dynamic_menu subtemp;
-int8 subtempres=make_menu (help_items, help_values.find(round (ui_help_delay/fps, 0))+1, subtemp);
-if (subtempres>0) ui_help_delay=help_values[subtempres-1]*fps;
+int8 subtempres=make_menu (help_items, help_values.find(round (ui_help_delay/1000, 0))+1, subtemp);
+if (subtempres>0) ui_help_delay=help_values[subtempres-1]*1000;
 }
 
 double set_volume (double vol)
@@ -1106,24 +1118,21 @@ double temp=which;
 sound ping, edge;
 ping.stream ("turn"+ext);
 edge.stream ("edge"+ext);
-if (speak_menu_prompt) say ("Nastav novou hodnotu pro "+prompt+".", true, false);
+say ("Nastav novou hodnotu pro "+prompt+".", true, false);
 bool tab, moved=false;
-ui_help_frames=0;
-frame.restart();
+reset_ui_help();
 while(true)
 {
 wait(5);
-if (frame.elapsed>=1000/fps)
-{
-frame.restart();
 if (speak_ui_help)
 {
-ui_help_frames++;
-if (keys>0 and ui_help_frames<=ui_help_delay) ui_help_frames=0;
-if (ui_help_frames==ui_help_delay and keys==0 and !help_read)
+if (keys>0 and ui_help_timer.elapsed<ui_help_delay) ui_help_timer.restart();;
+if (ui_help_timer.elapsed>=ui_help_delay and keys==0 and !help_read)
 {
 say (helpmsg, true, false);
 help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
 }
 }
 menu_music();
@@ -1133,7 +1142,7 @@ if (singlekey (KEY_ESCAPE))
 {
 play_esc();
 if (is_game and paused and !menuloop.playing and !play_menu_sounds) say ("Zrušeno.", true, false);
-help_read=false;
+reset_ui_help();
 return which;
 }
 else if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER))
@@ -1151,6 +1160,8 @@ else if (singlekey (KEY_F1))
 {
 read_menu (helpmsg);
 help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
 }
 else if ((down or right or tab) and keys==1)
 {
@@ -1239,8 +1250,7 @@ moved=false;
 }
 }
 }
-}
-help_read=false;
+reset_ui_help();
 return temp;
 }
 
@@ -1488,6 +1498,10 @@ allow_playerhits=true;
 hardcore=false;
 endless=false;
 freeplay=false;
+free_sleep=true;
+free_puke=true;
+free_trip=true;
+free_roam=true;
 }
 say_impatient=true;
 show_tips=true;
@@ -1859,16 +1873,18 @@ string help_msg="Text zadávej pomocí standardních kláves obvyklých v jiných prog
 if (singlekey (KEY_F1))
 {
 read_menu (help_msg);
-help_read=true;
+help_read=false;
 }
 if (speak_ui_help)
 {
-if (input.frames==ui_help_delay and input.said_max and keys==0 and !help_read)
+if (input.frames.elapsed>=ui_help_delay and input.said_max and keys==0 and !help_read)
 {
 say (help_msg, false, false);
 help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
 }
-if (input.frames<=ui_help_delay and keys>0) input.frames=0;
+if (ui_help_timer.elapsed<ui_help_delay and keys>0) ui_help_timer.restart();
 }
 }
 
@@ -1960,4 +1976,10 @@ bool check_profile()
 if (name_day==0 or name_month==0) return false;
 if (birth_day==0 or birth_month==0) return false;
 return true;
+}
+
+void reset_ui_help()
+{
+help_read=false;
+ui_help_timer.restart();
 }

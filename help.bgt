@@ -33,24 +33,26 @@ void help()
 {
 ss_start();
 keyhelp=true;
+help_read=false;
 string help_on="Klávesová nápovìda zapnuta.";
 if (is_optionsmenu) help_on+=" Do nabídky nastavení ovládání se vrátíš klávesou ef jedna.";
 say (help_on, true, false);
 uint8 count=0;
 string lastkey="";
 uint counter=0;
-ui_help_frames=0;
-frame.restart();
+ui_help_timer.restart();
 while (!singlekey (KEY_F1))
 {
-if (frame.elapsed >= 1000/fps)
+if (speak_ui_help and !help_read)
 {
-frame.restart();
-if (speak_ui_help)
+if (ui_help_timer.elapsed<ui_help_delay and keys>0) ui_help_timer.restart();
+if (ui_help_timer.elapsed>=ui_help_delay and keys==0)
 {
-ui_help_frames++;
-if (ui_help_frames<=ui_help_delay and keys>0) ui_help_frames=0;
-if (ui_help_frames==ui_help_delay and keys==0) say ("Libovolná klávesa nebo kombinace kláves: Vysvìtlí, co tato zkratka dìlá ve høe. Nìkteré zkratky mají navíc i dlouhý popis s více informacemi, který zjistíš, když danou zkratku stiskneš dvakrát rychle za sebou.", true, false);
+say ("Libovolná klávesa nebo kombinace kláves: Vysvìtlí, co tato zkratka dìlá ve høe. Nìkteré zkratky mají navíc i dlouhý popis s více informacemi, který zjistíš, když danou zkratku stiskneš dvakrát rychle za sebou.", true, false);
+help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
+}
 }
 menu_music();
 closekey();
@@ -108,11 +110,10 @@ if (counter >= fps/2)
 counter=0;
 count=0;
 }
-}
 wait(5);
 }
 if (oldpaused) say ("Klávesová nápovìda vypnuta.", true, false);
-ui_help_frames=0;
+reset_ui_help();
 keyhelp=false;
 ss_end();
 }

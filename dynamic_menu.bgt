@@ -335,7 +335,6 @@ if(enable_home_and_end==true)
 {
 if(inc and keys==1)
 {
-wait_keys();
 if (menu_position!=1)
 {
 play_move();
@@ -349,7 +348,6 @@ else play_stat ("edge", false, false, menu_sounds_vol);
 }
 if(dec and keys==1)
 {
-wait_keys();
 if (menu_position!=item_count)
 {
 play_move();

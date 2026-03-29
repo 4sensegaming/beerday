@@ -135,7 +135,7 @@ bool move()
 {
 if (frozen > 0 or state == tripped or state == falldown or frames < percent (speed, 90)) return true;
 if (frames<speed and random (0, 1)==1) return true;
-if (drank>0 and drank >= ceiling and state != disposing and health > difficulty and help_state == -1 and state != led and get_distance (x, seat_x, y, seat_y) > 0 and get_distance (x, sink.x, y, sink.y) > 0 and get_distance (x, faucet.x, y, faucet.y) > 0 and get_distance (x, door.x, y, door.y) > 0 and !mess_here (x, y) and y!=bottom and (can_make_mess() or (x==stairs and y<0) or (@mug_here(x,false,y)==null and @barrel_here(x,y,true)==null)) and random (0, 45) == 45)
+if ((!freeplay or free_trip) and drink>-1 and (drink<beers.length()-1 or second_drink>-1) and drank>0 and drank >= ceiling and state != disposing and health > difficulty and help_state == -1 and state != led and get_distance (x, seat_x, y, seat_y) > 0 and get_distance (x, sink.x, y, sink.y) > 0 and get_distance (x, faucet.x, y, faucet.y) > 0 and get_distance (x, door.x, y, door.y) > 0 and !mess_here (x, y) and y!=bottom and (can_make_mess() or y<0 or (@mug_here(x,false,y)==null and @barrel_here(x,y,true)==null)) and random (0, 45) == 45)
 if ((carrying.is_empty() or allow_broken) and (@has_barrel == null or allow_fallen) and (x!=stairs or health>get_distance (y, bottom) /2))
 {
 trip();
@@ -399,6 +399,7 @@ else say (prepend+"zakopl.", false);
 }
 if (is_player) play_stat ("trip");
 else play ("trip");
+if (enable_debugging and !is_player and !punched and drink==beers.length()-1 and second_drink==-1) warning (prepend+" nemá co zakopávat, když pije "+get_drink());
 frames=0;
 knock();
 if (x==stairs and y > bottom)
@@ -581,7 +582,7 @@ set_state (calming);
 return;
 }
 }
-if (puked < puke_count and help_state == -1 and state!=idle and drank > ceiling and (can_make_mess() or y<0))
+if ((!freeplay or free_puke) and puked < puke_count and help_state == -1 and state!=idle and drank > ceiling and (can_make_mess() or y<0))
 {
 if (puke_interval == 0) puke_interval=random (3, 18)*10*fps;
 puke_frames++;

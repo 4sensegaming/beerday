@@ -260,7 +260,7 @@ if (keys_down().is_empty()) break;
 wait(1);
 }
 keys=0;
-ui_help_frames=0;
+ui_help_timer.restart();
 get_characters();
 }
 

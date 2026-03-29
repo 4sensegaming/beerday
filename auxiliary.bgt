@@ -372,8 +372,7 @@ askmenu.add_item_tts ("yes", "ano");
 askmenu.add_item_tts ("no", "ne");
 if (cancel) askmenu.add_item_tts ("cancel", "zrušit");
 get_characters();
-ui_help_frames=0;
-help_read=false;
+reset_ui_help();
 if (is_game and !menu.running and !keyhelp)
 {
 oldpaused=paused;

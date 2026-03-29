@@ -89,7 +89,7 @@ prompt+=player.append+".";
 string old_name=h.name, old_name3=h.name3, old_name4=h.name4;
 dynamic_menu tempmenu;
 int8 tempres=1;
-bool old_speak_prompt=speak_menu_prompt;
+old_prompt=speak_menu_prompt;
 speak_menu_prompt=true;
 while(true)
 {
@@ -105,7 +105,7 @@ nm.insert_last (case3);
 nm.insert_last (case4);
 nm.insert_last ("confirm|Potvrdit");
 tempres=make_menu (nm, tempres, @tempmenu);
-if (speak_menu_prompt!=old_speak_prompt) speak_menu_prompt=old_speak_prompt;
+if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
 item=tempmenu.get_item_name (tempres);
 if (tempres==0)
 {
