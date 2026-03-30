@@ -65,7 +65,11 @@ void name_customer_randomly (character@ h)
 if (used_names>=available_names)
 {
 used_names=0;
-for (uint i=0; i<available_names; i++) names[i].used=false;
+for (uint i=0; i<available_names; i++)
+{
+names[i].used=false;
+if (profile.exists ("name"+i+"_used")) profile.delete ("name"+i+"_used");
+}
 }
 int chosen=-1;
 while (chosen==-1 or names[chosen].used or h.sex!=names[chosen].gender) chosen=random (0, available_names-1);
@@ -214,5 +218,8 @@ return h;
 void save_names()
 {
 for (uint i=0; i<available_names; i++)
+{
 if (names[i].used) profile.set ("name"+i+"_used", 1);
+else if (profile.exists ("name"+i+"_used")) profile.delete ("name"+i+"_used");
+}
 }

@@ -613,3 +613,17 @@ playlist.resize(0);
 playing=0;
 repeat_playlist=false;
 }
+
+void load_used()
+{
+uint l=tracks.length();
+for (uint i=0; i<l; i++)
+if (profile.exists (tracks[i])) used_tracks.insert_last (tracks[i]);
+}
+
+void save_used()
+{
+if (used_tracks.is_empty()) return;
+uint ul=used_tracks.length();
+for (uint i=0; i<ul; i++) profile.set (used_tracks[i], used_tracks[i]);
+}

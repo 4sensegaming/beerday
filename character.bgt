@@ -398,7 +398,6 @@ else say (prepend+"zakopl.", false);
 }
 if (is_player) play_stat ("trip");
 else play ("trip");
-if (enable_debugging and !is_player and !punched and drink==beers.length()-1 and second_drink==-1) warning (prepend+" nemá co zakopávat, když pije "+get_drink());
 frames=0;
 knock();
 if (x==stairs and y > bottom)
@@ -1670,7 +1669,7 @@ else
 {
 smoke_sound();
 if (frames > most_patient) most_patient=frames;
-if ((say_impatient or is_tutorial) and frames >= percent (patience, 80) and !said_impatient and frozen == 0 and @seen_mug == null and !enable_infinite_patience)
+if ((say_impatient or is_tutorial) and frames >= percent (patience, 80) and !said_impatient and frozen == 0 and @seen_mug == null and !enable_infinite_patience and !freeplay)
 {
 set_prepend();
 string rep=prepend+", ";
@@ -2321,8 +2320,9 @@ if (pindex > -1) possible.remove_at (pindex);
 l=possible.length();
 for (int8 i=0; i<l; i++)
 {
+if (enable_debugging and enable_logging) log+="Mìl by si vybrat, koho obslouží.\r\n";
 character@ p=possible[i];
-if (queue.find (p) == -1 or p.is_roaming or p.state == opening or p.state == closing or p.state == idle or p.state==drinking or p.punched or !p.active() or (p.is_chasing and @p.leading==@this) or (p.state==fleeing and get_distance (p.x, p.seat_x, p.y, p.seat_y) > get_distance (p.x, door.x, p.y, door.y)) or @p.seen_mug!=null or p.state==led or p.state==wanting_jukebox or p.state==jukeboxing)
+if (queue.find (p) == -1 or p.is_roaming or p.state == opening or p.state == closing or p.state == idle or p.state==drinking or p.punched or !p.active() or (p.is_chasing and @p.leading==@this) or (p.state==fleeing and get_distance (p.x, p.seat_x, p.y, p.seat_y) > get_distance (p.x, door.x, p.y, door.y)) or @p.seen_mug!=null or p.state==led or p.state==wanting_jukebox or p.state==jukeboxing or @p.hand!=null)
 {
 possible.remove_at (i);
 i--;
@@ -2344,9 +2344,11 @@ l--;
 continue;
 }
 mug@ m=mug_here (p.seat_x, true, p.seat_y);
-if (@m != null and ((@m.owner == null and dirty.find (m) == -1 and @m.drank == null and ((m.kinds[0] == p.drink and m.kinds[1] == p.second_drink) or (m.kinds[0]==p.second_drink and m.kinds[1]==p.drink))) or @m.claimed == @p))
+if (enable_debugging and enable_logging and @m!=null) log+=p.prepend+" už má na místì pùllitr.\r\n";
+if (@m!=null and m.total>=poured_undermeasure and m.kinds.find(p.drink)>-1 and (p.second_drink==-1 or m.kinds.find(p.second_drink)>-1) and (@m.claimed==@p or @p.seen_mug==@m) and @m.last_owner!=null and (m.last_owner.is_player or m.last_owner.help_state>-1))
 {
 possible.remove_at (i);
+if (enable_debugging and enable_logging) log+="Mìl by "+p.append+" ignorovat.\r\n";
 i--;
 l--;
 continue;

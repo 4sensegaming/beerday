@@ -190,7 +190,7 @@ if (@tracking==@handle and is_custmenu)
 if (handle.sex==1) cust+="Sleduješ ho. ";
 else cust+="Sleduješ ji. ";
 }
-if (handle.help_state==-1)
+if (handle.help_state==-1 and handle.state>-1 and handle.state<statedesc.length())
 {
 cust+=statedesc[handle.state];
 if (handle.drink > -1 and handle.help_state == -1 and handle.state != idle)
