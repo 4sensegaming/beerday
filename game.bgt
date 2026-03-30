@@ -554,7 +554,7 @@ else cause=string_replace (cause, "Zbývá", "zbývalo ještì", true);
 cause+="\r\n";
 }
 }
-if (longest > 0) cause+=" Nejdelší doba, kterou tu nìkdo strávil, je "+get_time (false, longest)+"\r\n";
+if (longest > 0) cause+=" Zákazník, který tu byl nejdýl, tu strávil "+get_time (false, longest)+"\r\n";
 if (customers.length() > 0)
 {
 cause+=" Právì teï ";
@@ -640,7 +640,7 @@ else if (most < 5)
 {
 cause+=" Nejvíc jsi mìl";
 if (gender==2) cause+="a";
-cause+=" jen "+most+" zákazníky.";
+cause+=" jenom "+most+" zákazníky.";
 }
 else
 {
@@ -660,7 +660,7 @@ cause+=" donést pití jenom jednomu!";
 }
 else if (served < 5)
 {
-cause+=" To ses teda moc nepøetrh";
+cause+=" No, moc ses teda nepøetrh";
 if (gender==2) cause+="la";
 cause+=". Staèil";
 if (gender==2) cause+="a";
