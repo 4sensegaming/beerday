@@ -86,7 +86,7 @@ void say_motd (bool is_new)
 string rep;
 if (is_new) rep="Nová zpráva ";
 else rep="Zpráva ";
-rep+="dne z "+motd_day+". "+months[motd_month-1]+" ";
+rep+="z "+motd_day+". "+months[motd_month-1]+" ";
 if (motd_year != DATE_YEAR) rep+=motd_year+" ";
 rep+="v "+motd_hour+":";
 if (motd_minute < 10) rep+="0";
@@ -96,7 +96,7 @@ if (is_new)
 global=play_stat ("pocket", false, true);
 wait_sound (global, false);
 }
-say (rep, true, false);
+say (rep, true, false, false, false);
 wait_reader (rep, true);
 }
 
