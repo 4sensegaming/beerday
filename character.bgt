@@ -537,6 +537,7 @@ target.is_roaming=false;
 target.is_chasing=false;
 }
 }
+if (@tracking==@target) untrack();
 return true;
 }
 
@@ -847,7 +848,7 @@ append=sanitize (handle.name4);
 return;
 }
 int8 ql=queue.length(), l=10, q=queue.find(handle);
-if (handle.state==state or (is_roaming and handle.is_roaming) or (is_chasing and handle.is_chasing))
+if ((is_roaming and handle.is_roaming) or (is_chasing and handle.is_chasing))
 {
 if (handle.sex==2) append+="jinou ";
 else append+="jiného ";
@@ -962,10 +963,10 @@ slot=play ("beat", true);
 }
 if ((what == mugging or what == serving or what == piping or what == cleaning or what == barreling or what == giving or what == throwing or what == emptiing or what == calming) and help_state==-1)
 {
-help_state=what;
 if (what==mugging or what==piping) help_state=serving;
+else help_state=what;
 }
-else if (!is_player and help_state>-1 and what!=mugging and what!=serving and what!=piping and what!=giving and what!=cleaning and what!=emptiing and what!=barreling and what!=throwing and what!=calming and what!=tripped and what!=falldown) help_state=-1;
+else if (!is_player and help_state>-1 and what!=mugging and what!=serving and what!=piping and what!=giving and what!=cleaning and what!=emptiing and what!=barreling and what!=throwing and what!=calming and what!=tripped and what!=falldown and what!=disposing and @leading==null) help_state=-1;
 if (!is_player)
 {
 if (what == roaming and state == drinking) roamers++;
@@ -1473,6 +1474,7 @@ customers[i].pouring_drink=-1;
 customers[i].pouring_second_drink=-1;
 customers[i].target_x=-127;
 customers[i].target_y=-127;
+if (customers[i].state==chasing) customers[i].set_state (customers[i].prev_state);
 }
 l=mugs.length();
 for (uint8 i=0; i<l; i++)
@@ -3213,14 +3215,12 @@ return;
 else
 {
 if (@m.claimed != @this) @m.claimed=@this;
-if (enable_chasing and queue.length() > 1 and @m.last_owner!=null and @m.last_owner!=@this and (@m.last_owner==@player or m.last_owner.help_state==serving or m.last_owner.help_state==giving))
+if (enable_chasing and queue.length() > 1 and @m.last_owner!=null and @m.last_owner!=@this and (m.last_owner.is_player or m.last_owner.help_state==serving or m.last_owner.help_state==giving))
 {
 int8 q=queue.find (this);
-if (q > 0 and q < queue.length() and random (0, 1) == 1)
+if (q > 0 and q < queue.length() and queue[0].state==waiting and queue[0].drank>=queue[0].anger and random (0, 1) == 1)
 {
-if (queue[0].state==waiting and queue[0].drank>=queue[0].anger)
-{
-if (@queue[0].leading == null and @m.last_owner!=@this) @queue[0].leading=@m.last_owner;
+@queue[0].leading=@m.last_owner;
 if (queue[0].leading.is_player)
 {
 string r=queue[0].prepend+"se na tebe naštval";
@@ -3228,7 +3228,7 @@ if (queue[0].sex==2) r+="a";
 r+=", protože jsi døív obsloužil";
 if (player.sex==2) r+="a";
 queue[0].set_append (this);
-r+=" "+queue[0].append;
+r+=" "+queue[0].append+".";
 say (r, false);
 }
 else
@@ -3240,12 +3240,11 @@ queue[0].set_append (m.last_owner);
 r+=queue[0].append+", protože døív obsloužil";
 if (m.last_owner.sex==2) r+="a";
 queue[0].set_append (this);
-r+=" "+queue[0].append;
+r+=" "+queue[0].append+".";
 say (r, false);
 }
 queue[0].frames=0;
 queue[0].set_state (chasing, false);
-}
 }
 }
 if (random (0, 5) >= 3 and (state == chasing or state == fleeing) and get_distance (x, seat_x, y, seat_y) > 0 and @seen_mug.claimed == @this)

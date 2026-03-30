@@ -828,13 +828,13 @@ tracker=0;
 tracker++;
 }
 
-void untrack()
+void untrack (bool silent=false)
 {
 if (@tracking==null) return;
 character@ h=@tracking;
 @tracking=null;
 player.set_append (h);
-say ("U nesleduješ "+player.append+".", true, false, is_custmenu);
+if (!silent) say ("U nesleduješ "+player.append+".", true, false, is_custmenu);
 tracker=0;
 track_x=-127;
 track_y=-127;
