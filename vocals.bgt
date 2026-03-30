@@ -73,11 +73,9 @@ narrate (leaving_hurt_vocals, supported_voices[j], fleeing+2);
 narrate (leaving_happy_vocals, supported_voices[j], fleeing+3);
 narrate (trip_vocals, supported_voices[j], tripped);
 narrate (fall_vocals, supported_voices[j], falldown);
-narrate (disposing_vocals, supported_voices[j], disposing);
 narrate (thrower_vocals, supported_voices[j], throwing);
 narrate (led_vocals, supported_voices[j], led);
 narrate (going_jukebox_vocals, supported_voices[j], wanting_jukebox);
-narrate (jukebox_vocals, supported_voices[j], jukeboxing);
 narrate (punched_vocals, supported_voices[j], "punched");
 narrate (punch_vocals, supported_voices[j], "punch");
 narrate (leave_me_vocals, supported_voices[j], "target");
@@ -170,96 +168,74 @@ closekey();
 }
 
 const string[] waiting_vocals={
-"To je doba.",
-"Panebožeto je doba.",
-"Co je.",
-"No Tak co je.",
-"Tak co bude s tim pitím.",
-"Tak co bude.",
-"No tak co bude.",
-"No tak co je jako.",
-"No tak co budejako.",
+"Panebože, to je doba!",
+"No Tak co je!",
+"Tak co bude s tim pitím!",
+"Tak co bude!",
+"No tak co bude!",
+"No tak co je, jako!",
+"No tak co bude, jako!",
 "No tak kdy to bude?",
 "Dostanu to nìkdy?",
-"Jako dostanu to vùbec nìkdy?",
-"No to je obsluha.",
-"No ty vole tomu øikám obsluha.",
-"No tak tomu øikám obsluha.",
-"Hej hospodo.",
-"No tak hospodo.",
-"No takhaló.",
-"No tak dìlej.",
-"Dìlej hospodo.",
-"Haló.",
-"Dìlej.",
-"Panebože.",
-"Já tu mezitím zestárnu.",
-"To ti to trvá.",
-"Na co èekáš.",
-"To si radši zajdu vedle na Rùžek.",
+"Jako, dostanu to vùbec nìkdy?",
+"No to je obsluha!",
+"No ty krávo, tomu øikám obsluha!",
+"Hej, hospodo!",
+"No tak, hospodo!",
+"No tak haló!",
+"No tak dìlej!",
+"Dìlej, hospodo!",
+"Haló!",
+"Dìlej!",
+"Panebože!",
+"Já tu mezitím snad zestárnu!",
+"To ti to trvá!",
+"Na co èekáš!",
+"To si radši zajdu vedle na Rùžek!",
 "Pomalejc by to nešlo?",
-"Ty se teda moc nepøedøeš.",
-"Koukám plný ruce práce, co?",
-"Že by to tady nìjak odsejpalo.",
-"To mám èekat hodinu?",
+"Ty se teda moc nepøedøeš!",
+"Koukám, plný ruce práce, co?",
+"Že by to tu odsejpalo, to nemohu øíct!",
 "To tu jako budu èekat hodinu?",
-"To mám èekat do soudnýho dne?",
-"Mám tu snad èekat do soudnýho dne?",
-"Tímhle tempem tu budu ještì zejtra.",
-"To by mì zajímalo jestli se nìkdy doèkám.",
-"Doèkám se nìkdy?",
-"Tak doèkám se nebo co.",
-"No ty vole.",
-"No ty kráso.",
-"No ty krávo.",
-"Ježišto je doba.",
-"Ježišto je obsluha.",
-"Kriste paneto je doba.",
-"Kriste paneto je obsluha.",
-"Ježiši Kriste to je doba.",
-"Ježiši Kriste to je obsluha.",
-"Ty na to dobøe sereš.",
+"To tu mám èekat do soudnýho dne?",
+"Tímhle tempem tu budu ještì zejtra!",
+"To by mì zajímalo, jestli se nìkdy doèkám!",
+"Doèkám se letos?",
+"Tak doèkám se, nebo co.",
+"No ty vole!",
+"No ty krávo!",
+"Ježiš, to je doba.",
+"Ježiš, to je obsluha!",
+"Kriste pane, to je doba!",
+"Kriste pane, to je obsluha!",
+"Ježiši Kriste, to je doba!",
+"Ježiši Kriste, to je obsluha!",
+"Tak todle je pøíšerná obsluha!",
+"Tak tohle je šílený!",
+"Ty na to dobøe sereš!",
 "Ty na mì jako sereš?",
 "Se poseru.",
 "Se z toho poseru.",
-"Já se z toho poseru.",
-"Já se poseru.",
 "Já se normálnì poseru.",
-"No já se poseru.",
-"Já se fakt poseru.",
-"Já se z toho fakt poseru.",
-"Se fakt poseru.",
-"Se poseru jako.",
-"Se fakt poseru jako.",
-"Kurva.",
-"Pro todle jsme klíèema nezvonili.",
-"To za našich mladejch let nebejvalo.",
-"Kurva fix.",
-"Jedu jedu.",
-"No tak jedu.",
-"Hejbni kostrou.",
-"Bude to.",
-"No tak bude to?.",
-"Zrychli to.",
-"Neflákám to.",
-"Neflákám se.",
-"Neflákej to.",
+"Se fakt poseru, jako!",
+"Kurva!",
+"Pro todle jsme klíèema nezvonili!",
+"To za našich mladejch let nebejvalo!",
+"Kurva fix!",
+"Jedu, jedu!",
+"No tak jedu!",
+"Hejbni kostrou!",
+"No tak bude to!",
+"Zrychli to!",
+"Neflákám to!",
 "Proè se tak flákáš?", 
-"Pøidej.",
+"Pøidej!",
 "Co ti tak trvá?",
-"Proè ti to tak trvá?",
-"Neloudej se.",
-"Proè se tak loudáš.", 
-"Neser se s tim tolik.",
-"Co se s tim tak sereš.",
-"Neser se s tim.",
-"Proè se s tim tak sereš.", 
-"Proè se s tim tak crcáš.", 
-"Necrcej se s tim.",
-"Necrcej se s tim tolik.",
-"Co se s tim tak crcáš.",
-"Tak kde to je.",
-"Tak kde to mám."};
+"Neser se s tim tolik!",
+"Co se s tim tak sereš!",
+"Tak kde to je!",
+"No tak kde to mám!"
+};
 
 const string[] lost_patience_vocals={
 ""
@@ -290,10 +266,6 @@ const string[] angry_vocals={
 };
 
 const string[] drunk_vocals={
-""
-};
-
-const string[] disposing_vocals={
 ""
 };
 
@@ -350,9 +322,5 @@ const string[] led_vocals={
 };
 
 const string[] going_jukebox_vocals={
-""
-};
-
-const string[] jukebox_vocals={
 ""
 };

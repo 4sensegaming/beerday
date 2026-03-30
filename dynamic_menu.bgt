@@ -154,9 +154,12 @@ if (auto_speak_first and !rerun) speak_item=true;
 if (is_custmenu and !rerun) custchanged=true;
 running=true;
 if (@top_menu!=@this) @top_menu=@this;
+frame.restart();
 while(true)
 {
-wait(5);
+if (frame.elapsed>=1000/fps)
+{
+frame.restart();
 // Invoke the user callback.
 if(@callback_handle!=null)
 {
@@ -259,7 +262,7 @@ else stick_last_aim=stick_aim;
 }
 if (!alt)
 {
-bool tab=lone (KEY_TAB) and !ctrl;
+bool tab=lone (KEY_TAB);
 if (left or up or (tab and shift) or stick_aim==1)
 {
 if(menu_position==0)
@@ -333,7 +336,7 @@ continue;
 }
 if(enable_home_and_end==true)
 {
-if(inc and keys==1)
+if(singlekey (KEY_HOME))
 {
 if (menu_position!=1)
 {
@@ -346,7 +349,7 @@ continue;
 }
 else play_stat ("edge", false, false, menu_sounds_vol);
 }
-if(dec and keys==1)
+if(singlekey (KEY_END))
 {
 if (menu_position!=item_count)
 {
@@ -361,6 +364,8 @@ else play_stat ("edge", false, false, menu_sounds_vol);
 }
 }
 }
+}
+wait(5);
 }
 running=false;
 return -1;
@@ -415,7 +420,7 @@ return item_list.length()+1;
 
 void skip_section (bool inc)
 {
-if (has_sections()==1)
+if (has_sections()<2)
 {
 play_stat ("edge", false, false, menu_sounds_vol);
 return;
@@ -429,6 +434,7 @@ part=item_list[i].section;
 menu_position=i+1;
 silence();
 if (is_custmenu) custchanged=true;
+//wait_keys();
 play_move();
 speak_item=true;
 return;
@@ -453,12 +459,14 @@ part=item_list[i].section;
 menu_position=i+1;
 silence();
 if (is_custmenu) custchanged=true;
+//wait_keys();
 play_move();
 speak_item=true;
 return;
 }
 }
 }
+//wait_keys();
 play_stat ("edge", false, false, menu_sounds_vol);
 }
 

@@ -75,7 +75,7 @@ if (menuloop.playing) menuloop.stop();
 
 void menu_music()
 {
-if (won.playing or !play_menu_music or (is_game and !play_menu_music_in_game) or onboarding or speaking_tutorial or (!foreground and pause_on_blur) or is_updatemenu or is_gallery)
+if (won.active or !play_menu_music or (is_game and !play_menu_music_in_game) or onboarding or speaking_tutorial or (!foreground and pause_on_blur) or is_gallery)
 {
 stop_menu_music();
 return;

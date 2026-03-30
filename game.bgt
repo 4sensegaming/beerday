@@ -416,8 +416,8 @@ set_stat (prefix_mode()+"died_punched", 1);
 }
 else if (player.state==closing)
 {
-cause+="Tys normálnì zbabìle utekl";
-if (gender==2) cause+="a";
+cause+="Tys normálnì zbabìle utek";
+if (gender==2) cause+="la";
 cause+="! Fuuuj!\r\n";
 set_stat (prefix_mode()+"died_player_fled", 1);
 }
@@ -941,7 +941,12 @@ else cause+=" "+calmers+" pacifikovalo agresivní zákazníky.";
 cause+="\r\n";
 }
 }
-else if (allow_helpers) cause+=" Nikdo se ti nerozhodl pomoct.\r\n";
+else if (allow_helpers)
+{
+cause+=" Nikdo se ti nerozhodl pomoct";
+if (!endless and !freeplay and limit>0 and elapsed<limit and served<5) cause+=". Hm, to asi o nìèem vypovídá";
+cause+=".\r\n";
+}
 if (spawned > 0)
 {
 if (spawned == 1) cause+=" Stihl pøijít jen jeden zákazník.";
@@ -1276,7 +1281,6 @@ paused=false;
 read_menu (cause);
 silence();
 fadeout();
-if (won.playing) won.stop();
 won.close();
 if (show_tips and !autoplay and !is_tutorial and (endless or elapsed < limit)) read_tip (true);
 autoplay=false;

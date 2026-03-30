@@ -961,8 +961,12 @@ if (slot>-1) clean();
 slot=play ("beat", true);
 }
 }
-if ((what == mugging or what == serving or what == piping or what == cleaning or what == barreling or what == giving or what == throwing or what == emptiing or what == calming) and help_state==-1) help_state=what;
-else if (!is_player and help_state>-1 and (what==roaming or what==chasing or what==fleeing or what==drinking or what==arriving or what==ordering or what==waiting or what==opening or what==closing or what==led or what==idle or what==returning or what==wanting_jukebox or what==jukeboxing)) help_state=-1;
+if ((what == mugging or what == serving or what == piping or what == cleaning or what == barreling or what == giving or what == throwing or what == emptiing or what == calming) and help_state==-1)
+{
+help_state=what;
+if (what==mugging or what==piping) help_state=serving;
+}
+else if (!is_player and help_state>-1 and what!=mugging and what!=serving and what!=piping and what!=giving and what!=cleaning and what!=emptiing and what!=barreling and what!=throwing and what!=calming and what!=tripped and what!=falldown) help_state=-1;
 if (!is_player)
 {
 if (what == roaming and state == drinking) roamers++;
@@ -2317,9 +2321,8 @@ if (pindex > -1) possible.remove_at (pindex);
 l=possible.length();
 for (int8 i=0; i<l; i++)
 {
-if (possible.is_empty()) break;
 character@ p=possible[i];
-if (queue.find (p) == -1 or p.is_roaming or p.state == opening or p.state == closing or p.state == idle or p.state==drinking or p.state==ordering or p.punched or !p.active() or (p.is_chasing and @p.leading==@this) or (p.state==fleeing and get_distance (p.x, p.seat_x, p.y, p.seat_y) > get_distance (p.x, door.x, p.y, door.y)) or @p.seen_mug!=null or p.state==led or p.state==wanting_jukebox or p.state==jukeboxing)
+if (queue.find (p) == -1 or p.is_roaming or p.state == opening or p.state == closing or p.state == idle or p.state==drinking or p.punched or !p.active() or (p.is_chasing and @p.leading==@this) or (p.state==fleeing and get_distance (p.x, p.seat_x, p.y, p.seat_y) > get_distance (p.x, door.x, p.y, door.y)) or @p.seen_mug!=null or p.state==led or p.state==wanting_jukebox or p.state==jukeboxing)
 {
 possible.remove_at (i);
 i--;
@@ -2348,7 +2351,7 @@ i--;
 l--;
 continue;
 }
-if (p.state == waiting and p.frames >= percent (p.patience, 90) and !is_tutorial and !enable_infinite_patience)
+if (p.state == waiting and p.frames >= percent (p.patience, 90) and !is_tutorial and !enable_infinite_patience and !freeplay)
 {
 possible.remove_at (i);
 i--;
@@ -2381,20 +2384,6 @@ continue;
 if (!possible.is_empty())
 {
 @leading=possible[0];
-if (@hand!=null and hand.total>0 and @hand.drank==null and random(0,1)==1)
-{
-uint8 pl=possible.length();
-for (uint8 i=0; i<pl; i++)
-{
-character@ h=possible[i];
-if ((hand.kinds[0]==h.drink and hand.kinds[1]==h.second_drink) or (hand.kinds[0]==h.second_drink and hand.kinds[1]==h.drink))
-{
-@leading=h;
-found_mug=true;
-break;
-}
-}
-}
 choose_drink();
 }
 }
@@ -2427,7 +2416,7 @@ set_state (serving);
 return;
 }
 }
-if (@leading==null or queue.find (leading) == -1 or leading.is_roaming or leading.state == opening or leading.state == closing or leading.state == idle or leading.state==drinking or leading.punched or !leading.active() or (leading.state==fleeing and get_distance (leading.x, door.x, leading.y, door.y) <= get_distance (x, leading.seat_x, y, leading.seat_y) and (@hand==null or hand.total<poured_undermeasure)) or !chose_drink or !found_mug)
+if (@leading==null or queue.find (leading) == -1 or leading.is_roaming or leading.state == opening or leading.state == closing or leading.state == idle or leading.state==drinking or leading.punched or !leading.active() or @leading.seen_mug!=null or (leading.state==fleeing and get_distance (leading.x, door.x, leading.y, door.y) <= get_distance (x, leading.seat_x, y, leading.seat_y) and (@hand==null or hand.total<poured_undermeasure)) or !chose_drink or !found_mug)
 {
 if (faucet.x==x and faucet.y==y and @faucet.owner is @this and faucet.amounts[faucet.pipe]>0) faucet.stop (this);
 @leading=null;
@@ -2499,7 +2488,7 @@ faucet.stop (this);
 set_state (serving);
 return;
 }
-else if (@hand != null and hand.total >= poured_undermeasure and allow_mistakes and ((leading.state == fleeing and get_distance (leading.x, door.x, leading.y, door.y) >15) or (leading.state == waiting and leading.frames >= percent (leading.patience, 90) and !is_tutorial and !enable_infinite_patience)))
+else if (@hand != null and hand.total >= poured_undermeasure and allow_mistakes and ((leading.state == fleeing and get_distance (leading.x, door.x, leading.y, door.y) >15) or (leading.state == waiting and leading.frames >= percent (leading.patience, 90) and !is_tutorial and !enable_infinite_patience and !freeplay)))
 {
 faucet.stop (this);
 set_state (serving);
@@ -2563,7 +2552,7 @@ uint8 d=bunch.length();
 for (uint8 i=0; i<d; i++)
 {
 mug@ m=bunch[i];
-if (get_distance (m.x, sink.x, m.y, sink.y) == 0 or @m.owner != null or @m.claimed != null)
+if (get_distance (m.x, sink.x, m.y, sink.y) == 0 or @m.owner != null or @m.claimed != null or (m.total==0 and @m.drank==null and dirty.find(m)==-1))
 {
 bunch.remove_at (i);
 i--;

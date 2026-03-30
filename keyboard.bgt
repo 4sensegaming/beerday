@@ -1,4 +1,4 @@
-bool ctrl=false, shift=false, alt=false, left=false, right=false, up=false, down=false, inc=false, dec=false, keyhelp=false, foreground=true, old_foreground=true;
+bool ctrl=false, shift=false, alt=false, left=false, right=false, up=false, down=false, keyhelp=false, foreground=true, old_foreground=true;
 uint keys;
 
 void keyboard()
@@ -208,10 +208,6 @@ if (key_pressed (KEY_UP) and !up) up=true;
 else if (up) up=false;
 if (key_pressed (KEY_DOWN) and !down) down=true;
 else if (down) down=false;
-if (key_pressed (KEY_HOME) and !inc) inc=true;
-else if (inc) inc=false;
-if (key_pressed (KEY_END) and !dec) dec=true;
-else if (dec) dec=false;
 }
 
 void closekey()
@@ -276,7 +272,7 @@ else if (!ctrl and shift) spell (history[history_index]);
 else if (ctrl and shift) read_menu (history[history_index]);
 }
 bool pressed=false;
-if (inc)
+if (singlekey (KEY_HOME))
 {
 silence();
 if (history.is_empty()) say ("Dosud nic neøeèeno.", true, false, false, false);
@@ -287,7 +283,7 @@ pressed=true;
 }
 else history_edge();
 }
-else if (dec)
+else if (singlekey (KEY_END))
 {
 silence();
 if (history.is_empty()) say ("Dosud nic neøeèeno.", true, false, false, false);

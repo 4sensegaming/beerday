@@ -113,12 +113,12 @@ silence();
 spell (concat());
 }
 }
-else if (inc and !ctrl and !alt and keys<=2)
+else if (key_pressed (KEY_HOME) and !ctrl and !alt and keys<=2)
 {
 move_index (0, false);
 if (shift) select_from_to (index, old_index);
 }
-else if (dec and !ctrl and !alt and keys<=2)
+else if (key_pressed (KEY_END) and !ctrl and !alt and keys<=2)
 {
 move_index (buffer.length(), false);
 if (shift) select_from_to (old_index, index);

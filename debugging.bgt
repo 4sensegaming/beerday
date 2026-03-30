@@ -34,12 +34,10 @@ while (result!=0)
 string[] dm;
 dm.reserve (100);
 dm.insert_last ("Menu ladìní");
-/*
+dm.insert_last ("toggle_autoplay|Automatická hra| |1|"+autoplay);
 dm.insert_last ("get_player_state|Zjistit stav hráèe| |1");
 dm.insert_last ("get_player_leading|Zjistit cíl hráèe| |1");
-dm.insert_last ("toggle_autoplay|Automatická hra| |1|"+autoplay);
-*/
-dm.insert_last ("ai_log|Výpis ladicích informací|Pro pomocníky. Soubory s pøíponou .log se vytvoøí v aktuální složce, odkud je hra spuštìná.|1|"+enable_logging);
+dm.insert_last ("ai_log|Výpis ladicích informací|Pro automatického hráèe a pomocníky. Soubory s pøíponou .log se vytvoøí v aktuální složce, odkud je hra spuštìná.|1|"+enable_logging);
 dm.insert_last ("delete_logs|Smazat existující .log soubory| |1|2|0|"+(find_files("*.log").length()==0));
 dm.insert_last ("activity_check|Kontrola špatné obsluhy|Pøedèasný konec hry|1|"+enable_lose_check);
 dm.insert_last ("angry|Agresivní zákazníci| |2|"+enable_chasing);

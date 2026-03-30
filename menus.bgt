@@ -15,11 +15,7 @@ timer ui_help_timer;
 int callback (dynamic_menu@ handle, string user_data)
 {
 closekey();
-if (is_readmenu and won.active and !won.playing and !won.paused)
-{
-won.close();
-return -1;
-}
+if (is_readmenu and won.active and !won.playing and !won.paused) return -1;
 if (!is_gallery) menu_music();
 else if (is_game and question=="")
 {
@@ -1113,7 +1109,7 @@ return vol;
 
 double set_stereo (double which, uint8 boundary, string prompt)
 {
-string helpmsg="Šipka dolù, šipka doprava nebo tab: Posunutí hodnoty doprava.\r\nŠipka nahoru, šipka doleva nebo šift plus tab: Posunutí hodnoty doleva.\r\nMezerník: Zopakování zvuku pro aktuální hodnotu.\r\nBekspejs: Obnovení výchozí hodnoty.\r\nHoum: Posunutí hodnoty na levý okraj stereopole.\r\nEnd: Posunutí hodnoty na pravý okraj stereopole.\r\nEnter: Uložení aktuální hodnoty.\r\nEskejp: Zrušení zmìn.\r\nAlt plus ef ètyøi: Ukonèení programu.\r\nEf jedna: Zobrazení tìchto zkratek v seznamu pro pohodlnìjší ètení.\r\nDylít nebo kontrol plus šift plus alt: Umlèení øeèi.";
+string helpmsg="Šipka dolù, šipka doprava nebo tab: Posunutí hodnoty doprava.\r\nŠipka nahoru, šipka doleva nebo šift plus tab: Posunutí hodnoty doleva.\r\nMezerník: Zopakování zvuku pro aktuální hodnotu.\r\nDylít nebo bekspejs: Obnovení výchozí hodnoty.\r\nHoum: Posunutí hodnoty na levý okraj stereopole.\r\nEnd: Posunutí hodnoty na pravý okraj stereopole.\r\nEnter: Uložení aktuální hodnoty.\r\nEskejp: Zrušení zmìn.\r\nAlt plus ef ètyøi: Ukonèení programu.\r\nEf jedna: Zobrazení tìchto zkratek v seznamu pro pohodlnìjší ètení.\r\nDylít nebo kontrol plus šift plus alt: Umlèení øeèi.";
 double temp=which;
 sound ping, edge;
 ping.stream ("turn"+ext);
@@ -1151,7 +1147,7 @@ play_enter();
 break;
 }
 else if (singlekey (KEY_SPACE)) moved=true;
-else if (singlekey (KEY_BACK))
+else if (singlekey (KEY_BACK) or singlekey (KEY_DELETE))
 {
 temp=which;
 moved=true;
@@ -1173,13 +1169,13 @@ else if ((up or left or (tab and shift)) and !ctrl and !alt and keys<=2)
 temp-=step_size;
 moved=true;
 }
-else if (inc and keys==1)
+else if (singlekey (KEY_HOME))
 {
 if (which==stereo_center) temp=stereo_left+step_size;
 else temp=left_edge;
 moved=true;
 }
-else if (dec and keys==1)
+else if (singlekey (KEY_END))
 {
 if (which==stereo_center) temp=stereo_right-step_size;
 else temp=right_edge;
