@@ -15,7 +15,7 @@ if (selftest.is_already_running)
 alert ("Chyba!", "Tento program je již spuštìn.");
 exit();
 }
-show_game_window (title+" "+version+" (early access)");
+show_game_window (title+" "+version);
 if (!directory_exists (folder)) directory_create (folder);
 if (!directory_exists (folder)) can_write=false;
 else
