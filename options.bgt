@@ -2,7 +2,7 @@ double loudness=defvol, player_steps_vol=0, helper_steps_vol=0, leaving_steps_vo
 bool forced_output=false, speak_errors=true, cue=true, play_menu_music=true, play_game_music=true, play_random_music=true, enable_jukebox=true, play_intro=true, play_outro=true, play_menu_music_in_game=false, pause_on_blur=true, show_empty_stats=false, say_impatient=true, play_logo=true, mono_audio=false, stereo_invert=false, play_mugloop=true, play_barrelloop=true, speak_step=true, speak_sr_prompt=true, play_sr_prompt=true, speak_menu_prompt=true, old_prompt=true, menu_wrap=false, speak_menu_position=true, speak_ui_help=true, use_history=true, save_history=false, reset_history=true, copy_history=false, show_tips=true, play_all_items=true, play_menu_sounds=true, play_submenu=true, speak_submenu=true, changed_item_loops=false, strip_diacritics=false, name_customers=true, updates=true, play_steps=true, player_steps=true, helper_steps=true, leaving_steps=true, dangerous_steps=true, order_steps=true, queue_steps=true, other_steps=true, play_say=true;
 bool free_sleep=true, free_puke=true, free_trip=true, free_roam=true;
 int8 selection=selection_unspecified;
-uint history_entries=100, ui_help_delay=5*fps, lastrun_day=0, lastrun_month=0, lastrun_year=0, lastrun_hour=0, lastrun_minute=0, created_day=0, created_month=0, created_year=0, created_hour=0, created_minute=0, name_day=0, name_month=0, birth_day=0, birth_month=0;
+uint history_entries=100, ui_help_delay=5*1000, lastrun_day=0, lastrun_month=0, lastrun_year=0, lastrun_hour=0, lastrun_minute=0, created_day=0, created_month=0, created_year=0, created_hour=0, created_minute=0, name_day=1, name_month=1, birth_day=1, birth_month=1;
 uint8 gender=3;
 dictionary profile;
 

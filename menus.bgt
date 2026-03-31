@@ -166,7 +166,7 @@ uint make_menu (string[]@ which, int start=1, dynamic_menu@ handle=@menu, bool a
 {
 handle.running=false;
 handle.reset (false);
-handle.allow_escape=!onboarding;
+handle.allow_escape=true;
 if (is_readmenu) handle.allow_escape=true;
 if (is_custmenu or is_readmenu) handle.wrap=false;
 else handle.wrap=menu_wrap;
@@ -392,11 +392,7 @@ int8 tempres=1;
 while (tempres!=0)
 {
 string[] optmenu=options_menu;
-if (onboarding)
-{
-optmenu.remove_last();
-optmenu.insert_last ("done|Hotovo");
-}
+if (onboarding) optmenu.remove_last();
 tempres=make_menu (optmenu, tempres);
 string item=menu.get_item_name (tempres);
 if (instr (item, "ui")) ui_options();
@@ -425,7 +421,6 @@ if (onboarding) did_learn_sounds=true;
 int tempres=-1;
 string[] secs={"Pípa a toèení", "Pùllitry", "Sudy", "Pohyb", "Nárazy", "Zákazníci", "Dveøe", "Nakupování", "Uživatelské rozhraní", "Nabídky"};
 string[] lm=learnmenu;
-if (onboarding) lm.insert_last ("continue|Pokraèovat| |11");
 while (true)
 {
 if (tempres == -1)
@@ -433,7 +428,7 @@ if (tempres == -1)
 tempres=1;
 tempres=make_menu (lm, 1, menu, true, secs);
 }
-else if (tempres == 0 or (onboarding and tempres==menu.get_item_count())) break;
+else if (tempres == 0) break;
 else
 {
 silence();
@@ -723,11 +718,6 @@ hm.insert_last ("gameover_break_mug|Když se rozbije pùllitr| |4|"+!allow_broken)
 hm.insert_last ("gameover_break_barrel|Když se rozbije sud| |4|"+!allow_fallen);
 }
 }
-hm.insert_last ("opt_set_drink_selection|Jak vybrat piva na èepu");
-if (selection!=selection_unspecified) hm[hm.length()-1]+=": "+to_lower (string_trim_left (selection_menu[selection], string_contains (selection_menu[selection], "|", 1)+1));
-hm[hm.length()-1]+="|Urèuje, jestli se piva, která chceš mít na èepu, budou mìnit každou hru a jestli je vybereš ruènì, nebo se vyberou náhodnì.|5|2|1";
-if (!beers.is_empty()) hm.insert_last ("opt_clear_drinks|Smazat vybraná piva|Nelze, pokud se vybírají náhodnì.|5|2|0|"+(selection==selection_random_change or selection==selection_manual_change));
-else hm.insert_last ("choose_drinks|Vybrat piva|Nelze, pokud se vybírají náhodnì.|5|2|1|"+(selection==selection_random_change or selection==selection_manual_change or selection==selection_unspecified));
 hm.insert_last ("other_options|Ostatní nastavení hry|Na které události bìhem hry chceš dostávat slovní upozornìní. Vìtšina plánovaných nastavení tohoto typu zatím chybí.|5|2|1");
 string start="start|Spustit ";
 if (is_tutorial) start+="seznámení se hrou";
@@ -739,12 +729,17 @@ else start+="normální ";
 if (hardcore) start+="hardcore ";
 start+="hru";
 }
-start+=" na "+diff[difficulty]+" obtížnost|";
-if (hardcore or freeplay) start+=say_game (false);
+start+=" na "+to_lower(diff[difficulty])+" obtížnost|";
+if (hardcore or freeplay)
+{
+string game=say_game(false);
+start+=game;
+if (game=="" or game==" ") start+=" ";
+}
 else start+=" ";
-start+="|6";
+start+="|5";
 hm.insert_last (start);
-string[] secs={"Režim hry", "Nastavení volné hry", "Pomocníci v hardcore høe", "Kdy konèí hardcore hra prohrou", "Obecná nastavení", ""};
+string[] secs={"Režim hry", "Nastavení volné hry", "Pomocníci v hardcore høe", "Kdy konèí hardcore hra prohrou", ""};
 int8 tempres=make_menu (hm, gameres, menu, first, secs, !first);
 first=false;
 if (tempres==0) return false;
@@ -974,7 +969,6 @@ optmenu.insert_last ("echo_smart|Chytrá odezva|Pokud je toto nastavení zapnuté, 
 if (gender==2) optmenu[optmenu.length()-1]+="a";
 optmenu[optmenu.length()-1]+=" od poslední odezvy, pokaždé, když na chvíli pøestaneš psát.|5|"+input.echo_smart;
 if (!onboarding) optmenu.insert_last ("restore_ui_defaults|Obnovit výchozí nastavení rozhraní| |6");
-else optmenu.insert_last ("continue|Pokraèovat| |6");
 if (tempres == -1) tempres=1;
 string[] secs={"Obecné", "Nabídky", "Historie øeèi", "Ètení", "Odezva pøi psaní", ""};
 tempres=make_menu (optmenu, tempres, tempmenu, first, secs, !first);
@@ -1264,7 +1258,6 @@ optmenu.insert_last ("keyhelp|Klávesová nápovìda|Každá klávesa, kterou stiskneš,
 optmenu.insert_last ("view_controls|Zobrazit ovládání| |1|2|1");
 optmenu.insert_last ("remap|Pøemapovat ovládání|Zatím nic nedìlá.|1|2|1");
 if (!onboarding) optmenu.insert_last ("restore_control_defaults|Obnovit výchozí ovládání|Zatím nic nedìlá.");
-else optmenu.insert_last ("continue|Pokraèovat");
 if (tempres == -1) tempres=1;
 tempres=make_menu (optmenu, tempres, tempmenu);
 item=tempmenu.get_item_name (tempres);
@@ -1318,12 +1311,12 @@ void profile_options()
 {
 silence();
 dynamic_menu tempmenu;
-int8 tempres=-1;
+int8 tempres=1;
 string item="";
-while (tempres == -1 or tempres != 0)
+while (true)
 {
 string[] optmenu={""};
-if (tempres == -1 and speak_menu_prompt) optmenu[0]="Nastavení profilu";
+optmenu[0]="Nastavení profilu";
 optmenu.insert_last ("gender|Pohlaví: "+string_split(genders[gender], "|", true)[1]+"|Urèuje, v jakém mluvnickém rodì tì bude hra oslovovat. Možnost neuvedeno pøedpokládá mužský rod.|1|2|1");
 string date_desc="|Kdo ví, tøeba se ti to bude k nìèemu hodit. Toto datum už po dokonèení nastavení nepùjde zmìnit.";
 string ndi="nameday|";
@@ -1342,7 +1335,7 @@ if (onboarding) nbi+=date_desc;
 else nbi+="| ";
 nbi+="|1|2|1|"+!onboarding;
 optmenu.insert_last (nbi);
-if (!onboarding)
+if (!onboarding and profile.exists ("created_day"))
 {
 string created="created_date|Datum vytvoøení profilu: "+days[created_day-1]+" "+months[created_month-1]+" "+created_year+", "+created_hour+":";
 if (created_minute<10) created+="0"+created_minute;
@@ -1351,23 +1344,23 @@ created+="| |1|2|0|1";
 optmenu.insert_last (created);
 }
 if (!onboarding) optmenu.insert_last ("clear_profile|Smazat profil|"+clear_profile_description+"|1|2|1|"+!file_exists (folder+"profile.dat"));
-else
-{
-bool completed=check_profile();
-string cont="continue|Pokraèovat|";
-if (!completed) cont+="Pøed pokraèováním prosím vyplò, kdy máš svátek a narozeniny, protože pozdìji už nebudeš mít možnost tyto údaje zmìnit.";
-else cont+=" ";
-cont+="|1|2|0|"+!completed;
-optmenu.insert_last (cont);
-}
-if (tempres == -1) tempres=1;
 tempres=make_menu (optmenu, tempres, tempmenu);
+if (tempres==0)
+{
+if (!check_profile())
+{
+play_stat ("error");
+say ("Pøed pokraèováním prosím vyplò, kdy máš svátek a narozeniny, protože pozdìji už nebudeš mít možnost tyto údaje zmìnit.", true, false, true);
+tempres=1;
+continue;
+}
+else break;
+}
 item=tempmenu.get_item_name (tempres);
 if (instr (item, "gender")) gender=set_gender();
 else if (instr (item, "nameday")) set_date (false);
 else if (instr (item, "birthday")) set_date (true);
 else if (instr (item, "clear")) clear_profile();
-else if (instr (item, "continue")) break;
 }
 }
 
@@ -1417,7 +1410,6 @@ if (is_game) optmenu[optmenu.length()-1]+="|Obtížnost, režim hry a zpùsob vybírá
 else optmenu[optmenu.length()-1]+="| ";
 optmenu[optmenu.length()-1]+="|4";
 }
-else optmenu.insert_last ("continue|Pokraèovat| |4");
 if (tempres == -1) tempres=1;
 tempres=make_menu (optmenu, tempres, tempmenu, first, sections, !first);
 first=false;
@@ -1588,7 +1580,6 @@ optmenu.insert_last ("other_vol|Hlasitost krokù všech ostatních zákazníkù: "+get
 optmenu.insert_last ("restore_volumes|Obnovit výchozí nastavení všech hlasitostí| |5");
 optmenu.insert_last ("learn_sounds|Seznámení se zvuky|Obsahuje klíèové zvuky, které potøebuješ znát. Bìhem hry mùžeš nabídku seznámení se zvuky kdykoli otevøít klávesou ef 3 nebo z kontextového menu.|6|2|1");
 if (!onboarding) optmenu.insert_last ("restore_audio_defaults|Obnovit všechna výchozí nastavení zvuku| |6");
-else optmenu.insert_last ("continue|Pokraèovat| |6");
 string[] secs={"Které zvuky pøehrávat", "Které zvuky krokù pøehrávat", "Nastavení pøehrávání ve stereu", "Nastavení hlasitostí", "Nastavení hlasitostí krokù", ""};
 if (tempres == -1) tempres=1;
 tempres=make_menu (optmenu, tempres, tempmenu, first, secs, !first);
@@ -1922,7 +1913,7 @@ monres=name_month;
 if (dayres==0) dayres=1;
 if (monres==0) monres=1;
 dynamic_menu tempmenu;
-string[] datemenu={"Nastav datum", "day|Den|"+days[dayres-1], "month|Mìsíc|"+months[monres-1], "continue|Pokraèovat"};
+string[] datemenu={"Nastav datum", "day|Den|"+days[dayres-1], "month|Mìsíc|"+months[monres-1]};
 tempres=make_menu (datemenu, tempres, @tempmenu);
 if (tempres==1)
 {
@@ -1933,21 +1924,9 @@ else if (tempres==2)
 {
 if (is_birthday) birth_month=set_month (monres);
 else name_month=set_month (monres);
-}
-else
-{
-if (is_birthday)
-{
-birth_day=dayres;
-birth_month=monres;
-}
-else
-{
-name_day=dayres;
-name_month=monres;
-}
 break;
 }
+else break;
 }
 }
 
@@ -1956,7 +1935,9 @@ uint8 set_day (uint8 day)
 dynamic_menu tempmenu;
 string[] day_names=days;
 day_names.insert_at (0, "Nastav den");
-return make_menu (day_names, day, @tempmenu);
+uint8 tempres=make_menu (day_names, day, @tempmenu);
+if (tempres==0) return 1;
+return tempres;
 }
 
 uint8 set_month (uint8 month)
@@ -1964,7 +1945,9 @@ uint8 set_month (uint8 month)
 dynamic_menu tempmenu;
 string[] month_names=months;
 month_names.insert_at (0, "Nastav mìsíc");
-return make_menu (month_names, month, @tempmenu);
+uint8 tempres=make_menu (month_names, month, @tempmenu);
+if (tempres==0) return 1;
+return tempres;
 }
 
 bool check_profile()

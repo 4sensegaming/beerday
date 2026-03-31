@@ -119,15 +119,25 @@ vocal_elapsed=0;
 voice="";
 if (use_vocals)
 {
-while(true)
+uint l=known_voices.length(), count=0;
+while(voice=="" and !supported_voices.is_empty() and count<l)
 {
 voice=known_voices[random(0, known_voices.length()-1)];
-if ((sex==1 and instr (voice, "\tf")) or (sex==2 and !instr (voice, "\tf"))) continue;
+if ((sex==1 and instr (voice, "\tf")) or (sex==2 and !instr (voice, "\tf")))
+{
+count++;
+continue;
+}
 int8 found_voice=supported_voices.find (string_split (voice, "\t", true)[0]);
-if (found_voice==-1) continue;
+if (found_voice==-1)
+{
+count++;
+continue;
+}
 voice=supported_voices[found_voice];
 break;
 }
+if (voice=="") use_vocals=false;
 }
 }
 
@@ -3336,6 +3346,7 @@ return true;
 
 string get_drink()
 {
+if (drink==-1) return "";
 string order=beers4[drink];
 if (second_drink > -1)
 {

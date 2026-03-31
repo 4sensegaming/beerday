@@ -239,8 +239,8 @@ if (!file_exists (folder+"profile.dat"))
 onboarding=true;
 say_first ("Tato hra nikdy žádným zpùsobem neodesílá žádná data mnì, vlastnímu serveru ani jakékoli tøetí stranì. Veškerá uložená nastavení zùstávají pouze na tvém vlastním disku, dají se kdykoli smazat, neobsahují žádné osobní údaje a jsou uložena v neèitelné, zašifrované podobì.");
 say_sleep_mode();
-say_first ("F1 kdykoli zobrazí klávesové zkratky, kterými se ovládá nabídka nebo obrazovka, kde právì jsi. Zároveò pokud v nìkteré nabídce 10 vteøin nestiskneš žádnou klávesu, tato nápovìda se pøeète automaticky.");
-say_first ("Než se budeš moct pustit do hraní, vìnuj prosím chvilku nastavení nìkolika údajù, díky kterým se ti hra pøizpùsobí na míru.");
+say_first ("F1 kdykoli zobrazí klávesové zkratky, kterými se ovládá nabídka nebo obrazovka, kde právì jsi. Zároveò pokud v nìkteré nabídce pìt vteøin nestiskneš žádnou klávesu, tato nápovìda se pøeète automaticky.");
+say_first ("Než se budeš moct pustit do hraní, vìnuj prosím chvilku nastavení nìkolika údajù, díky kterým se ti hra pøizpùsobí na míru. Každá zmìna nastavení se hned uloží, takže nemusíš nic potvrzovat a mùžeš rovnou každou nabídku zavøít escapem.");
 profile_options();
 profile.set ("name_day", name_day);
 profile.set ("name_month", name_month);
@@ -257,7 +257,6 @@ profile.set ("created_year", created_year);
 profile.set ("created_hour", created_hour);
 profile.set ("created_minute", created_minute);
 say_first ("Díky. Teï si ještì mùžeš nastavit ostatní vlastnosti a chování hry, nebo rovnou v následující nabídce vybrat položku Hotovo. Pokud ti nebude jasné, co nìkteré nastavení dìlá, mùžeš si hru nejdøív trochu osahat a k nastavením se vrátit kdykoli pozdìji, klidnì i bìhem hry.");
-say_first ("Za normálních okolností se každá zmìna nastavení rovnou projeví, takže není potøeba nic potvrzovat ani ukládat. Volba Pokraèovat na konci jednotlivých podnabídek nastavení se zobrazuje pouze teï, pøi prvním spuštìní. Pøi každém dalším spuštìní se staèí po zmìnì nastavení vrátit do pøedchozí nabídky klávesou escape.");
 options();
 if (!did_stereo_test)
 {

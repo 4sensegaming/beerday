@@ -176,6 +176,11 @@ if(speak_item)
 {
 if (is_custmenu) custchanged=true;
 if (item_list[menu_position-1].is_submenu and play_menu_sounds and play_submenu) play_submenu();
+if (!play_menu_sounds)
+{
+silence_menu();
+silence();
+}
 if (@sections!=null and sections.length()>1 and part!=old_part)
 {
 string section_name=get_section_name (item_list[menu_position-1]);

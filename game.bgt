@@ -1640,11 +1640,10 @@ drinks7.remove_at (found);
 }
 if (!speak_menu_prompt) speak_menu_prompt=true;
 drinks.insert_at (0, "Vyber si "+selection_prompts[i]+".");
-if (onboarding) drinks.insert_last ("Zpìt");
 pan_menu (selection_pans[i]);
 ss_start();
 int8 drink=make_menu (drinks);
-if (drink < 1 or (onboarding and drink==drinks.length()-1))
+if (drink < 1)
 {
 if (beers.is_empty())
 {
