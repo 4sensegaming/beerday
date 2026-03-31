@@ -319,7 +319,6 @@ else if (who.playing()) who.update();
 
 void warning (string wtf, bool quit=false)
 {
-if (!enable_debugging) return;
 bool oldpaused=paused;
 silence();
 if (custbeep.playing) custbeep.stop();

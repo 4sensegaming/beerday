@@ -228,7 +228,7 @@ for (uint x=0; x<l; x++)
 {
 closekey();
 sound new;
-if (!new.load (files[x]) and enable_debugging)
+if (!new.load (files[x]))
 {
 warning ("Nepodaøilo se naèíst zvuk "+files[x]+"\r\n"+get_last_error_text());
 exit();

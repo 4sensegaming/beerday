@@ -66,7 +66,7 @@ stat@ handle=null;
 uint sl=stats.length();
 for (uint i=0; i<sl; i++)
 if (stats[i].name == name) return stats[i];
-if (@handle==null and enable_debugging) warning ("Neexistující statistika "+name+".");
+if (@handle==null) warning ("Neexistující statistika "+name+".");
 return handle;
 }
 
@@ -75,7 +75,7 @@ double get_stat (string name)
 stat@ temp=find_stat (name);
 if (@temp==null)
 {
-if (enable_debugging) warning ("Statistiku "+name+" se nepovedlo pøeèíst.");
+warning ("Statistiku "+name+" se nepovedlo pøeèíst.");
 exit();
 }
 return temp.content;
@@ -87,7 +87,7 @@ if ((is_tutorial or value == 0) and (name != "runtime" and name!="run_times")) r
 stat@ handle=find_stat (name);
 if (@handle == null)
 {
-if (enable_debugging) warning ("Statistiku "+name+" se nepovedlo zapsat.");
+warning ("Statistiku "+name+" se nepovedlo zapsat.");
 exit();
 }
 if (!overwrite) handle.content+=value;
@@ -100,7 +100,7 @@ file@ f=pack.get_file ("stats.dat");
 string raw=string_decrypt (f.read(), scramble());
 if (raw=="")
 {
-if (enable_debugging) warning ("Chyba pøi naèítání statistik:\r\n"+get_last_error_text());
+warning ("Chyba pøi naèítání statistik:\r\n"+get_last_error_text());
 return;
 }
 string[] split=string_split (raw, "\r\n", true);
@@ -112,7 +112,7 @@ string[] single_stat=string_split (split[i], "\t", true);
 uint8 ssl=single_stat.length();
 if (ssl<3 or ssl>4)
 {
-if (enable_debugging) warning ("Nesprávná statistika na øádku "+(i+1)+". Má "+ssl+" prvkù.");
+warning ("Nesprávná statistika na øádku "+(i+1)+". Má "+ssl+" prvkù.");
 return;
 }
 stat new;

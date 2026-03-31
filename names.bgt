@@ -24,8 +24,6 @@ uint e=entries.length();
 for (uint i=0; i<e; i++)
 {
 string[] singlename=string_split (entries[i], "\r\n", true);
-if (enable_debugging)
-{
 if (singlename.length()!=4)
 {
 warning ("Neplatné jméno na øádku "+(i+1)+": "+entries[i]);
@@ -42,14 +40,13 @@ if (found1>-1 and found2>-1)
 warning ("Stejné jméno "+string_left (entries[i], 15)+" na pozicích "+(found1+1)+" a "+(found2+1)+".");
 continue;
 }
-}
 char_name new;
 if (singlename[0]=="m") new.gender=1;
 else new.gender=2;
 new.case1=string_split (singlename[1], " ", true);
 new.case3=string_split (singlename[2], " ", true);
 new.case4=string_split (singlename[3], " ", true);
-if (enable_debugging and (new.case1.length()!=new.case3.length() or new.case1.length()!=new.case4.length()))
+if ((new.case1.length()!=new.case3.length() or new.case1.length()!=new.case4.length()))
 {
 warning ("Jméno "+string_left (entries[i], 15)+" na øádku "+(i+1)+" nemá stejnì pádù.");
 continue;

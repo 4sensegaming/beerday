@@ -226,7 +226,7 @@ if (help_state>-1) step_vol=helper_steps_vol;
 else if (is_roaming or is_chasing) step_vol=dangerous_steps_vol;
 else if (leaving>0) step_vol=leaving_steps_vol;
 else if (queue.find(this)>-1) step_vol=queue_steps_vol;
-else if (state==arriving or state==ordering or state==returning) step_vol=order_steps_vol;
+else if (state==arriving or state==ordering) step_vol=order_steps_vol;
 else step_vol=other_steps_vol;
 }
 if (x == stairs) play ("stairs", false, false, step_vol);
@@ -361,12 +361,10 @@ return;
 }
 if (frames < percent (speed, 90))
 {
-steps++;
 if (mess_here (x, y)) trip_mess();
 else trip();
 return;
 }
-steps++;
 switch (dir)
 {
 case 0:
@@ -950,7 +948,11 @@ else append+="zákazníka";
 
 void set_state (int8 what, bool describe=true)
 {
-if (what==state) return;
+if (what==state)
+{
+warning ("Zákazník se pokouší zaèít dìlat èinnost, kterou u dìlá. "+statedesc[what]+". To je stav "+state+", aktuální help_state je "+help_state+".");
+return;
+}
 if (what==fleeing and !enable_fleeing) return;
 if (what==chasing and !enable_chasing) return;
 if (what==roaming and !enable_roaming) return;
@@ -2862,7 +2864,7 @@ if (has_dirty_mugs()) set_state (disposing);
 
 void set_help (uint8 activity)
 {
-set_state (activity);
+set_state (activity, false);
 helpers++;
 clean();
 slot=play ("helper", false, true);
