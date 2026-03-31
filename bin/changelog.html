@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Happy Beerday - historie změn</title>
+</head>
+
+<body>
+<header>
+<h1>Happy Beerday - historie změn</h1>
+<nav>
+<ul style="list-style-type: none">
+<li><a href="roadmap.html">Roadmapa</a></li>
+<li><a href="https://github.com/4sensegaming/beerday/issues">Seznam issues na GitHubu</a></li>
+<li><a href="https://github.com/4sensegaming/beerday/issues/new">Nahlásit problém na GitHubu</a></li>
+</ul>
+</nav>
+</header>
+<main>
+<article aria-labelledby="091">
+<h2 id="091">Verze  0.9.1</h2>
+<p>31. března 2026</p>
+<ul aria-labelledby="091">
+<li>Opraven index out of bounds při zjišťování, které pití zákazník chce - alt+čísla (díky Trychtýřovi a Majozovi).</li>
+<li>Mezi podporované hlasy pro namlouvání hlášek zákazníků přidány varianty slovenského Espeaku.</li>
+<li>Opraveno možné zamrznutí hned na začátku hry při vybírání, kterým hlasem bude který zákazník mluvit (díky Míše).</li>
+<li>U zákazníků by snad mělo být opraveno několik různých podivných chyb při zařazování do fronty, vyřazování z fronty, resetování a index out of bounds při sledování zákazníka, který právě odešel, které měly všechny jednu společnou příčinu (díky Trychtýřovi a Majozovi).</li>
+<li>Opraveno nepřerušování řeči při pohybu po menu s uspaným NVDA a vypnutými zvuky menu (díky Chipotlovi).</li>
+<li>Nastavení, jak vybrat piva na čepu, odstraněno z menu hry a ponecháno jenom v menu všech nastavení hry (díky Majozovi).</li>
+<li>Opravena chyba v generování položky Spustit hru v tom a tom režimu, když byla zapnutá volná hra.</li>
+<li>Escape teď funguje ve všech menu i při onboardingu (díky Míše). Měla jsi pravdu, celý proces onboardingu se tím výrazně zrychlil a zpříjemnil.</li>
+<li>Opraveno výchozí nastavení prodlevy před přečtením kontextové nápovědy  z předchozí verze.</li>
+<li>Opraveno hlášení obtížnosti v prvním pádě v informacích o hře pod klávesou T a v položce menu Spustit hru (díky Majozovi).</li>
+<li>Zakázáno ladicí menu (díky Majozovi) 😊 .</li>
+<li>Upravena hláška, když odejde poslední zákazník, protože už se jinde nebavím o hospodě, ale o baru.</li>
+<li>Opravena chyba, kdy zpráva na konci hry uváděla dvojnásobný počet kroků.</li>
+</ul>
+</article>
+<hr>
+<article aria-labelledby="09">
+<h2 id="09">Verze  0.9</h2>
+<p>30. března 2026</p>
+<h3 id="09ui">Uživatelské rozhraní</h3>
+<ul aria-labelledby="09 09ui">
+<li>Výrazně zrychleno spouštění programu.</li>
+<li>Zjednodušena a vylepšena detekce, jestli právě probíhá hra, nebo ne, která se používá v řadě případů, včetně třeba chování hudby v závěrečné zprávě na konci hry atd. To by mělo eliminovat chybu, kdy se tloukla hudba puštěná z jukeboxu s hudbou v této zprávě, respektive s hudbou v menu, a další možné chyby tohoto typu (díky Trychtýřovi).</li>
+<li>Nechápu, jak jsem to do teďka mohl přehlížet, ale nefungovala zkratka alt+F4 během čekání, až dohraje některý konkrétní zvuk (třeba znělka při spuštění programu, pokud ji máte zapnutou).</li>
+<li>Opravena položka Pohlaví v nastavení profilu (chyba z předchozí verze).</li>
+<li>Hra teď při práci s nabídkami místo slova &quot;sekce&quot; používá slovo &quot;záložka&quot;.</li>
+<li>Přeformulovány texty většiny odkazů v titulcích a především příslušné položky menu, které odkazy otevírají, teď budou zamčené, pokud právě nejste online.</li>
+<li>Všechna zaškrtávací políčka ve všech menu od teďka oznamují svůj stav pouze slovy &quot;zapnuto/vypnuto&quot;, nikde se už nepoužívá &quot;zaškrtnuto/nezaškrtnuto&quot;.</li>
+<li>Test sterea se teď přehrává v pořadí levá strana, střed, pravá strana, už ne levá strana, pravá strana, střed.</li>
+<li>Přečtení kkontextové nápovědy k ovládání dané obrazovky už nepřerušuje stávající řeč (díky Majozovi). Zároveň jsem opravil chybu, kdy pokud se v jednom menu jednou automaticky tato nápověda přečetla, už se sice správně nepřečetla znovu, dokud bylo dané menu aktivní, ale špatně se pak už nepřečetla vůbec nikdy, ani v jiném menu. Už si nejsem jistý, jestli k téhle chybě docházelo i v poslední produkční verzi, nebo jenom u mě během vývoje téhle ☺ .</li>
+<li>KOnečně jsem zvedl zadek a udělal jednou provždy pořádek ve všech možných i nemožných statistikách a v jejich Názvech, pořadí, ukládání, způsobu počítání atd. Celé jsem to optimalizoval, odstranil jsem zbytečné nevyužité statistiky, naopak přidal spoustu nových, aby si autisti mezi námi (včetně mě) mohli užívat opravdu co nejpodrobnější přehled, ☺, opravil jsem docela dost dalších chyb při dynamickém počítání hodnot pro různé statistiky a předělal jsem celé menu zobrazování statistik i kopírování statistik do schránky podle jednotlivých kategorií, aby to celé bylo mnohem přehlednější a aby se daly rychleji najít právě ty statistiky, které vás zrovna zajímají. Podívejte se na to, jak je to teď všechno mnohem líp uspořádané!</li>
+<li>Zamčené (neaktivní) položky menu teď při stisknutí enteru nevydávají vůbec žádný zvuk.</li>
+<li>V menu se teď do předchozí nabídky můžete kromě escapu vrátit i backspacem, aby se dala menu ovládat jednou rukou.</li>
+<li>Pokud máte zapnuté čtení pozic položek v nabídkách, tj. např. &quot;položka 4 z 8&quot;, a daná nabídka je rozdělena do více záložek, nebude už při vstupu do jiné záložky řečeno, kolikátá záložka z kolika to je, ale jenom kolik má položek.</li>
+<li>Pokud máte zapnuté čtení pozic položek v nabídkách a zároveň čtení názvu nabídky při jejím otevření, uslyšíte spolu s názvem nabídky i, kolik má záložek. Záložky budou uvedeny opět pouze v případě, že jich je víc než jedna.</li>
+<li>Další obrovská spousta drobných vylepšení odezvy v nabídkách a celkového chování nabídek, kterých si většinou nejspíš ani nevšimnete, ale mě by to bez nich iritovalo. 😊 🤦‍♂</li>
+<li>Další úpravy a doplnění textace a popisů většiny položek ve všech menu (za některé díky Chipotlovi a Blackspellovi), včetně další aktualizace titulků. Prohlédněte si prosím ještě jednou znovu a pořádně všechny nabídky, jako by tohle byla úplně první verze vůbec, a dejte mi vědět, pokud vám cokoli přijde nejednoznačné, nesrozumitelné, kostrbaté nebo prostě divné.</li>
+<li>Znovu upraveny veškeré texty klávesové nápovědy.</li>
+<li>V nabídce zobrazení ovládání se teď čtou i popisy jednotlivých příkazů.</li>
+<li>Optimalizováno a zrychleno zpracování stisknutých kláves ve hře, ve všech menu a při čekání, až pustíte všechny klávesy, než hra udělá něco dalšího. Všude se to teď bude jevit subjektivně rychlejší, ale pořád to funguje tak, jak má, i to čekání. Tahle optimalizace by měla zároveň opravit chybu, kdy občas klávesnice zejména při hře na nejtěžší obtížnost pocitově nereagovala.</li>
+<li>Opravena chyba, kdy se program zasekl při pokusu přehrát poslední zvuk v pořadí v nabídce seznámení se zvuky.</li>
+</ul>
+<h4 id="09options">Nastavení</h4>
+<ul aria-labelledby="09 09options">
+<li>Konečně přidány měnitelné volby v menu pro už existující funkce &quot;Zobrazovat text bez diakritiky&quot; (nastavení rozhraní) a &quot;Dávat některým zákazníkům náhodná jména&quot; (nastavení hry).</li>
+<li>Přidáno nastavení (rozhraní), jestli při spuštění kontrolovat aktualizace. Pokud ne, budete muset aktualizace vždycky vyhledat ručně (v novém menu Online funkce - viz níže).</li>
+<li>Jednotlivá nastavená hardcore omezení se teď ukládají do profilu, takže pokud hrajete nějakou hardcore kombinaci obzvlášť rádi, zůstane nastavená i při příštím spuštění programu.</li>
+<li>Přepracováno pořadí a struktura položek v menu nastavení rozhraní. Zároveň byly přesunuty volby &quot;Zobrazovat tipy při prohře&quot; a &quot;Hlásit, že zákazník brzy ztratí trpělivost&quot; z tohoto menu do menu nastavení hry.</li>
+<li>Když jste změnili nastavení pro přehrávání zvuků více předmětů na stejném místě v průběhu hry, neprojevila se změna na už existujících, hrajících zvucích.</li>
+<li>V nastavení zvuku teď kromě všech výchozích nastavení (co přehrávat a co ne) můžete obnovit i jen výchozí úrovně hlasitostí, případně výchozí nastavení sterea, beze změny ostatních nastavení.</li>
+<li>Změněny výchozí hodnoty některých nastavení, např. &quot;zobrazovat tipy při prohře&quot; nebo &quot;přehrávat hudbu v nabídkách i během hry&quot;.</li>
+<li>Přidány volby do nastavení hry, jestli z jukeboxu může hrát hudba náhodně a jestli ho smějí pouštět zákazníci. Jsou na sobě nezávislé. Hráč může jukebox samozřejmě pustit vždycky, pokud není úplně zakázaná hudba při hře jako taková v nastavení zvuku a pokud na to má peníze.</li>
+<li>Přidána nastavení zvuku, jestli přehrávat kroky celkově a potom i dílčí kroky hráče, pomocníků, nebezpečných zákazníků, odcházejících zákazníků, zákazníků bez objednávky, zákazníků ve frontě a ostatních zákazníků, a ke každému tomuto typu kroku pak i odpovídající nastavení hlasitosti (díky Míše).</li>
+<li>Přidáno nastavení zvuku, jestli přehrávat příslušný zvuk (viz menu seznámení se zvuky) při zapsání nové promluvy do historie řeči.</li>
+<li>Přidáno nastavení pro hlasitost zvuků pohybu v nabídkách.</li>
+</ul>
+<h4 id="09names">Jména a pojmenování zákazníků</h4>
+<ul aria-labelledby="09 09names">
+<li>Odstranil jsem spoustu až moc exotických jmen, respektive až moc infantilních zdrobnělineček, takže už vám nebudou přicházet zákazníci s náhodnými jmény jako Jenovéfa, Baltazar nebo třeba Kristýnka, což se do hospody fakt moc nehodí. ☺ I tak pořád používám 191 českých jmen a většina z nich má víc tvarů, takže hned tak nedojdou.</li>
+<li>Přepracoval jsem implementaci náhodného generování jmen. Výsledkem je, že když vám teď přijde například Franta, tak už do vyčerpání všech dostupných jmen nikdy nepřijde František nebo Fanda, protože hra ví, že to jsou další tvary stejného jména a že tohle jméno už bylo použito. Zároveň teď náhodné pojmenování bude při přejmenování zákazníka, který se už jednou nějak jmenoval, vybírat pouze mužská nebo pouze ženská jména podle toho, jaké bylo to předchozí.</li>
+<li>Při ručním pojmenování zákazníka teď zadáváte tři tvary jména - první, třetí a čtvrtý pád. Zkoušel jsem i varianty, kdy byste zadali třeba jenom první pád a hra by si už sama dohledala ty zbývající, ale to nefungovalo. Vždycky můžete narazit na jméno nebo tvar jména, který hra nezná, nebo můžete použít takový tvar, u kterého by hra nedokázala sama říct, jestli je to v tomhle případě mužské, nebo ženské jméno - co já vím, třeba Marťa nebo Pája.</li>
+<li>Pokud teď ale ručně přejmenujete například Aleše na Šárku, hra danému zákazníkovi automaticky a bez keců změní pohlaví. Tomu říkám tranzice! 😊</li>
+<li>Použitá jména se teď ukládají do profilu, podobně jako třeba použité písničky z jukeboxu, takže si je hra bude pamatovat i při příštím spuštění, až dokud se nevyčerpají všechna.</li>
+<li>Při ručním zadávání jména pro zákazníka vás teď hra nenechá dát stejné jméno, které už má někdo jiný.</li>
+</ul>
+<h3 id="09new">Významné / viditelné novinky</h3>
+<ul aria-labelledby="09 09new">
+<li>Hláška o early accessu se teď přečte jenom jednou denně, respektive při prvním spuštění v daný den.</li>
+<li>Když vytvářím novou aktualizaci, umím v ní teď specifikovat, že vám musí kvůli nekompatibilitě smazat celý profil, tj. všechna nastavení, průchod hrou, statistiky atd. Až to v budoucnu bude potřeba, upozorní vás na to už hláška při spuštění, že je dostupná aktualizace, a pak se vás hra ještě zeptá, jestli jste si jisti, když aktualizaci potvrzujete. Budu to potřebovat udělat všem plošně minimálně jednou při zavádění obchodu a podruhé při zveřejnění oficiální verze 1.0.</li>
+<li>Hra teď má konečně pořádného průvodce prvním spuštěním krok za krokem, tak, jak jsem si ho vždycky představoval. Vyzkoušejte to! V rámci tohoto onboardingu přibylo několik nových statistik a údajů v profilu. V souvislosti s některými z nich budete časem získávat achievementy.</li>
+<li>Přidáno obrovské množství náhodných a kontextových hlášek zákazníků podle činnosti, kterou zrovna dělají. Kód je v podstatě hotový, ale zatím jsou teda reálně napsané jenom hlášky pro situaci, kdy zákazník čeká, až ho obsloužíte. Použijí se pouze s podporovanými Sapi 5 hlasy pro nastavený jazyk hry (zatím pořád máme jenom češtinu, takže nic nastavovat nejde) a pouze, pokud máte aspoň jeden takový hlas nainstalovaný. Je to obrovská novinka, jeden z highlightů téhle verze a neskutečné oživení hry, celé to teď má úplně jinou imerzi, ale vy nemusíte dělat vůbec nic. ☺ Dokonce to ani nepotřebuje žádné nastavení, kromě úrovně hlasitosti těchto hlášek v nastavení zvuku. Prostě pokud žádný známý, podporovaný Sapi 5 hlas pro daný jazyk nainstalovaný nemáte, hra se o to vůbec nebude pokoušet a zákazníci zůstanou dál němí, jako byli vždycky. ☺ Pokud daná hláška už namluvená je (například už nějakou dobu hrajete, ale pak v nové verzi přibyly nějaké další), nebude je hra při každém spuštění vytvářet vždycky znovu všechny, ale vytvoří si jenom ty nové. Nebojte, je to celkem dost inteligentní a optimalizované. Pokud si smažete profil (z hlavního menu nebo z menu Nastavení ➡ Profil), smažou se i všechny existující vytvořené hlášky. Ona se tím teď nově smaže celá datová složka hry ☺ a při příštím spuštění si ji hra vytvoří znovu od nuly.</li>
+<li>Načítání zvuků je teď rozdělené na tři fáze (načítání standardních zvuků hry, namluvení hlášek zákazníků, pokud některé chybí, a nakonec načtení i těchto hlášek), program teď jde konečně ukončit zkratkou alt+F4 i během načítání zvuků a další interní, ale významné optimalizace celého procesu načítání. Taky jsem přišel na, myslím, docela kreativní způsob, jak zajistit, abyste během načítání nemuseli jen tak sedět na prázdno a čumět do blba. Však uvidíte. ☺</li>
+<li>Předělal jsem a velice výrazně zjednodušil, zlogičtěl a zefektivnil úplně celé hlavní menu a nové menu hry (už se nenastavuje zvlášť obtížnost, režim, hardcore hra a tutoriál z hlavního menu atd.), prohlédněte si to znovu od začátku a opravdu pořádně! Aneb když coby slepej nemůžete dělat plnohodnotného UX designera, tak si tu potřebu saturujete aspoň ve vlastní hře. 😊 Zároveň na konci menu přibyla nová položka &quot;Zobrazit tipy, jak hrát&quot;. Pokud tak někdo bude mít vypnuté výchozí zobrazování tipů při prohře nebo se hrou teprve začíná, myslím, že tyhle tipy neuškodí a můžou se hodit, a takhle je k nim snadnější přístup ke všem najednou. Je to další mechanismus, jak se hru naučit, kromě kontextového menu, klávesové nápovědy a hlavně tutoriálu (až ho spravím ☺ ).</li>
+<li>S tím souvisí i změna filozofie všech menu, kdy se teď budou všude, kde je to možné a dává to smysl, zobrazovat vždycky všechny položky, které dané menu může mít, jen prostě budou zamčené, pokud je zrovna není možné aktivovat (smazat profil, když ještě žádný nemáte, měnit nastavení, jako je obtížnost, režim hry a způsob vybírání pití, během hry, používat online funkce, když nejste připojení k internetu, zopakovat poslední zprávu dne, když jste ještě žádnou nedostali, atd.).</li>
+<li>Přidán nový režim volné hry (díky Chipotlovi). V tomto režimu můžete hrát, jak dlouho chcete, zákazníci mají nekonečnou trpělivost, hra nehlídá, jestli flákáte obsluhu, a můžete si nastavit, jestli se zákazníci můžou ožrat, zvracet, zakopávat nebo usnout.</li>
+<li>Přidán nový zvuk (včetně nabídky seznámení se zvuky) pro získání odměny za úspěch (achievementu) a nahrazen starý zvuk pro dokončení nákupu. Zatím ale nejsou využité přímo ve hře.</li>
+<li>Přidána nová animace při spuštění programu, která se přehraje, pokud ji máte zapnutou v nastavení zvuku. Uslyšíte ji určitě minimálně při onboardingu. Nejspíš mi dáte sami za pravdu, že ta stará byla už opravdu hodně stará, hodně trapná a hodně statická. ☺ Součástí animace je i úplně nový zvuk úvodní znělky - nové, původní řekněme logo 4Sense Gaming.</li>
+<li>Podobně se teď bude nově přehrávat animace při ukončení programu, pokud ji máte v nastavení zvuku zapnutou. Je to ta samá animace, jako když při hře odejdete dveřmi z hospody pryč, ale v tomto případě je trochu upravená - například při ukončení programu se dá přerušit enterem, mezerníkem, escapem nebo zkratkou alt+F4, ale při předčasném ukončení hry odchodem ne. Zároveň jsem tuhle animaci při té příležitosti ještě celkově vylepšil.</li>
+</ul>
+<h3 id="09music">Hudba</h3>
+<ul aria-labelledby="09 09music">
+<li>Do neustále se rozrůstajícího soundtracku přibylo dalších krásných 24 nových tracků. ☺ Soundtrack v tuto chvíli čítá 116 písniček, plus hudba v menu, při výhře a při prohře.</li>
+<li>Některé tracky teď můžou během hry hrát jen po dvaadvacáté hodině, respektive mezi desátou večer a pátou ráno. Mezi šestou a dvaadvacátou hrát nebudou. Přímo z jukeboxu se dají pustit kdykoliv, jsou ale drahé. ☺</li>
+<li>U zamčených tracků v hudební síni slávy je nyní uveden popis, proč jsou zamčené, tj. &quot;ještě nezaznělo ve hře&quot;.</li>
+<li>Opravena chyba, kdy hra sice správně běžela dál ve chvíli, kdy jste zrovna ovládali jukebox, ale špatně ve chvíli, kdy jste u toho zároveň stiskli alt+F4 a měli odpovědět na otázku, jestli chcete program ukončit.</li>
+<li>Opravena chyba, kdy se při ovládání jukeboxu zobrazovala položka &quot;Zastavit právě hrající písničku&quot;, i když zrovna nic nehrálo.</li>
+<li>Opravena chyba, kdy z hudební síně slávy nešel pustit vůbec žádný track, i když byl ve hře odemčený (díky Majozovi). Ve skutečnosti byl problém na hlubší úrovni - moderní a dobře nastavený server mi teď správně začal odmítat nezabezpečenou komunikaci ze strany hry, která je napsaná v zoufale zastaralém BGT. V dřívějších verzích se to nedělo, protože jsem tehdy ještě neměl nastavené zabezpečení celého webu/serveru tak přísně. Vyřešil jsem to, ale znamená to, že se změnily všechny URL související se hrou a tím pádem bohužel opět nebude fungovat automatická aktualizace na tuhle verzi, ale na další už pak zase ano.</li>
+<li>Opravena chyba, kdy informace o jukeboxu uváděla poslední písničku, i když zrovna teď nic nehrálo.</li>
+<li>Opravena chyba, kdy pokud jste během hry vypnuli v nastavení zvuku hudbu z jukeboxu, aktuální track nepřestal hned hrát.</li>
+<li>Při procházení autorů v hudební síni slávy je teď u každého kromě počtu a celkové délky všech jeho písniček uveden i počet těch, které jsou už odemčené.</li>
+<li>Přidána statistika, jak dlouhé jsou celkem všechny písničky, které už ve hře zazněly.</li>
+</ul>
+<h3 id="09gameplay">Hra</h3>
+<ul aria-labelledby="09 09gameplay">
+<li>Další opravy kontroly špatné obsluhy, aby vás nepodezřívala z flákání neprávem v situacích, kdy prostě jen nemáte koho obsluhovat (díky Trychtýřovi a později Míše, Majozovi, Blackspellovi a v podstatě úplně všem). U spousty dřívějších verzí jsem psal, že se chci vyhnout tomu, abych ji musel výrazně předělávat. Bohužel, vyhnout se tomu nešlo, což se asi dalo čekat. Tak jsem teda do toho jabka teď kousnul pořádně a fakt bych to nechtěl zakřiknout, ale vypadá to, že teď už opravdu konečně funguje tak, jak má, svině jedna! ☺</li>
+<li>Po optimalizaci vyřazování zákazníků z fronty v předchozí verzi zůstávali omráčení zákazníci (a někdy i jiní, jako třeba pomocníci) dál ve frontě (díky Trychtýřovi).</li>
+<li>Další várka informativních hlášek napříč celou hrou teď rozlišuje pohlaví zákazníků a hráče. Pořád to nejsou úplně všechny a vím o těch, které jsou ještě postaru šovinistické, ☺ ale ty zbývající budou vyžadovat rozsáhlejší změny a nechtěl jsem tím už dál zdržovat tenhle update.</li>
+<li>Pokus opravit chybu, kdy se pomocník obsluha naštval na pomocníka donašeče ☺ (díky Míše).</li>
+<li>Pokud už je nahoře v hospodě moc bordelu, takže by hned při vzniku dalšího všichni začali odcházet, nedali si zákazníci úplně ve všech případech pozor na to, aby už žádný další bordel svojí chybou nevytvořili, což si rozhodně dávat měli (díky Míše). To znamená, že třeba někdy mohli zakopnout s plným půllitrem v ruce nebo na místě, kde někdo pije, někoho praštit atd.</li>
+<li>Opraven runtime error z poslední verze, když pomocník vyhazovač vyvedl ožralu (díky Míše).</li>
+<li>Opravena hláška, když pomocník obsluha pošle s pivem pomocníka roznašeče (díky Míše). Hra musí umět popsat i případ, kdy si to ti dva pomocníci předají mezi sebou. V takovém případě to není obsloužení zákazníka. V minulé verzi jsem hlášku právě pro tenhle případ odstranil a nedošlo mi, k čemu to povede. ☺</li>
+<li>Prozatím zakázán a odstraněn z menu režim automatické hry. Strávil jsem s ním až příliš mnoho času a i tak v něm pořád bylo až příliš mnoho chyb na to, aby se mi ještě vyplatilo se tím zabývat. Máte to primárně tak nějak hrát vy! 😊 Mně by se to taky líbilo, kdyby to fungovalo, ale bohužel nefunguje... A já už to chci opravdu vydat.</li>
+<li>Vylepšena odezva v menu s přehledem všech zákazníků, když někoho začnete nebo přestanete sledovat, a celkově vylepšeno hlášení sledovaného zákazníka (díky Majozovi). Hra už vám teď nikdy neřekne doslova &quot;sledovaný zákazník&quot;, ale vždycky ho popíše relevantně (kde je, co dělá), stejně jako jiné dosavadní způsoby zjišťování informací o zákaznících. Tato změna zároveň opravuje chybu, kdy se v přehledu zákazníků nikdy nestihla přečíst odezva na změnu stavu sledování, jak měla (začal/přestal jsi sledovat zákazníka, už sleduješ jiného, tohohle konkrétního teď sledovat nemůžeš, protože spí, atd.). Zároveň byla opravena asi regrese (nechce se mi věřit, že tohle jsem ještě nikdy neřešil) chyby, kdy pokud jste někoho sledovali (například ožralu) a pak omráčili, sledování se automaticky nezrušilo.</li>
+<li>Když se ozve zvuk, že zbývá minuta do konce hry, přečte se teď i nová hláška &quot;poslední objednávky&quot; a zároveň se uloží do historie. Stejně tak když vyprší čas, takže jste vyhráli, ozve se &quot;zavíráme, na shle&quot;.</li>
+<li>Snad už by měla být definitivně opravena chyba, kdy mohli zakopávat a padat ze schodů i zákazníci, kteří pijí nealko.</li>
+<li>Opravena chyba, kdy se špatně počítalo, kolik hráč udělal kroků, například na schodech.</li>
+<li>Vylepšena odezva chybové hlášky ve chvíli, kdy se něco pokoušíte udělat až moc rychle na danou obtížnost, třeba sebrat půllitr. Zároveň se nyní tato hláška (respektive jenom zvuk chyby, pokud máte v nastavení hry vypnuté slovní popisy chyb) ozývá i při přepínání pípy.</li>
+<li>Změněno chování pomocníků, kteří odnášejí špinavé půllitry. Teď už budou řešit jenom ty půllitry, které jsou opravdu špinavé, a ty, ve kterých sice něco je, ale leží jinde než u dřezu a nikdo si je nebere (díky Majozovi). Takhle si teď můžete nechat natočené čisté půllitry do zásoby blízko u pípy nebo i kdekoli jinde, abyste se nemuseli pořád vracet až ke dřezu, pokud je daleko. Pokud někde nějaký čistý půllitr zapomenete omylem nebo ho třeba nečekaně někomu sebere a pak zase někde položí ožralý zákazník, atd., tak pořád vydává zvuk a pořád můžete zjistit, kde je, zkratkou shift+M.</li>
+<li>Snad by měly být už definitivně opraveny chyby, kdy pomocník začal točit zákazníkovi, který právě pití dostal, dřív, než si ho ten stihl vzít, případně zákazníkovi, kterému právě pití nesete vy (díky Majozovi).</li>
+<li>Opravena chyba, kdy pokud se zákazník naštval na pomocníka a ten mezitím přestal pomáhat, naštvaný zákazník na to nezareagoval a byl dál naštvaný, ale čekal na svém místě, nic nedělal a pořád byl ve frontě. Správně se má buď vrátit na svoje místo a začít znovu čekat, nebo si jít objednat.</li>
+<li>Snad opravena chyba typu &quot;Druhý zákazník ve frontě se naštval na pomocníka, protože dřív obsloužil jiného druhého zákazníka ve frontě&quot; 😊 🤦‍♂ (díky Majozovi).</li>
+</ul>
+<h3 id="09other">Ostatní</h3>
+<ul aria-labelledby="09 09other">
+<li>Místo veřejného to do listu, který byl dostupný na serveru a na který vedla položka v menu, se teď zobrazuje <a href="roadmap.html">roadmapa</a> (ne tak detailní, ale zato srozumitelnější orientační plán dalšího vývoje). Koho by případně zajímaly detaily, může si prohlédnout <a href="https://github.com/4sensegaming/beerday/issues">issues na GitHubu</a>. Pokud by se vám chtělo <a href="https://github.com/4sensegaming/beerday/issues/new">nahlašovat chyby ideálně rovnou tam</a>, můžete, ale samozřejmě mi můžete úplně v pohodě psát i do skupiny 4Sense Testing nebo i soukromě. Soukromě je to ale nejmíň vyhovující varianta pro mě, protože bych to pak už měl roztříštěné na moc různých místech. Dík!</li>
+<li>Hra přejmenována na Happy Beerday. Původní název Tom's Beerday už je dávno irelevantní (z časových i nomenklaturních důvodů 😊 ) a navíc to stejně byl jenom interní vtípek, kterému by většina normálních lidí nerozuměla.</li>
+<li>A samozřejmě klasicky další hromada jiných detailů a drobností, které jsou buď tak malé, že si jich stejně nikdy nikdo nevšimne, nebo jsem je zapomněl zapsat, nebo jsem s nimi tenhle dokument už ani nechtěl plevelit, protože je i beztak zaplevelený až moc. ☺ </li>
+</ul>
+</article>
+<hr>
+<p>Starší verze jsem při vydání 0.9 z historie odstranil. Už byly až moc historické a irelevantní a tenhle dokument byl tím pádem až moc dlouhý. Zajímá nás jenom stav od téhle verze do budoucna - aktuální dění od založení testerské skupiny na WhatsAppu do vydání první veřejné verze. Při vydání 1.0 celou historii zase promažu, aby noví hráči neviděli staré a pro ně nezajímavé záznamy z testovacích verzí.</p>
+</main>
+</body>
+</html>

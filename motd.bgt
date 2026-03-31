@@ -8,4 +8,9 @@ motd=DATE_DAY+"\t"+DATE_MONTH+"\t"+DATE_YEAR+"\t"+TIME_HOUR+"\t"+TIME_MINUTE+"\t
 file f;
 f.open ("bin/motd.dat", "wb");
 f.write (string_encrypt (motd, scramble_update()));
+if (question ("Uploadnout zprávu?", "")==1)
+{
+run ("C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe", "", false, false);
+wait(1000);
+}
 }

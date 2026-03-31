@@ -1,4 +1,4 @@
-bool ctrl=false, shift=false, alt=false, left=false, right=false, up=false, down=false, inc=false, dec=false, keyhelp=false, foreground=true, old_foreground=true;
+bool ctrl=false, shift=false, alt=false, left=false, right=false, up=false, down=false, keyhelp=false, foreground=true, old_foreground=true;
 uint keys;
 
 void keyboard()
@@ -11,7 +11,7 @@ if (ask ("Ukonèit tuto hru?", false, false) == 1)
 is_game=false;
 pool.destroy_all();
 things.destroy_all();
-if (autoplay) clear_autoplay_earnings();
+if (autoplay or freeplay or is_tutorial) clear_earnings();
 make_stats (true);
 reset_objects();
 autoplay=false;
@@ -208,17 +208,13 @@ if (key_pressed (KEY_UP) and !up) up=true;
 else if (up) up=false;
 if (key_pressed (KEY_DOWN) and !down) down=true;
 else if (down) down=false;
-if (key_pressed (KEY_HOME) and !inc) inc=true;
-else if (inc) inc=false;
-if (key_pressed (KEY_END) and !dec) dec=true;
-else if (dec) dec=false;
 }
 
 void closekey()
 {
 modifiers();
 keys=keys_down().length();
-if (!foreground or onboarding) return;
+if (!foreground) return;
 if (alt and lone (KEY_F4) and !ctrl and !shift)
 {
 if (question == "Ukonèit program?") return;
@@ -226,7 +222,12 @@ if (ask ("Ukonèit program?", false, !is_game) == 1)
 {
 stop_menu_music();
 silence (true);
-quit();
+if (!onboarding) quit();
+else
+{
+delete_nvda();
+exit();
+}
 }
 }
 }
@@ -249,20 +250,14 @@ return false;
 
 void wait_keys()
 {
-garbage_collect();
-frame.restart();
 while (true)
 {
-wait(5);
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
-get_characters();
-if (keys_down().length() == 0) break;
-}
+if (keys_down().is_empty()) break;
+wait(1);
 }
 keys=0;
-ui_help_frames=0;
+ui_help_timer.restart();
+get_characters();
 }
 
 void history_keys()
@@ -277,7 +272,7 @@ else if (!ctrl and shift) spell (history[history_index]);
 else if (ctrl and shift) read_menu (history[history_index]);
 }
 bool pressed=false;
-if (inc)
+if (singlekey (KEY_HOME))
 {
 silence();
 if (history.is_empty()) say ("Dosud nic neøeèeno.", true, false, false, false);
@@ -288,7 +283,7 @@ pressed=true;
 }
 else history_edge();
 }
-else if (dec)
+else if (singlekey (KEY_END))
 {
 silence();
 if (history.is_empty()) say ("Dosud nic neøeèeno.", true, false, false, false);

@@ -132,7 +132,11 @@ dirty.insert_last (this);
 }
 if (get_distance (x, sink.x, y, sink.y) == 0)
 {
-if (total > 0 or @drank != null) sink.washer.insert_last (this);
+if (total > 0 or @drank != null)
+{
+sink.washer.insert_last (this);
+time_since_served=0;
+}
 int8 f=dirty.find (this);
 if (f > -1) dirty.remove_at (f);
 @last_owner=null;

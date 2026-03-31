@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>Happy Beerday - Orientační plán vývoje</title>
+</head>
+
+<body>
+<header>
+<h1>Happy Beerday - orientační plán vývoje</h1>
+<p>Naposledy aktualizováno: 30. března 2026</p>
+<p>Použitá čísla verzí jsou orientační a výhledová. Myslím to tak, že i když už vyšla verze 0.9, tak další verze budou setinkové aktualizace (0.9.1 atd.), dokud nebudou hotové všechny věci uvedené pod nadpisem verze 0.9.</p>
+<nav>
+<ul style="list-style-type: none">
+<li><a href="changelog.html">Historie změn</a></li>
+<li><a href="https://github.com/4sensegaming/beerday/issues">Seznam issues na Githubu</a></li>
+</ul>
+</nav>
+</header>
+<main>
+<article labelledby="current">
+<h2 id="current">Aktuální rozpracovaná verze: 0.9</h2>
+<ul aria-labelledby="current">
+<li>Dokončit náhodné a kontextové hlášky zákazníků podle činnosti, kterou zrovna provádějí</li>
+<li>Opravit zbývající texty, pro které chybí gramatická varianta pro ženský rod, u hráče i zákazníků</li>
+</ul>
+</article>
+<hr>
+<article aria-labelledby="next">
+<h2 id="next">Následující verze: 0.10</h2>
+<ul aria-labelledby="next">
+<li>Přepracovat celý tutoriál
+<ul>
+<li>Opravit stávající chyby, zejména v přehrávání zvuků během čtení některého tutoriálu</li>
+<li>Rozdělit tutoriál na jednotlivé levely, kterými bude hráč muset procházet postupně, aby se nemusel naučit všechno najednou a nebyl zahlcen</li>
+</ul>
+</li>
+<li>Přidat nová nastavení
+<ul>
+<li>Hlasitost pro zvuky dveří a pípy</li>
+<li>Možnost vyzkoušet si aktuální nastavení sterea a hlasitosti</li>
+<li>Změnit klávesovou zkratku pro zrušení sledování zákazníka a přidat nastavení, jestli pozici sledovaného zákazníka hlásit automaticky a případně jak často</li>
+</ul>
+</li>
+</ul>
+</article>
+<hr>
+<article aria-labelledby="upcoming">
+<h2 id="upcoming">Další verze: 0.11</h2>
+<ul aria-labelledby="upcoming">
+<li>Přidat herní obchod, kde se platí penězi vydělanými obsluhováním zákazníků
+<ul>
+<li>Veškeré obtížnosti, režimy a varianty hry bude potřeba odemknout postupným kupováním; na začátku (s novým profilem po prvním spuštění) bude mít hráč přístup pouze k tutoriálu</li>
+<li>Možnost nakupovat další vylepšení, jako například televizi, ve které budou běžet různé archivní sportovní zápasy; to bude znamenat větší hluk, plnější hospodu (víc míst pro zákazníky než obvykle) a zákazníci budou rychleji pít a mít menší trpělivost při čekání</li>
+</ul>
+</li>
+<li>Přidat možnost zaplatit některému zákazníkovi za to, že bude hráči po určitou dobu pomáhat s určitou činností, tj. vybrat si ručně právě ty pomocníky, které zrovna teď potřebujete</li>
+<li>Přidat nová nastavení hry, zejména které všechny události mají a nemají být oznamovány
+<ul>
+<li>Např. že právě někdo přišel nebo odešel</li>
+<li>Někdo někoho praštil</li>
+<li>Někdo sebral půllitr nebo sud</li>
+<li>Hráč položil poslední půllitr, který nesl</li>
+<li>V hospodě je moc nepořádku, takže zákazníci začnou brzy odcházet</li>
+<li>Atd.</li>
+</ul>
+</li>
+</ul>
+</article>
+<hr>
+<article aria-labelledby="future">
+<h2 id="future">Do budoucna</h2>
+<ul aria-labelledby="future">
+<li>Zákazníci budou moct chodit na záchod, tj. na chvíli nebudou pít ani čekat ve frontě</li>
+<li>Obdobně budou moct chvíli hrát např. kulečník nebo stolní fotbal</li>
+<li>Přidat možnost nastavit si vlastní klávesové zkratky pro ovládání</li>
+<li>Přidat achievementy za všechny možné úspěchy i neúspěchy (první, desátý, stý nebo tisící obsloužený zákazník, chyba při obsluze, pád ze schodů atd.), za které bude hráč dostávat další peníze</li>
+<li>Přidat nějakou zvukovou animaci (cut scénu) na konci hry</li>
+<li>Vytvořit pro hru instalátor</li>
+<li>Vytvořit anglický překlad a potenciálně další jazyky</li>
+<li>Přepsat celou hru do nového enginu NVGT, což bude mimo jiné znamenat
+<ul>
+<li>Nativní podporu UTF-8 (správné zobrazování české diakritiky na všech platformách)</li>
+<li>Verze pro macOS, Linux a potenciálně i iOS a Android</li>
+<li>Modernější a bezpečnější technologii</li>
+<li>Méně technologických omezení a rychlejší vývoj</li>
+<li>Lepší možnosti pokročilejšího ladění</li>
+<li>Pokročilejší možnosti přehrávání zvuků, včetně nejrůznějších efektů (reverb, low pass, ekvalizér) počítaných v reálném čase</li>
+</ul>
+</li>
+</ul>
+</article>
+<hr>
+<article aria-labelledby="bugs">
+<h2 id="bugs">Známé chyby</h2>
+<ul aria-labelledby="bugs">
+<li>Pokud si v hudební síni slávy pustíte postupně plus minus 40 skladeb během jednoho spuštění programu, program spadne. Tuto chybu bude bohužel z technických důvodů možné opravit až v enginu NVGT.</li>
+</ul>
+</article>
+</main>
+</body>
+</html>

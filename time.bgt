@@ -5,7 +5,7 @@ string get_time (bool pre=true, double time=0, bool is_stat=false)
 {
 if (time == 0)
 {
-if (endless) time=elapsed;
+if (endless or freeplay) time=elapsed;
 else time=limit-elapsed+fps;
 }
 if (time < 1*fps) time=1*fps;
@@ -91,9 +91,14 @@ return report;
 void track_time()
 {
 elapsed++;
-if (endless) return;
+if (endless or freeplay) return;
+if (!is_gallery)
+{
+time_since_served++;
+}
 if (limit - elapsed <= 60*fps and !timewarn)
 {
+say ("Poslední objednávky.", false, true);
 play_stat ("minleft");
 timewarn=true;
 }

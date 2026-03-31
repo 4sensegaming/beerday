@@ -6,7 +6,7 @@ string nc="", nca="";
 
 string folder=DIRECTORY_LOCAL_APPDATA+"/4Sense Gaming/Beerday", cpl;
 instance selftest ("Beertender");
-bool onboarding=false;
+bool onboarding=false, did_learn_sounds=false, did_stereo_test=false;
 
 void initialize()
 {
@@ -53,7 +53,6 @@ screen_reader_set_library_path (NVDA, folder+nvda);
 parse_cmd();
 read_help();
 read_navs();
-read_names();
 read_voices();
 read_tips();
 read_tutorial();
@@ -113,124 +112,209 @@ load_profile();
 load_used();
 load_soundtrack();
 create_stats();
-uint al=all_beers.length();
-for (uint i=0; i<al; i++) stat_sections.insert_last (all_beers[i]);
-al=non_alco.length();
-for (uint i=0; i<al; i++) stat_sections.insert_last (non_alco[i]);
-stat_sections.insert_last ("Správa statistik");
 load_player();
 load_stats();
 load_options();
 if (selection==selection_random_keep or selection==selection_manual_keep) load_drinks();
+read_names();
 }
 if (history_entries>0) history.reserve (history_entries);
 else history.reserve (10000);
 pack.close();
 checkup();
-if (output==0)
-{
-changed_output();
-while (!sapi.active or sapi.speaking) wait(5);
-}
-while (!is_game_window_active()) wait(5);
+if (output==0) changed_output();
 if (play_intro)
 {
 wait_keys();
-if (output>0) wait(250);
-bool success=say ("4Sense Gaming uvádí:", true, false);
-if (success)
-{
 uint8 counter=0;
-frame.restart();
-while (counter < fps*2)
+sound start, dooropen, doorbell, step, here, doorclose, coin;
+start.stream ("start"+ext);
+dooropen.stream ("dooropen"+ext);
+doorbell.stream ("doorbell"+ext);
+here.stream ("collidejukebox"+ext);
+doorclose.stream ("doorclose"+ext);
+coin.stream (randomize ("coin") +ext);
+start.play();
+double pan=stereo_left, step_interval=random(40,60)*10, step_time=4000;
+dooropen.pan=pan;
+doorbell.pan=pan;
+doorclose.pan=pan;
+bool interrupted_intro=false;
+while (start.playing or coin.playing or counter<16)
 {
 wait (5);
-if (frame.elapsed >= 1000/fps)
+if (key_down (KEY_LMENU) and key_pressed (KEY_F4))
 {
-frame.restart();
-counter++;
-if (key_down (KEY_LMENU) and key_pressed (KEY_F4)) exit();
+if (can_write and COMMAND_LINE=="")
+{
+set_stat ("run_times", 1);
+save_stats();
+save_profile();
+}
+delete_nvda();
+exit();
+}
 if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_ESCAPE) or singlekey (KEY_SPACE))
 {
 silence();
-success=false;
+fadeout (0.5, false, true);
+interrupted_intro=true;
 break;
 }
-}
-}
-}
-if (success)
+if (counter==0 and start.position>=800)
 {
-global=play_stat ("start");
-say (title, true, false);
-success=wait_sound (global, true);
+doorbell.play();
+dooropen.play();
+counter=1;
 }
-if (success) say ("Na zdraví!", true, false);
+if (counter==1 and start.position>=1800)
+{
+say ("4Sense Gaming", true, false);
+counter=2;
+}
+if ((counter<2 or counter>4 and is_game_window_active()) and output>0) screen_reader_stop_speech (output);
+if (counter==2 and start.position>=3200)
+{
+say ("Uvádí", true, false);
+counter=3;
+}
+if (counter==3 and start.position>=3400)
+{
+doorclose.play();
+counter=4;
+}
+for (uint8 i=4; i<14; i++)
+if (counter==i and start.position>=step_time)
+{
+step.close();
+step.load (randomize ("floor")+ext);
+step.pan=pan;
+if (step.pan<stereo_center)
+{
+step.play();
+step_interval=random(40,60)*10;
+step_time+=step_interval;
+pan+=(stereo_right/10);
+}
+counter++;
+if (counter==14)
+{
+step.play();
+here.play();
+counter=15;
+}
+}
+if (counter==15 and !doorbell.playing and !step.playing and !here.playing)
+{
+coin.play();
+counter=16;
+}
+if (!is_game_window_active())
+{
+if (dooropen.playing) dooropen.pause();
+if (doorbell.playing) doorbell.pause();
+if (doorclose.playing) doorclose.pause();
+if (step.playing) step.pause();
+if (start.playing) start.pause();
+if (coin.playing) coin.pause();
+while (!is_game_window_active()) wait(5);
+if (doorbell.paused) doorbell.play();
+if (dooropen.paused) dooropen.play();
+if (doorclose.paused) doorclose.play();
+if (step.paused) step.play();
+if (start.paused) start.play();
+if (coin.paused) coin.play();
+}
+}
+if (!interrupted_intro)
+{
+say (title, true, false);
+wait_delay();
+}
 }
 if (global > -1) pool.destroy_sound (global);
 global=-1;
 if (!file_exists (folder+"profile.dat"))
 {
 onboarding=true;
+say_first ("Tato hra nikdy ádnım zpùsobem neodesílá ádná data mnì, vlastnímu serveru ani jakékoli tøetí stranì. Veškerá uloená nastavení zùstávají pouze na tvém vlastním disku, dají se kdykoli smazat, neobsahují ádné osobní údaje a jsou uloena v neèitelné, zašifrované podobì.");
 say_sleep_mode();
-say_first ("F1 kdykoli vyvolá klávesovou nápovìdu, která funguje stejnì jako u odeèítaèù. Zároveò pokud ve vıchozím nastavení v nìkteré nabídce 5 vteøin nestiskneš ádnou klávesu, dozvíš se, kterımi klávesami a jakım zpùsobem se daná nabídka ovládá.");
-say_first ("Klávesa kontextového menu (nebo shift+F10) je uiteènım pomocníkem do zaèátku, jak pøi uèení se všech dostupnıch klávesovıch zkratek, tak pøi zjišování, co všechno se v danou chvíli právì dá zjistit nebo udìlat.");
-profile.set ("player_name", player_name);
-profile.set ("player_name5", player_name5);
+say_first ("F1 kdykoli zobrazí klávesové zkratky, kterımi se ovládá nabídka nebo obrazovka, kde právì jsi. Zároveò pokud v nìkteré nabídce pìt vteøin nestiskneš ádnou klávesu, tato nápovìda se pøeète automaticky.");
+say_first ("Ne se budeš moct pustit do hraní, vìnuj prosím chvilku nastavení nìkolika údajù, díky kterım se ti hra pøizpùsobí na míru. Kadá zmìna nastavení se hned uloí, take nemusíš nic potvrzovat a mùeš rovnou kadou nabídku zavøít escapem.");
+profile_options();
 profile.set ("name_day", name_day);
 profile.set ("name_month", name_month);
 profile.set ("birth_day", birth_day);
 profile.set ("birth_month", birth_month);
+created_day=DATE_DAY;
+created_month=DATE_MONTH;
+created_year=DATE_YEAR;
+created_hour=TIME_HOUR;
+created_minute=TIME_MINUTE;
 profile.set ("created_day", created_day);
 profile.set ("created_month", created_month);
 profile.set ("created_year", created_year);
 profile.set ("created_hour", created_hour);
 profile.set ("created_minute", created_minute);
-save_profile();
-onboarding=false;
+say_first ("Díky. Teï si ještì mùeš nastavit ostatní vlastnosti a chování hry, nebo rovnou v následující nabídce vybrat poloku Hotovo. Pokud ti nebude jasné, co nìkteré nastavení dìlá, mùeš si hru nejdøív trochu osahat a k nastavením se vrátit kdykoli pozdìji, klidnì i bìhem hry.");
+options();
+if (!did_stereo_test)
+{
+say_first ("Teï si ještì ovìøíme, e máš správnì nasazená sluchátka nebo umístìné reproduktory, aby se správnì pøehrávaly zvuky ve stereu.");
+speakers();
 }
+if (!did_learn_sounds)
+{
+int8 l=ask ("Chceš se rovnou seznámit s nejdùleitìjšími zvuky, které budeš pro hru potøebovat?");
+if (l==1) learn();
+else say_first ("Poloka Seznámení se zvuky je kdykoli dostupná v hlavním menu, v nabídce nastavení zvuku, anebo pøímo bìhem hry jednak v kontextovém menu a jednak po stisknutí klávesy F3.");
+}
+onboarding=false;
+did_learn_sounds=false;
+did_stereo_test=false;
+say_first ("Tak, to u je opravdu všechno. Nic víc nepotøebuješ. Nebudu tì ani trápit s ádnımi nudnımi návody, protoe hra tì na zaèátku postupnì všechno sama nauèí a ukáe ti, jak se hraje. Pus se do toho. Hodnì štìstí!");
+save_player();
+save_options();
+save_profile();
+}
+set_stat ("run_times", 1);
 }
 
 void say_first (string text)
 {
 if (menuloop.playing) menuloop.stop();
 say (text, true, false);
-wait_reader (text);
+wait_reader (text, false);
 }
 
 void say_sleep_mode()
 {
-if (output==4) say ("Pro optimální chod hry doporuèuji NVDA uspat. Nebude se tak nechtìnì pøerušovat øeè tím, e stiskneš nìkterou klávesu. Pøi opuštìní okna hry NVDA mluvit bude. Reim spánku je bohuel nutné zapínat pokadé ruènì. Pøíslušná klávesová zkratka je NVDA plus šift plus es v desktopovém rozloení klávesnice a NVDA plus šift plus zet v laptopovém. Pokud ale víš, jak na to, mùeš si místo uspávání NVDA vytvoøit konfiguraèní profil se zakázanım pøerušením øeèi pøi psaní a pøi stisknutí enteru.", false, false, true);
+if (output==4) say ("Pro optimální chod hry je nejlepší NVDA po kadém spuštìní uspat. Nebude se tak nechtìnì pøerušovat øeè tím, e stiskneš nìkterou klávesu. Pøíslušná klávesová zkratka je NVDA plus šift plus es v desktopovém rozloení klávesnice a NVDA plus šift plus zet v laptopovém.", false, false, true);
 }
 
 void quit (bool silent=false, bool is_updating=false)
 {
 if (!silent)
 {
-silence();
-pool.destroy_all();
-things.destroy_all();
-silence_custmenu();
+silence (play_outro);
 pause(false);
 if (play_outro)
 {
 if (menuloop.playing) stop_menu_music();
-say ("Dìkujeme, pøijïte zas.", true, false);
-global=play_stat ("exit");
-wait_sound();
+leave (false);
 }
 if (menuloop.playing) fadeout (0.5, false);
 }
-if (autoplay) clear_autoplay_earnings();
-if (is_game and !is_updating and !onboarding) make_stats (true);
+if (autoplay or freeplay or is_tutorial) clear_earnings();
+if (is_game) make_stats (true);
 if (can_write and !is_updating and !onboarding)
 {
-profile.delete_all();
 save_used();
 save_player();
 save_stats();
 save_options();
 if (!beers.is_empty() and (selection==selection_random_keep or selection==selection_manual_keep)) save_drinks();
+save_names();
 save_profile();
 if ((save_history or copy_history) and !history.is_empty())
 {
@@ -249,14 +333,25 @@ h.close();
 }
 }
 }
+delete_nvda();
 exit();
+}
+
+void delete_nvda()
+{
+if (file_exists (folder+"nvda.dll"))
+{
+screen_reader_stop_speech (4);
+screen_reader_unload_library (4);
+file_delete (folder+"nvda.dll");
+}
 }
 
 void error (string msg="", bool wait=false, bool interrupt=true)
 {
 if (autoplay) return;
 play_stat ("error");
-if ((speak_errors or is_tutorial) and msg != "") say (msg, interrupt, false, wait);
+if ((speak_errors or is_tutorial or onboarding) and msg != "") say (msg, interrupt, false, wait);
 }
 
 int8 ask (string q, bool cancel=false, bool stop=true)
@@ -276,8 +371,7 @@ askmenu.add_item_tts ("yes", "ano");
 askmenu.add_item_tts ("no", "ne");
 if (cancel) askmenu.add_item_tts ("cancel", "zrušit");
 get_characters();
-ui_help_frames=0;
-help_read=false;
+reset_ui_help();
 if (is_game and !menu.running and !keyhelp)
 {
 oldpaused=paused;
@@ -438,20 +532,6 @@ if (first) first=false;
 }
 }
 
-void load_used()
-{
-uint l=tracks.length();
-for (uint i=0; i<l; i++)
-if (profile.exists (tracks[i])) used_tracks.insert_last (tracks[i]);
-}
-
-void save_used()
-{
-if (used_tracks.is_empty()) return;
-uint ul=used_tracks.length();
-for (uint i=0; i<ul; i++) profile.set (used_tracks[i], used_tracks[i]);
-}
-
 void read_tips()
 {
 file@ f=pack.get_file ("tips.dat");
@@ -475,11 +555,11 @@ f.write (string_encrypt (serialize (profile), scramble()));
 
 void load_profile()
 {
+profile.delete_all();
 file f;
 if (!f.open (folder+"profile.dat", "rb")) return;
 string raw=string_decrypt (f.read(), scramble());
 if (raw=="") return;
-profile.delete_all();
 profile=deserialize (raw);
 }
 
@@ -487,4 +567,16 @@ void read_credits()
 {
 file@ creds=pack.get_file ("credits.dat");
 credits=string_decrypt (creds.read(), scramble());
+}
+
+void wait_delay (double delay=600)
+{
+timer waiter;
+while (waiter.elapsed<delay)
+{
+wait(5);
+if (keys_down().length()>0) break;
+}
+wait_keys();
+silence (true);
 }

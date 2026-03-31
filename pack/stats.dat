@@ -1,210 +1,302 @@
-runtime	Celkem	1
-run_times	Poèet spuštìní
-played_total	Zahájené	2
-played_diff1	Na nejjednodušší obtížnost
-played_diff2	Na jednoduchou obtížnost
-played_diff3	Na støední obtížnost
-played_diff4	Na tìžkou obtížnost
-played_diff5	Na nejtìžší obtížnost
-played_mode1	V normálním režimu
-played_mode2	V automatickém režimu
-played_mode3	V nekoneèném normálním režimu
-played_mode4	V nekoneèném automatickém režimu
-completed_total	Celkem	3
-completed_diff1	Na nejjednodušší obtížnost
-completed_diff2	Na jednoduchou obtížnost
-completed_diff3	Na støední obtížnost
-completed_diff4	Na tìžkou obtížnost
-completed_diff5	Na nejtìžší obtížnost
-completed_mode1	V normálním režimu
-completed_mode2	V automatickém režimu
-lost_total	Celkem	4
-lost_diff1	Na nejjednodušší obtížnost
-lost_diff2	Na jednoduchou obtížnost
-lost_diff3	Na støední obtížnost
-lost_diff4	Na tìžkou obtížnost
-lost_diff5	Na nejtìžší obtížnost
-lost_mode1	V normálním režimu
-lost_mode2	V automatickém režimu
-lost_mode3	V nekoneèném normálním režimu
-lost_mode4	V nekoneèném automatickém režimu
-died_falls	Hráèovým padáním ze schodù
-died_punched	Umlácením hráèe
-died_trips	Hráèovým zakopáváním
-died_player_fled	Hráèovým odchodem
-died_player_slouch	Špatnou obsluhou
-died_customer	Umlácením zákazníka
-died_mugs	Rozbitím všech pùllitrù
-quit_total	Celkem	5
-quit_diff1	Na nejjednodušší obtížnost
-quit_diff2	Na jednoduchou obtížnost
-quit_diff3	Na støední obtížnost
-quit_diff4	Na tìžkou obtížnost
-quit_diff5	Na nejtìžší obtížnost
-quit_mode1	V normálním režimu
-quit_mode2	V automatickém režimu
-quit_mode3	V nekoneèném normálním režimu
-quit_mode4	V nekoneèném automatickém režimu
-duration_total	Celkem	6
-duration_diff1	Na nejjednodušší obtížnost
-duration_diff2	Na jednoduchou obtížnost
-duration_diff3	Na støední obtížnost
-duration_diff4	Na tìžkou obtížnost
-duration_diff5	Na nejtìžší obtížnost
-duration_mode1	V normálním režimu
-duration_mode2	V automatickém režimu
-duration_mode3	V nekoneèném normálním režimu
-duration_mode4	V nekoneèném automatickém režimu
-duration_completed	V dokonèených hrách
-duration_lost	V prohraných hrách
-duration_quit	V pøerušených hrách
-played_hardcore_total	Zahájeno	7
-played_hardcore_diff1	Na nejjednodušší obtížnost
-played_hardcore_diff2	Na jednoduchou obtížnost
-played_hardcore_diff3	Na støední obtížnost
-played_hardcore_diff4	Na tìžkou obtížnost
-played_hardcore_diff5	Na nejtìžší obtížnost
-played_hardcore_mode1	V normálním režimu
-played_hardcore_mode2	V automatickém režimu
-played_hardcore_mode3	V nekoneèném normálním režimu
-played_hardcore_mode4	V nekoneèném automatickém režimu
-completed_hardcore_total	Celkem	8
-completed_hardcore_diff1	Na nejjednodušší obtížnost
-completed_hardcore_diff2	Na jednoduchou obtížnost
-completed_hardcore_diff3	Na støední obtížnost
-completed_hardcore_diff4	Na tìžkou obtížnost
-completed_hardcore_diff5	Na nejtìžší obtížnost
-completed_hardcore_mode1	V normálním režimu
-completed_hardcore_mode2	V automatickém režimu
-lost_hardcore_total	Celkem	9
-lost_hardcore_diff1	Na nejjednodušší obtížnost
-lost_hardcore_diff2	Na jednoduchou obtížnost
-lost_hardcore_diff3	Na støední obtížnost
-lost_hardcore_diff4	Na tìžkou obtížnost
-lost_hardcore_diff5	Na nejtìžší obtížnost
-lost_hardcore_mode1	V normálním režimu
-lost_hardcore_mode2	V automatickém režimu
-lost_hardcore_mode3	V nekoneèném normálním režimu
-lost_hardcore_mode4	V nekoneèném automatickém režimu
-died_fled	Odchodem zákazníka
-died_stunned	Omráèením zákazníka
-died_mug	Rozbitím pùllitru
-died_barrel	Rozbitím sudu
-died_trip	Hráèovým zakopnutím
-died_fall	Hráèovým pádem ze schodù
-died_mistake	Chybou pøi obsluze
-died_punch	Praštìním hráèe
-died_messy	odchodem všech zákazníkù kvùli nepoøádku
-died_trip_mess	Hráèovým zakopnutím na nepoøádku
-quit_hardcore_total	Celkem	10
-quit_hardcore_diff1	Na nejjednodušší obtížnost
-quit_hardcore_diff2	Na jednoduchou obtížnost
-quit_hardcore_diff3	Na støední obtížnost
-quit_hardcore_diff4	Na tìžkou obtížnost
-quit_hardcore_diff5	Na nejtìžší obtížnost
-quit_hardcore_mode1	V normálním režimu
-quit_hardcore_mode2	V automatickém režimu
-quit_hardcore_mode3	V nekoneèném normálním režimu
-quit_hardcore_mode4	V nekoneèném automatickém režimu
-duration_hardcore_total	Celkem	11
-duration_hardcore_diff1	Na nejjednodušší obtížnost
-duration_hardcore_diff2	Na jednoduchou obtížnost
-duration_hardcore_diff3	Na støední obtížnost
-duration_hardcore_diff4	Na tìžkou obtížnost
-duration_hardcore_diff5	Na nejtìžší obtížnost
-duration_hardcore_mode1	V normálním režimu
-duration_hardcore_mode2	V automatickém režimu
-duration_hardcore_mode3	V nekoneèném normálním režimu
-duration_hardcore_mode4	V nekoneèném automatickém režimu
-duration_hardcore_completed	V dokonèených
-duration_hardcore_lost	V prohraných
-duration_hardcore_quit	V pøerušených
-longest_overall_total	Celkovì	12
-longest_diff1	Na nejjednodušší obtížnost
-longest_diff2	Na jednoduchou obtížnost
-longest_diff3	Na støední obtížnost
-longest_diff4	Na tìžkou obtížnost
-longest_diff5	Na nejtìžší obtížnost
-longest_hardcore	V režimu hardcore
-longest_auto_overall_total	Celkovì	13
-longest_auto_diff1	Na nejjednodušší obtížnost
-longest_auto_diff2	Na jednoduchou obtížnost
-longest_auto_diff3	Na støední obtížnost
-longest_auto_diff4	Na tìžkou obtížnost
-longest_auto_diff5	Na nejtìžší obtížnost
-longest_auto_hardcore	V režimu hardcore
-steps_total	Hráèových krokù	14
-trips_total	Zakopnutí
-falls_total	Pádù ze schodù
-customers_total	Pøišlo	15
-customers_most	Nejvíc za jednu hru
-fled_total	Odešlo
-happy_total	Spokojených
-thrown_total	Vyhozených
-hurt_total	Pøíliš zranìných
-stunned_total	Omráèeno
-player_stunned_total	Celkem	16
-player_stunned_roaming	Ožralých
-player_stunned_chasing	Naštvaných
-player_stunned_fleeing	Odcházejících
-player_stunned_hurting	Utíkajících
-player_stunned_waiting	Èekajících
-customer_stunned_total	Celkem	17
-customer_stunned_roaming	Ožralých
-customer_stunned_chasing	Naštvaných
-customer_stunned_fleeing	Odcházejících
-customer_stunned_hurting	Utíkajících
-customer_stunned_waiting	Èekajících
-customer_stunned_drinking	Pijících
-helpers_total	Celkem	18
-pourers_total	Toèilo
-givers_total	Roznášelo pití
-cleaners_total	Odnášelo špinavé pùllitry
-barrelers_total	Nosilo nové sudy
-emptiers_total	Odnášelo prázdné sudy
-throwers_total	Vyhazovalo ožraly
-calmers_total	Pacifikovalo agresivní zákazníky
-roamers_total	Ožralù	19
-chasers_total	Agresivních
-slept_total	Usnulo
-patient_total	Nejtrpìlivìjší zákazník èekal
-most_beers_total	Nejvíc vypitých pùllitrù na zákazníka
-longest_total	Nejdéle pøítomný zákazník
-most_queued	Nejvíc zákazníkù ve frontì najednou
-puked_total	Poblilo se celkem
-puked_most	Nejvíc za jednu hru
-most_hits	Nejvíckrát praštìný zákazník
-player_hits	Celkem	20
-most_player_hits	Nejvíc za jednu hru
-money_total	Celkem	21
-earned_most	Nejvíc za jednu hru
-money	Penìz k dispozici
-most_paid	Nejvìtší celková útrata jednoho zákazníka
-gratuity	Celkem	22
-most_gratuity_once	Nejvìtší dýško od jednoho zákazníka
-most_gratuity_total	Nejvíc na dýškách dohromady od jednoho zákazníka
-earned_jukebox	Celkem	23
-earned_jukebox_once	Nejvíc za jednu hru
-earned_jukebox_most	Nejvíc od jednoho zákazníka
-played_jukebox	Puštìno skladeb	24
-played_jukebox_player	Hráèem
-played_jukebox_customers	Zákazníky
-washed_total	Umyté	25
-dirty_left_total	Zbylé odložené
-broken_total	Rozbité
-broken_nonempty	Z toho natoèené
-fallen_total	Rozbité	26
-fallen_nonempty	Z toho plné
-replaced_total	Vymìnìné
-mess1	Z rozbitého nádobí	27
-mess2	Z rozlitého pití
-mess3	Ze zvratkù
-dried	Zaschlo
-served_total	Celkem	28
-served_most	Nejvíc za jednu hru
-served_correct	Správných
-single_drinks	Jednodruhových
-mixed_drinks	Míchaných
-mistakes_total	Špatných
-dirty_drinks	Ve špinavém pùllitru
-undermeasures	Podmírákù
+runtime	Celkový èas	1
+run_times	Poèet spuštìní	1
+normal_played_total	Dohromady	2	1
+normal_played_diff1	Na nejjednodušší obtížnost	2	1
+normal_played_diff2	Na jednoduchou obtížnost	2	1
+normal_played_diff3	Na støední obtížnost	2	1
+normal_played_diff4	Na tìžkou obtížnost	2	1
+normal_played_diff5	Na nejtìžší obtížnost	2	1
+normal_completed_total	Dohromady	2	2
+normal_completed_diff1	Na nejjednodušší obtížnost	2	2
+normal_completed_diff2	Na jednoduchou obtížnost	2	2
+normal_completed_diff3	Na støední obtížnost	2	2
+normal_completed_diff4	Na tìžkou obtížnost	2	2
+normal_completed_diff5	Na nejtìžší obtížnost	2	2
+normal_lost_total	Dohromady	2	3
+normal_lost_diff1	Na nejjednodušší obtížnost	2	3
+normal_lost_diff2	Na jednoduchou obtížnost	2	3
+normal_lost_diff3	Na støední obtížnost	2	3
+normal_lost_diff4	Na tìžkou obtížnost	2	3
+normal_lost_diff5	Na nejtìžší obtížnost	2	3
+normal_died_falls	Padáním ze schodù	2	3
+normal_died_punched	Umlácením hráèe	2	3
+normal_died_trips	Zakopáváním	2	3
+normal_died_player_fled	Odchodem	2	3
+normal_died_player_slouch	Špatnou obsluhou	2	3
+normal_died_customer	Umlácením zákazníka	2	3
+normal_died_mugs	Rozbitím všech pùllitrù	2	3
+normal_quit_total	Dohromady	2	4
+normal_quit_diff1	Na nejjednodušší obtížnost	2	4
+normal_quit_diff2	Na jednoduchou obtížnost	2	4
+normal_quit_diff3	Na støední obtížnost	2	4
+normal_quit_diff4	Na tìžkou obtížnost	2	4
+normal_quit_diff5	Na nejtìžší obtížnost	2	4
+normal_duration_total	Dohromady	2	5
+normal_duration_diff1	Na nejjednodušší obtížnost	2	5
+normal_duration_diff2	Na jednoduchou obtížnost	2	5
+normal_duration_diff3	Na støední obtížnost	2	5
+normal_duration_diff4	Na tìžkou obtížnost	2	5
+normal_duration_diff5	Na nejtìžší obtížnost	2	5
+normal_completed_duration	Ve vyhraných hrách	2	5
+normal_lost_duration	V prohraných hrách	2	5
+normal_quit_duration	V pøerušených hrách	2	5
+normal_longest_total	Dohromady	2	6
+normal_longest_diff1	Na nejjednodušší obtížnost	2	6
+normal_longest_diff2	Na jednoduchou obtížnost	2	6
+normal_longest_diff3	Na støední obtížnost	2	6
+normal_longest_diff4	Na tìžkou obtížnost	2	6
+normal_longest_diff5	Na nejtìžší obtížnost	2	6
+normal_completed_longest	Vyhraná hra	2	6
+normal_lost_longest	Prohraná hra	2	6
+normal_quit_longest	Pøerušená hra	2	6
+normal_hardcore_played_total	Dohromady	3	1
+normal_hardcore_played_diff1	Na nejjednodušší obtížnost	3	1
+normal_hardcore_played_diff2	Na jednoduchou obtížnost	3	1
+normal_hardcore_played_diff3	Na støední obtížnost	3	1
+normal_hardcore_played_diff4	Na tìžkou obtížnost	3	1
+normal_hardcore_played_diff5	Na nejtìžší obtížnost	3	1
+normal_hardcore_completed_total	Dohromady	3	2
+normal_hardcore_completed_diff1	Na nejjednodušší obtížnost	3	2
+normal_hardcore_completed_diff2	Na jednoduchou obtížnost	3	2
+normal_hardcore_completed_diff3	Na støední obtížnost	3	2
+normal_hardcore_completed_diff4	Na tìžkou obtížnost	3	2
+normal_hardcore_completed_diff5	Na nejtìžší obtížnost	3	2
+normal_hardcore_lost_total	Dohromady	3	3
+normal_hardcore_lost_diff1	Na nejjednodušší obtížnost	3	3
+normal_hardcore_lost_diff2	Na jednoduchou obtížnost	3	3
+normal_hardcore_lost_diff3	Na støední obtížnost	3	3
+normal_hardcore_lost_diff4	Na tìžkou obtížnost	3	3
+normal_hardcore_lost_diff5	Na nejtìžší obtížnost	3	3
+normal_hardcore_died_fled	Odchodem zákazníka	3	3
+normal_hardcore_died_stunned	Omráèením zákazníka	3	3
+normal_hardcore_died_mug	Rozbitím pùllitru	3	3
+normal_hardcore_died_barrel	Rozbitím sudu	3	3
+normal_hardcore_died_trip	Zakopnutím	3	3
+normal_hardcore_died_fall	Pádem ze schodù	3	3
+normal_hardcore_died_mistake	Chybou pøi obsluze	3	3
+normal_hardcore_died_punch	Praštìním hráèe	3	3
+normal_hardcore_died_messy	odchodem všech zákazníkù kvùli nepoøádku	3	3
+normal_hardcore_quit_total	Dohromady	3	4
+normal_hardcore_quit_diff1	Na nejjednodušší obtížnost	3	4
+normal_hardcore_quit_diff2	Na jednoduchou obtížnost	3	4
+normal_hardcore_quit_diff3	Na støední obtížnost	3	4
+normal_hardcore_quit_diff4	Na tìžkou obtížnost	3	4
+normal_hardcore_quit_diff5	Na nejtìžší obtížnost	3	4
+normal_hardcore_duration_total	Dohromady	3	5
+normal_hardcore_duration_diff1	Na nejjednodušší obtížnost	3	5
+normal_hardcore_duration_diff2	Na jednoduchou obtížnost	3	5
+normal_hardcore_duration_diff3	Na støední obtížnost	3	5
+normal_hardcore_duration_diff4	Na tìžkou obtížnost	3	5
+normal_hardcore_duration_diff5	Na nejtìžší obtížnost	3	5
+normal_hardcore_completed_duration	Ve vyhraných hrách	3	5
+normal_hardcore_lost_duration	V prohraných hrách	3	5
+normal_hardcore_quit_duration	V pøerušených hrách	3	5
+normal_hardcore_longest_total	Dohromady	3	6
+normal_hardcore_longest_diff1	Na nejjednodušší obtížnost	3	6
+normal_hardcore_longest_diff2	Na jednoduchou obtížnost	3	6
+normal_hardcore_longest_diff3	Na støední obtížnost	3	6
+normal_hardcore_longest_diff4	Na tìžkou obtížnost	3	6
+normal_hardcore_longest_diff5	Na nejtìžší obtížnost	3	6
+normal_hardcore_completed_longest	Vyhraná hra	3	6
+normal_hardcore_lost_longest	Prohraná hra	3	6
+normal_hardcore_quit_longest	Pøerušená hra	3	6
+endless_played_total	Dohromady	4	1
+endless_played_diff1	Na nejjednodušší obtížnost	4	1
+endless_played_diff2	Na jednoduchou obtížnost	4	1
+endless_played_diff3	Na støední obtížnost	4	1
+endless_played_diff4	Na tìžkou obtížnost	4	1
+endless_played_diff5	Na nejtìžší obtížnost	4	1
+endless_lost_total	Dohromady	4	2
+endless_lost_diff1	Na nejjednodušší obtížnost	4	2
+endless_lost_diff2	Na jednoduchou obtížnost	4	2
+endless_lost_diff3	Na støední obtížnost	4	2
+endless_lost_diff4	Na tìžkou obtížnost	4	2
+endless_lost_diff5	Na nejtìžší obtížnost	4	2
+endless_died_falls	Padáním ze schodù		4	2
+endless_died_punched	Umlácením hráèe	4	2
+endless_died_trips	Zakopáváním	4	2
+endless_died_player_fled	Odchodem	4	2
+endless_died_player_slouch	Špatnou obsluhou	4	2
+endless_died_customer	Umlácením zákazníka	4	2
+endless_died_mugs	Rozbitím všech pùllitrù	4	2
+endless_quit_total	Dohromady	4	3
+endless_quit_diff1	Na nejjednodušší obtížnost	4	3
+endless_quit_diff2	Na jednoduchou obtížnost	4	3
+endless_quit_diff3	Na støední obtížnost	4	3
+endless_quit_diff4	Na tìžkou obtížnost	4	3
+endless_quit_diff5	Na nejtìžší obtížnost	4	3
+endless_duration_total	Dohromady	4	4
+endless_duration_diff1	Na nejjednodušší obtížnost	4	4
+endless_duration_diff2	Na jednoduchou obtížnost	4	4
+endless_duration_diff3	Na støední obtížnost	4	4
+endless_duration_diff4	Na tìžkou obtížnost	4	4
+endless_duration_diff5	Na nejtìžší obtížnost	4	4
+endless_lost_duration	V prohraných hrách	4	4
+endless_quit_duration	V pøerušených hrách	4	4
+endless_longest_total	Dohromady	4	5
+endless_longest_diff1	Na nejjednodušší obtížnost	4	5
+endless_longest_diff2	Na jednoduchou obtížnost	4	5
+endless_longest_diff3	Na støední obtížnost	4	5
+endless_longest_diff4	Na tìžkou obtížnost	4	5
+endless_longest_diff5	Na nejtìžší obtížnost	4	5
+endless_lost_longest	Prohraná hra	4	5
+endless_quit_longest	Pøerušená hra	4	5
+endless_hardcore_played_total	Dohromady	5	1
+endless_hardcore_played_diff1	Na nejjednodušší obtížnost	5	1
+endless_hardcore_played_diff2	Na jednoduchou obtížnost	5	1
+endless_hardcore_played_diff3	Na støední obtížnost	5	1
+endless_hardcore_played_diff4	Na tìžkou obtížnost	5	1
+endless_hardcore_played_diff5	Na nejtìžší obtížnost	5	1
+endless_hardcore_lost_total	Dohromady	5	2
+endless_hardcore_lost_diff1	Na nejjednodušší obtížnost	5	2
+endless_hardcore_lost_diff2	Na jednoduchou obtížnost	5	2
+endless_hardcore_lost_diff3	Na støední obtížnost	5	2
+endless_hardcore_lost_diff4	Na tìžkou obtížnost	5	2
+endless_hardcore_lost_diff5	Na nejtìžší obtížnost	5	2
+endless_hardcore_died_fled	Odchodem zákazníka	5	2
+endless_hardcore_died_stunned	Omráèením zákazníka	5	2
+endless_hardcore_died_mug	Rozbitím pùllitru	5	2
+endless_hardcore_died_barrel	Rozbitím sudu	5	2
+endless_hardcore_died_trip	Zakopnutím	5	2
+endless_hardcore_died_fall	Pádem ze schodù	5	2
+endless_hardcore_died_mistake	Chybou pøi obsluze	5	2
+endless_hardcore_died_punch	Praštìním hráèe	5	2
+endless_hardcore_died_messy	odchodem všech zákazníkù kvùli nepoøádku	5	2
+endless_hardcore_quit_total	Dohromady	5	3
+endless_hardcore_quit_diff1	Na nejjednodušší obtížnost	5	3
+endless_hardcore_quit_diff2	Na jednoduchou obtížnost	5	3
+endless_hardcore_quit_diff3	Na støední obtížnost	5	3
+endless_hardcore_quit_diff4	Na tìžkou obtížnost	5	3
+endless_hardcore_quit_diff5	Na nejtìžší obtížnost	5	3
+endless_hardcore_duration_total	Dohromady	5	4
+endless_hardcore_duration_diff1	Na nejjednodušší obtížnost	5	4
+endless_hardcore_duration_diff2	Na jednoduchou obtížnost	5	4
+endless_hardcore_duration_diff3	Na støední obtížnost	5	4
+endless_hardcore_duration_diff4	Na tìžkou obtížnost	5	4
+endless_hardcore_duration_diff5	Na nejtìžší obtížnost	5	4
+endless_hardcore_lost_duration	V prohraných hrách	5	4
+endless_hardcore_quit_duration	V pøerušených hrách	5	4
+endless_hardcore_longest_total	Dohromady	5	5
+endless_hardcore_longest_diff1	Na nejjednodušší obtížnost	5	5
+endless_hardcore_longest_diff2	Na jednoduchou obtížnost	5	5
+endless_hardcore_longest_diff3	Na støední obtížnost	5	5
+endless_hardcore_longest_diff4	Na tìžkou obtížnost	5	5
+endless_hardcore_longest_diff5	Na nejtìžší obtížnost	5	5
+endless_hardcore_lost_longest	Prohraná hra	5	5
+endless_hardcore_quit_longest	Pøerušená hra	5	5
+free_played_total	Dohromady	6	1
+free_played_diff1	Na nejjednodušší obtížnost	6	1
+free_played_diff2	Na jednoduchou obtížnost	6	1
+free_played_diff3	Na støední obtížnost	6	1
+free_played_diff4	Na tìžkou obtížnost	6	1
+free_played_diff5	Na nejtìžší obtížnost	6	1
+free_lost_total	Dohromady	6	2
+free_lost_diff1	Na nejjednodušší obtížnost	6	2
+free_lost_diff2	Na jednoduchou obtížnost	6	2
+free_lost_diff3	Na støední obtížnost	6	2
+free_lost_diff4	Na tìžkou obtížnost	6	2
+free_lost_diff5	Na nejtìžší obtížnost	6	2
+free_died_falls	Padáním ze schodù		6	2
+free_died_punched	Umlácením hráèe	6	2
+free_died_trips	Zakopáváním	6	2
+free_died_player_fled	Odchodem	6	2
+free_died_customer	Umlácením zákazníka	6	2
+free_died_mugs	Rozbitím všech pùllitrù	6	2
+free_quit_total	Dohromady	6	3
+free_quit_diff1	Na nejjednodušší obtížnost	6	3
+free_quit_diff2	Na jednoduchou obtížnost	6	3
+free_quit_diff3	Na støední obtížnost	6	3
+free_quit_diff4	Na tìžkou obtížnost	6	3
+free_quit_diff5	Na nejtìžší obtížnost	6	3
+free_duration_total	Dohromady	6	4
+free_duration_diff1	Na nejjednodušší obtížnost	6	4
+free_duration_diff2	Na jednoduchou obtížnost	6	4
+free_duration_diff3	Na støední obtížnost	6	4
+free_duration_diff4	Na tìžkou obtížnost	6	4
+free_duration_diff5	Na nejtìžší obtížnost	6	4
+free_lost_duration	V prohraných hrách	6	4
+free_quit_duration	V pøerušených hrách	6	4
+free_longest_total	Dohromady	6	5
+free_longest_diff1	Na nejjednodušší obtížnost	6	5
+free_longest_diff2	Na jednoduchou obtížnost	6	5
+free_longest_diff3	Na støední obtížnost	6	5
+free_longest_diff4	Na tìžkou obtížnost	6	5
+free_longest_diff5	Na nejtìžší obtížnost	6	5
+free_lost_longest	Prohraná hra	6	5
+free_quit_longest	Pøerušená hra	6	5
+steps_total	Krokù	7	1
+trips_total	Zakopnutí	7	1
+falls_total	Pádù ze schodù	7	1
+player_hits	Dohromady	7	2
+most_player_hits	Nejvíc za jednu hru	7	2
+customers_total	Pøišlo	8	1
+customers_most	Nejvíc za jednu hru	8	1
+fled_total	Odešlo	8	1
+happy_total	Spokojených	8	1
+thrown_total	Vyhozených	8	1
+hurt_total	Pøíliš zranìných	8	1
+stunned_total	Omráèených	8	1
+helpers_total	Dohromady	8	2
+pourers_total	Toèilo	8	2
+givers_total	Roznášelo pití	8	2
+cleaners_total	Odnášelo špinavé pùllitry	8	2
+barrelers_total	Nosilo nové sudy	8	2
+emptiers_total	Odnášelo prázdné sudy	8	2
+throwers_total	Vyhazovalo ožraly	8	2
+calmers_total	Pacifikovalo agresivní zákazníky	8	2
+roamers_total	Ožralù	8	3
+chasers_total	Agresivních	8	3
+slept_total	Usnulo	8	3
+patient_total	Nejtrpìlivìjší zákazník èekal	8	3
+most_beers_total	Nejvíc vypitých pùllitrù na zákazníka	8	3
+longest_total	Nejdéle pøítomný zákazník	8	3
+most_queued	Nejvíc zákazníkù ve frontì najednou	8	3
+puked_total	Dohromady se poblilo	8	3
+puked_most	Nejvíc za jednu hru	8	3
+most_hits	Nejvíckrát praštìný zákazník	8	3
+player_stunned_total	Dohromady	8	4
+player_stunned_roaming	Ožralých	8	4
+player_stunned_chasing	Naštvaných	8	4
+player_stunned_fleeing	Odcházejících	8	4
+player_stunned_hurting	Utíkajících	8	4
+player_stunned_waiting	Èekajících	8	4
+customer_stunned_total	Dohromady	8	5
+customer_stunned_roaming	Ožralých	8	5
+customer_stunned_chasing	Naštvaných	8	5
+customer_stunned_fleeing	Odcházejících	8	5
+customer_stunned_hurting	Utíkajících	8	5
+customer_stunned_waiting	Èekajících	8	5
+customer_stunned_drinking	Pijících	8	5
+money	Aktuálnì k dispozici	9	1
+money_total	Celkem vydìláno	9	1
+earned_most	Nejvíc za jednu hru	9	1
+most_paid	Nejvíc od jednoho zákazníka	9	1
+gratuity	Dohromady	9	2
+most_gratuity_once	Nejvìtší jednorázové dýško od jednoho zákazníka	9	2
+most_gratuity_total	Nejvíc na dýškách od jednoho zákazníka za celou hru	9	2
+jukebox_earned_total	Dohromady	9	3
+jukebox_earned_once	Nejvíc za jednu hru	9	3
+jukebox_earned_most	Nejvíc od jednoho zákazníka	9	3
+jukebox_played_total	Zaznìlo skladeb	10
+jukebox_played_player	Puštìno hráèem	10
+jukebox_played_customers	Puštìno zákazníky	10
+jukebox_played_duration	Celková délka všech skladeb	10
+washed_total	Umyté	11
+dirty_left_total	Zbylé odložené	11
+broken_total	Rozbité	11
+broken_nonempty	Z toho natoèené	11
+fallen_total	Rozbité	12
+fallen_nonempty	Z toho plné	12
+replaced_total	Vymìnìné	12
+mess1	Z rozbitého nádobí	13
+mess2	Z rozlitého pití	13
+mess3	Ze zvratkù	13
+dried	Zaschlo	13
+served_total	Dohromady	14	1
+served_most	Nejvíc za jednu hru	14	1
+served_correct	Správných	14	1
+single_drinks	Jednodruhových	14	1
+mixed_drinks	Míchaných	14	1
+mistakes_total	Špatných	14	1
+dirty_drinks	Ve špinavém pùllitru	14	1
+undermeasures	Podmírákù	14	1

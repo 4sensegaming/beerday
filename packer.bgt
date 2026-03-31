@@ -1,6 +1,6 @@
 bool encrypt=true;
-string pack_name="../pack.dat";
-string pack_folder="../pack/";
+string pack_name="pack.dat";
+string pack_folder="pack/";
 string key="Jedno pivooo, dvì pivaaa, tøi pivaaa, ètyøi pivaaa, pìt, šest, sedum, vosum piiiv, devìt, deset piiiv.";
 string[] skip={"nvda.dll"};
 string[] encrypt_as_string={"help.dat", "navchars.dat", "tutorial.dat", "objectives.dat", "tips.dat", "credits.dat", "stats.dat", "soundtrack.dat", "names.dat", "voices.dat"};
@@ -92,26 +92,7 @@ quit();
 pack.close();
 if (!directory_delete (string_trim_right (folder, 1))) alert ("Error!", "Temporary encrypted files could not be deleted. Reason:\r\n" + get_last_error_text());
 pack.open (pack_name);
-string report="The pack contains "+pack.get_file_count()+" file(s) altogether";
-uint8 list=question (report+".", "Do you wish to list all the file names for verification?");
-if (list == 1)
-{
-names=pack.list_files();
-string text;
-l=names.length();
-for (uint x=0; x<l; x++)
-{
-text+=names[x];
-if (skip.find (names[x]) > -1) text+=" (unencrypted)";
-if (encrypt_as_string.find (names[x]) > -1) text+=" (encrypted as a string)";
-if (x < names.length()-1) text+="\r\n";
-}
-pack.close();
-alert ("File name list:", text+"\r\nThis list has also been copied to the clipboard for better convenience.");
-clipboard_copy_text (report+":\r\n"+text);
-}
-uint8 q=question ("Delete source folder", "Do you wish to completely delete the folder containing all the original files in their unpacked, unencrypted format?");
-if (q == 1) directory_delete (string_trim_right (pack_folder, 1));
+alert ("The pack contains "+pack.get_file_count()+" files.", "");
 }
 
 bool add (string file, bool skipped)

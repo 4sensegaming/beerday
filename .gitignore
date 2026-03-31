@@ -1,1 +1,7 @@
-bin/
+bin/lastver.dat
+bin/beerday.exe
+bin/update.001
+bin/update.002
+bin/motd.dat
+_wip.txt
+*.dat

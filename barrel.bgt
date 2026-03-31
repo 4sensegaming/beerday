@@ -225,6 +225,7 @@ return;
 play ("place");
 owner.frames=0;
 owner.frozen=1;
+time_since_served=0;
 @owner.has_barrel=null;
 faucet.amounts[kind]=amount;
 if (!owner.is_player)

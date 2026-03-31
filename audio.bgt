@@ -32,6 +32,7 @@ return file;
 
 void silence (bool full=false)
 {
+get_characters();
 if (output == 0 and sapi.speaking) sapi.stop();
 else if (output > 0 and foreground) screen_reader_stop_speech (output);
 if (full)
@@ -75,9 +76,11 @@ else wait_reader (phrase);
 return true;
 }
 
-void fadeout (double volume_step=0.5, bool enable_close=true)
+void fadeout (double volume_step=0.5, bool enable_close=true, bool forced=false)
 {
 if (loudness <= minvol) return;
+if (!forced)
+{
 uint l=pool.items.length(), count=0;
 for (uint i=0; i<l; i++)
 if (pool.sound_is_playing(i)) count++;
@@ -85,6 +88,7 @@ l=things.items.length();
 for (uint i=0; i<l; i++)
 if (things.sound_is_playing(i)) count++;
 if (count==0 and !menuloop.playing and !won.playing and !is_gallery) return;
+}
 frame.restart();
 while (get_sound_master_volume()>minvol)
 {
@@ -101,11 +105,13 @@ set_sound_master_volume (curvol);
 silence(true);
 if (menuloop.playing) stop_menu_music();
 set_sound_master_volume (loudness);
+garbage_collect();
 }
 
 void fadein (double volume_step=0.5)
 {
 if (loudness <= minvol) return;
+garbage_collect();
 set_sound_master_volume(minvol-10);
 frame.restart();
 while (get_sound_master_volume() < loudness)
@@ -135,7 +141,7 @@ if (frame.elapsed >= 1000/fps)
 frame.restart();
 wait(5);
 closekey();
-if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE))
+if (!onboarding and (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE)))
 {
 if (fade) fadeout();
 else
@@ -222,7 +228,7 @@ for (uint x=0; x<l; x++)
 {
 closekey();
 sound new;
-if (!new.load (files[x]) and enable_debugging)
+if (!new.load (files[x]))
 {
 warning ("Nepodaøilo se naèíst zvuk "+files[x]+"\r\n"+get_last_error_text());
 exit();
@@ -303,15 +309,15 @@ turn.play();
 
 void play_enter()
 {
-if (!play_menu_sounds or (is_gallery and question!="")) return;
 silence_menu();
+if (!play_menu_sounds or (is_gallery and question!="")) return;
 enter.play();
 }
 
 void play_esc()
 {
-if (!play_menu_sounds or (is_gallery and question!="")) return;
 silence_menu();
+if (!play_menu_sounds or (is_gallery and question!="")) return;
 esc.play();
 }
 

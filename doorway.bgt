@@ -40,7 +40,7 @@ if (@handle!=null and !handle.is_player)
 {
 uint8 c=customers.length();
 if (c == max and handle.leaving == 0) say ("Výbornì! Máš plno!", false);
-else if (c == 0) say ("A sakra! Máš prázdnou hospodu!", false);
+else if (c == 0) say ("A sakra! Pusto prázdno, nikdo tu nezùstal!", false);
 garbage_collect();
 }
 frames=0;
