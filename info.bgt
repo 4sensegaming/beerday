@@ -1204,7 +1204,7 @@ else game="Normální ";
 if (hardcore) game+="hardcore ";
 game+="hra ";
 }
-game+="na "+difficulties[difficulty-1]+" obtížnost. ";
+game+="na "+diff4[difficulty-1]+" obtížnost. ";
 if (endless or freeplay) game+="Hraješ "+get_time (false)+" ";
 else game+=get_time();
 }

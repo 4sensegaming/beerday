@@ -729,7 +729,7 @@ else start+="normální ";
 if (hardcore) start+="hardcore ";
 start+="hru";
 }
-start+=" na "+to_lower(diff[difficulty])+" obtížnost|";
+start+=" na "+diff4[difficulty-1]+" obtížnost|";
 if (hardcore or freeplay)
 {
 string game=say_game(false);

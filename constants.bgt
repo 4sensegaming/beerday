@@ -63,9 +63,7 @@ const string[] pause_music={"bought", "nomoney", "pocket", "helper", "minleft", 
 string[] main_menu={"Hlavní menu", "play|Hrát| |1|2|1", "options|Nastavení|Bìhem hry mùžeš nabídku nastavení kdykoli otevøít klávesou F2 nebo z kontextového menu.|1|2|1", "learn_sounds|Seznámení se zvuky|Obsahuje klíèové zvuky, které potøebuješ znát. Bìhem hry mùžeš nabídku seznámení se zvuky kdykoli otevøít klávesou ef 3 nebo z kontextového menu|2|2|1", "stereo_test|Otestovat pøehrávání ve stereu|"+stereo_test_description+" Tuto funkci najdeš i v nabídce nastavení zvuku.|2|2|0|", "menu_music|Pøehrávat hudbu v nabídkách|Toto nastavení najdeš i v nabídce nastavení zvuku. Ovlivòuje i hudbu na závìreèné obrazovce na konci hry.|2|1", "stats|Statistiky|Sleduj nejrùznìjší statistiky, jak dlouho už hraješ a jak si vedeš, od prvního spuštìní programu|3|2|1", "repeat_motd|Zopakovat poslední zprávu od autora| |3|2|0|", "online|Online funkce|Ruèní kontrola aktualizací, stažení instalátoru a rùzné komunikaèní kanály a sociální sítì.", "clear_profile|Smazat profil|"+clear_profile_description+"|3|2|1|", "tips|Zobrazit tipy, jak hrát|Ve výchozím stavu se jeden náhodný tip zobrazí vždycky, když prohraješ. Mùžeš to zmìnit v nabídce nastavení rozhraní.|3|2|1", "credits|Titulky|Kdo všechno se na høe podílel.|3|2|1", "quit|Konec| |3"};
 string[] diff={"Zvol si obtížnost.", "Nejjednodušší", "Jednoduchá", "Støední", "Tìžká", "Nejtìžší"};
 string[] diff_desc={"", "15 minut", "20 minut", "25 minut", "30 minut", "35 minut"};
-string[] difficulties={"nejjednodušší", "jednoduchá", "støední", "tìžká", "nejtìžší"};
-const string[] modes={"Normální hra", "Automatická hra", "Nekoneèná hra", "Nekoneèná automatická hra"};
-string[] modemenu={"Nastav režim hry", "Normální hra", "Automatická hra", "Nekoneèná hra", "Nekoneèná automatická hra"};
+string[] diff4={"nejjednodušší", "jednoduchou", "støední", "tìžkou", "nejtìžší"};
 string[] selection_menu={"Nastav zpùsob vybírání piv na èepu.", "drinks_random|Náhodnì každou hru", "drinks_random_remember|Náhodnì a zapamatovat", "drinks_manual|Ruènì každou hru", "drinks_manual_remember|Ruènì a zapamatovat"};
 
 enum selection_modes

@@ -112,6 +112,9 @@ sitting=false;
 if (is_player) sex=gender;
 else sex=random(1,2);
 id=-1;
+int8 q=queue.find(this);
+if(q>-1) queue.remove_at(q);
+disrefer();
 speech.resize(0);
 vocal_slot=-1;
 vocal_interval=0;
@@ -1142,7 +1145,7 @@ else if (what==cleaning and count_clean_mugs()==0) say (prepend+"teï odnáší špin
 }
 prev_state=state;
 state=what;
-if (state == idle or state == drinking or leaving>1 or count_mess(2)+count_mess(3)>=max_liquid_mess or (help_state>-1 and prev_state!=mugging and prev_state!=serving and prev_state!=piping and prev_state!=giving and prev_state!=cleaning and prev_state!=emptiing and prev_state!=barreling and prev_state!=throwing and prev_state!=calming and prev_state!=disposing)) disrefer();
+if (state == idle or state == drinking or state==closing or count_mess(2)+count_mess(3)>=max_liquid_mess or (help_state>-1 and prev_state!=mugging and prev_state!=serving and prev_state!=piping and prev_state!=giving and prev_state!=cleaning and prev_state!=emptiing and prev_state!=barreling and prev_state!=throwing and prev_state!=calming and prev_state!=disposing)) disrefer();
 vocal_elapsed=0;
 }
 
@@ -1460,7 +1463,8 @@ if (!is_player) update_ambience();
 
 void disrefer()
 {
-if (!is_roaming and !is_chasing and @tracking==@this) untrack();
+if (customers.find(this)==-1) return;
+if (@tracking==@this and (state==drinking or state==idle or state==closing or help_state>-1)) untrack();
 @leading=null;
 unqueue (state!=drinking);
 if (!is_player and @player.leading == @this)
@@ -4146,7 +4150,7 @@ int8 position=-127;
 uint count=0;
 while (!done)
 {
-if (count >= 54 *54)
+if (count >=1000)
 {
 position=-127;
 break;

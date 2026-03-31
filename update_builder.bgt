@@ -10,6 +10,7 @@ if (question ("Zadat zprávu dne?", "") == 1) run (bgtpath, "motd.bgt", true, fal
 if (question ("Zkontrolovat log?", "") == 1) run (exec, "bin/changelog.html", true, false);
 if (question ("Zkontrolovat roadmapu?", "") == 1) run (exec, "bin/roadmap.html", true, false);
 run (exec, "packer.bgt", true, false);
+wait(500);
 file f;
 string command="";
 if (question ("Smazat profil?", "")==1) command="c";
@@ -19,25 +20,23 @@ f.close();
 string compile="";
 question("Zkompilovat jako release build?", "")==1?compile="-C":compile="-c";
 run (bgtpath, compile+source, true, false);
+file_copy (exe, "bin/"+exe, true);
+file_copy (exe, update, true);
+file_delete (exe);
 file_encrypt (update, real, scramble_update());
 file_delete (update);
-file_copy (real, "bin/beerday.exe");
+file_copy (real, "bin/"+real, true);
 file_delete (real);
 f.open ("bin/update.002", "wb");
 f.write (string_encrypt (file_hash (real, 2, false), scramble_update()));
 f.close();
-if (question ("Pøepnout debugging?", "")==1)
-{
-string current="", new="";
 f.open ("debugging.bgt", "rb");
 string raw=f.read();
-instr(raw,"debugging==true")?current="debugging=true":current="debugging=false";
-current=="debugging=true"?new="debugging=false":new="debugging=true";
-raw=string_replace (raw, current, new, true);
+raw=string_replace (raw, "enable_debugging=true", "enable_debugging=false", true);
+raw=string_replace (raw, "enable_logging=true", "enable_logging=false", true);
 f.open ("debugging.bgt", "wb");
 f.write (raw);
 f.close();
-}
 if (question ("Uploadnout celý update?", "")==1)
 {
 run ("C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe", "", false, false);
