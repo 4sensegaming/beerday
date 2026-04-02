@@ -144,6 +144,7 @@ temp.open ("test.exe", "wb");
 temp.write ("test");
 temp.close();
 if (!file_exists ("test.exe")) can_write=false;
+else file_delete ("test.exe");
 if (!can_write)
 {
 postpone_update=true;
