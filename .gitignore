@@ -1,5 +1,6 @@
-bin/lastver.dat
+bin/*.zip
 bin/beerday.exe
+bin/lastver.dat
 bin/update.001
 bin/update.002
 _wip.txt
