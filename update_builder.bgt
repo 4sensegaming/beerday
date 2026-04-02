@@ -5,7 +5,7 @@ void main()
 {
 show_game_window ("Beerday Update Builder");
 if (question ("Uvedená verze je "+version, "V poøádku?") == 2) return;
-if (!check_build()) return;
+if (question ("Build", "Verze: "+version+"\r\nDatum: "+build_day+". "+build_month+". "+build_year+", "+build_hour+":"+build_minute+"\r\nPokraèovat?") ==2) return;
 if (question ("Zadat zprávu dne?", "") == 1) run (bgtpath, "motd.bgt", true, false);
 if (question ("Zkontrolovat log?", "") == 1) run (exec, "bin\\changelog.html", true, false);
 if (question ("Zkontrolovat roadmapu?", "") == 1) run (exec, "bin\\roadmap.html", true, false);
@@ -15,7 +15,7 @@ file f;
 string command="";
 if (question ("Smazat profil?", "")==1) command="c";
 f.open ("bin/lastver.dat", "wb");
-f.write (string_encrypt (version+"\t"+build_day+"\t"+build_month+"\t"+build_year+"\t"+build_hour+"\t"+build_minute+"\t"+command, scramble_update()));
+if (f.write (string_encrypt (version+"\t"+build_day+"\t"+build_month+"\t"+build_year+"\t"+build_hour+"\t"+build_minute+"\t"+command, scramble_update())) ==0) alert (get_last_error_text(), "");
 f.close();
 string compile="";
 question("Zkompilovat jako release build?", "")==1?compile="-C":compile="-c";
@@ -25,11 +25,11 @@ file_copy (exe, update, true);
 file_delete (exe);
 file_encrypt (update, real, scramble_update());
 file_delete (update);
-file_copy (real, "bin/"+real, true);
-file_delete (real);
+file_copy (real, "bin\\"+real, true);
 f.open ("bin/update.002", "wb");
-f.write (string_encrypt (file_hash (real, 2, false), scramble_update()));
+if (f.write (string_encrypt (file_hash (real, 2, false), scramble_update())) ==0) alert (get_last_error_text(), "");
 f.close();
+file_delete (real);
 f.open ("debugging.bgt", "rb");
 string raw=f.read();
 raw=string_replace (raw, "enable_debugging=true", "enable_debugging=false", true);
@@ -42,15 +42,6 @@ if (question ("Uploadnout celý update?", "")==1)
 run ("C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe", "", false, false);
 wait(1000);
 }
-}
-
-bool check_build()
-{
-if (build_day != DATE_DAY or build_month != DATE_MONTH or build_year != DATE_YEAR or build_hour != TIME_HOUR or build_minute != TIME_MINUTE)
-{
-if (question ("Pozor!", "Build konstanty nejsou aktuální! Pokraèovat?") ==2) return false;
-}
-return true;
 }
 
 bool instr (string source, string part)

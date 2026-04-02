@@ -55,14 +55,19 @@ if (p > 0)
 {
 string[]@ da;
 if ((@m.owner != null and m.owner.is_player) or @m.owner==null) @da=beers;
-else if (@m.owner!=null) @da=beers4;
+else if (@m.owner!=null)
+{
+@da=beers7;
+rep+="pùllitr s";
+string f=to_lower (da[m.kinds[0]][0]);
+if (f=="s" or f=="š" or f=="z" or f=="ž") rep+="e";
+rep+=" ";
+}
 rep+=da[m.kinds[0]];
 if (m.kinds[1] > -1)
 {
 @da=beers7;
-if (da[m.kinds[1]][0]=="S" or da[m.kinds[1]][0]=="Z" or da[m.kinds[1]][0]=="ž") rep+=" se ";
-else rep+=" s ";
-rep+=da[m.kinds[1]];
+rep+=" a "+da[m.kinds[1]];
 }
 rep+=". ";
 }
@@ -193,7 +198,7 @@ else cust+="Sleduješ ji. ";
 if (handle.help_state==-1 and handle.state>-1 and handle.state<statedesc.length())
 {
 cust+=statedesc[handle.state];
-if (handle.drink > -1 and handle.help_state == -1 and handle.state != idle)
+if (handle.drink > -1 and handle.help_state == -1 and handle.state != idle and !handle.has_drink and @handle.hand==null)
 {
 if (handle.state == waiting and queue.find (handle) > -1) cust+=" na ";
 else if (handle.state != drinking and handle.state != ordering)
@@ -202,8 +207,7 @@ cust+=". Rozhodl";
 if (handle.sex==2) cust+="a";
 cust+=" se pro ";
 }
-if (handle.state==drinking) cust+=". ";
-else cust+=handle.get_drink();
+if (handle.state!=drinking) cust+=handle.get_drink();
 }
 else if (handle.is_chasing and @handle.leading != null)
 {
@@ -1085,9 +1089,14 @@ say (fc, true, false);
 void say_thrown()
 {
 string tc;
-if (!allow_helpers) tc="V této høe jsou pomocníci zakázaní.";
-else if (!allow_throwers) tc="V této høe jsou vyhazovaèi zakázaní.";
-else if (throwers == 0) tc="Žádného vyhazovaèe jsi ještì nemìl.";
+if (!allow_helpers) tc="V této hardcore høe jsou pomocníci zakázaní.";
+else if (!allow_throwers) tc="V této hardcore høe jsou vyhazovaèi zakázaní.";
+else if (throwers == 0)
+{
+tc="Žádného vyhazovaèe jsi ještì nemìl";
+if (gender==2) tc+="a";
+tc+=".";
+}
 if (tc != "")
 {
 say (tc, true, false);

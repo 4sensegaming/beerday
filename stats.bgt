@@ -66,7 +66,6 @@ stat@ handle=null;
 uint sl=stats.length();
 for (uint i=0; i<sl; i++)
 if (stats[i].name == name) return stats[i];
-if (@handle==null) warning ("Neexistující statistika "+name+".");
 return handle;
 }
 
@@ -76,7 +75,7 @@ stat@ temp=find_stat (name);
 if (@temp==null)
 {
 warning ("Statistiku "+name+" se nepovedlo pøeèíst.");
-exit();
+return 0;
 }
 return temp.content;
 }
@@ -88,7 +87,7 @@ stat@ handle=find_stat (name);
 if (@handle == null)
 {
 warning ("Statistiku "+name+" se nepovedlo zapsat.");
-exit();
+return;
 }
 if (!overwrite) handle.content+=value;
 else if (value > handle.content) handle.content=value;
@@ -275,7 +274,7 @@ set_stat ("mixed_drinks", mixed_drinks);
 set_stat ("money", money);
 set_stat ("earned_most", money, true);
 find_stat("money_total").content=money_total;
-set_stat ("jukebox_earned", earned_jukebox);
+set_stat ("jukebox_earned_total", earned_jukebox);
 set_stat ("jukebox_earned_once", earned_jukebox, true);
 set_stat ("jukebox_earned_most", earned_jukebox_most_customer, true);
 set_stat ("jukebox_played_total", played_jukebox);

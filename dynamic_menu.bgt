@@ -153,7 +153,7 @@ item_list.sort_ascending();
 if (auto_speak_first and !rerun) speak_item=true;
 if (is_custmenu and !rerun) custchanged=true;
 running=true;
-if (@top_menu!=@this) @top_menu=@this;
+if (!rerun) reset_ui_help();
 frame.restart();
 while(true)
 {
@@ -176,11 +176,6 @@ if(speak_item)
 {
 if (is_custmenu) custchanged=true;
 if (item_list[menu_position-1].is_submenu and play_menu_sounds and play_submenu) play_submenu();
-if (!play_menu_sounds)
-{
-silence_menu();
-silence();
-}
 if (@sections!=null and sections.length()>1 and part!=old_part)
 {
 string section_name=get_section_name (item_list[menu_position-1]);
@@ -282,6 +277,7 @@ continue;
 if (ctrl)
 {
 skip_section (false);
+silence();
 continue;
 }
 if(menu_position==1)
@@ -293,15 +289,17 @@ menu_position=item_count;
 part=item_list[menu_position-1].section;
 speak_item=true;
 if (is_custmenu) custchanged=true;
+silence();
 continue;
 }
 else
 {
-play_stat ("edge", false, false, menu_sounds_vol);
+if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
 continue;
 }
 }
 play_move();
+silence();
 menu_position-=1;
 part=item_list[menu_position-1].section;
 speak_item=true;
@@ -313,26 +311,29 @@ else if (right or down or tab or stick_aim==2)
 if (ctrl)
 {
 skip_section (true);
+silence();
 continue;
 }
 if(menu_position==item_count)
 {
 if(wrap==true)
 {
-play_turn();
+if (play_menu_sounds) play_turn();
 menu_position=1;
 part=item_list[menu_position-1].section;
 speak_item=true;
 if (is_custmenu) custchanged=true;
+silence();
 continue;
 }
 else
 {
-play_stat ("edge", false, false, menu_sounds_vol);
+if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
 continue;
 }
 }
 play_move();
+silence();
 menu_position+=1;
 part=item_list[menu_position-1].section;
 speak_item=true;
@@ -349,10 +350,11 @@ play_move();
 menu_position=1;
 part=item_list[menu_position-1].section;
 speak_item=true;
+silence();
 if (is_custmenu) custchanged=true;
 continue;
 }
-else play_stat ("edge", false, false, menu_sounds_vol);
+else if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
 }
 if(singlekey (KEY_END))
 {
@@ -362,10 +364,11 @@ play_move();
 menu_position=item_count;
 part=item_list[menu_position-1].section;
 speak_item=true;
+silence();
 if (is_custmenu) custchanged=true;
 continue;
 }
-else play_stat ("edge", false, false, menu_sounds_vol);
+else if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
 }
 }
 }

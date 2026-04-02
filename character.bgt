@@ -1147,7 +1147,7 @@ else if (what==cleaning and count_clean_mugs()==0) say (prepend+"teï odnáší špin
 }
 prev_state=state;
 state=what;
-if (state == idle or state == drinking or state==closing or count_mess(2)+count_mess(3)>=max_liquid_mess or (help_state>-1 and prev_state!=mugging and prev_state!=serving and prev_state!=piping and prev_state!=giving and prev_state!=cleaning and prev_state!=emptiing and prev_state!=barreling and prev_state!=throwing and prev_state!=calming and prev_state!=disposing)) disrefer();
+if (state == idle or state == drinking or state==closing or (state==roaming and !is_roaming) or count_mess(2)+count_mess(3)>=max_liquid_mess or (help_state>-1 and state!=mugging and state!=serving and state!=piping and state!=giving and state!=cleaning and state!=emptiing and state!=barreling and state!=throwing and state!=calming and state!=disposing)) disrefer();
 vocal_elapsed=0;
 }
 
@@ -1289,6 +1289,7 @@ if (tracklist[i].filename==choice)
 break;
 }
 if (try.is_xmas and DATE_MONTH!=12) continue;
+if (choice==last_track) continue;
 if (playlist.find(choice)==-1) break;
 }
 if (played_jukebox_songs==0)
@@ -1384,7 +1385,7 @@ clean();
 punched=false;
 frames=0;
 frozen=1;
-if (health<=attack or random (0, 10) >= 9) set_state (fleeing);
+if (health<=attack or prev_state==fleeing or prev_state==opening or prev_state==closing or random (0, 10) >= 9) set_state (fleeing);
 else
 {
 if (!said_mess)
@@ -1739,7 +1740,7 @@ return;
 if (allow_helpers and random (0, 1) == 1)
 {
 choose_help();
-if (help_state>-1 and help_state != cleaning)
+if (help_state>-1 and help_state != cleaning and @hand!=null)
 {
 frames=speed+transition;
 hand.frames=speed+transition;
@@ -1769,7 +1770,7 @@ else if (enable_idle and decide == 1)
 {
 frames=speed+transition;
 hand.frames=speed+transition;
-hand.drop();
+if (@hand!=null) hand.drop();
 once_transition=random (transition, 150);
 set_state (idle);
 return;
@@ -1782,7 +1783,7 @@ return;
 }
 }
 frames=speed+transition;
-hand.drop();
+if (@hand!=null) hand.drop();
 set_state (arriving);
 return;
 }
@@ -2273,7 +2274,6 @@ rep+=" "+append+".";
 say (rep, false);
 frozen=1;
 frames=0;
-time_since_served=0;
 once_transition=(fps*3)+10;
 @leading=null;
 }
@@ -3028,7 +3028,7 @@ else if (decide < 9)
 {
 if (sex==2) say ("Ožrala usnula.", false);
 else say ("Ožrala usnul.", false);
-set_state (idle);
+set_state (idle, false);
 }
 else
 {
@@ -3037,7 +3037,7 @@ if (sex==2) r+="a";
 r+=" a jde si znovu objednat.";
 say (r, false);
 frames=0;
-set_state (arriving);
+set_state (arriving, false);
 }
 roamed=0;
 clean();
@@ -3083,6 +3083,7 @@ if (@leading == null and x == player.x and y == player.y and allow_playerhits) @
 if (@leading != null)
 {
 set_state (chasing);
+walked=100;
 return;
 }
 }
@@ -3140,7 +3141,7 @@ if (said_impatient) said_impatient=false;
 int8 order=queue.find (this);
 if (order == -1)
 {
-if (queue.is_empty()) time_since_served=0;
+if (queue.is_empty() and count_state(waiting).is_empty()) time_since_served=0;
 queue.insert_last (this);
 if (queue.length() > most_queue) most_queue=queue.length();
 set_patience();
@@ -3160,9 +3161,9 @@ nearby=-1;
 }
 queue.remove_at (order);
 if (full) has_drink=false;
+if (queue.is_empty() and count_state(waiting).is_empty()) time_since_served=0;
 }
 frames=0;
-if (queue.is_empty()) time_since_served=0;
 }
 
 void check_drink()
@@ -3204,7 +3205,11 @@ if (!autoplay) set_stat ("mixed_"+beers[m.kinds[0]]+"_"+beers[m.kinds[1]], 1);
 served++;
 }
 if (!correct) mistakes++;
-else served_correct++;
+else
+{
+served_correct++;
+time_since_served=0;
+}
 @seen_mug=@m;
 }
 if (state == waiting and frames > most_patient) most_patient=frames;

@@ -14,6 +14,7 @@ timer ui_help_timer;
 
 int callback (dynamic_menu@ handle, string user_data)
 {
+if (@top_menu!=@handle) @top_menu=@handle;
 closekey();
 if (is_readmenu and won.active and !won.playing and !won.paused) return -1;
 if (!is_gallery) menu_music();
@@ -23,12 +24,13 @@ game();
 if (player.state==opening or player.state==closing or player.state==fleeing or player.state==tripped or player.state==falldown) return -1;
 }
 int oldpos=handle.get_position(), pos=oldpos;
-if (singlekey (KEY_F1) and !instr (read_text, "ásledující") and !instr (read_text, "že text byl pøeèten") and !instr (read_text, "stereo") and !instr (read_text, "zadávej"))
+if (singlekey (KEY_F1) and !instr (read_text, "ásledující") and !instr (read_text, "Potvrzení a pokraèování") and !instr (read_text, "stereo") and !instr (read_text, "zadávej"))
 {
 ui_help (false);
 silence();
 if (question!="") say (question, true, false);
 handle.speak_item=true;
+return 0;
 }
 else if (singlekey (KEY_SPACE))
 {
@@ -59,7 +61,7 @@ wait_answered();
 return 3;
 }
 }
-if (is_custmenu and custbeep.playing) custcounter++;
+if (is_custmenu and !is_readmenu and custbeep.playing) custcounter++;
 uint count=handle.get_item_count();
 if (count > 10)
 {
@@ -75,7 +77,7 @@ else play_stat ("edge");
 }
 if (pos != oldpos)
 {
-if (is_custmenu and @handle==@menu and question=="")
+if (is_custmenu and !is_readmenu and @handle==@menu and question=="")
 {
 custchanged=true;
 custcounter=0;
@@ -86,7 +88,7 @@ handle.part=handle.item_list[handle.menu_position-1].section;
 handle.speak_item=true;
 }
 }
-if (is_custmenu and @handle==@menu and question=="")
+if (is_custmenu and !is_readmenu and @handle==@menu and question=="")
 {
 if (custchanged)
 {
@@ -144,14 +146,12 @@ if ((output == 0 and !sapi.speaking) or (output>0 and custcounter>fps))
 custcounter=0;
 silence_custmenu();
 }
-if (!is_readmenu and lone (KEY_R) and ctrl and !shift and !alt) read_menu (handle.item_list[pos-1].name, ".");
+if (!is_readmenu and lone (KEY_R) and ctrl and !shift and !alt) read_menu (handle.item_list[pos-1].ui_name, ".");
 }
-if (is_readmenu and lone (KEY_W, 3) and !alt)
+if (is_readmenu and lone (KEY_C) and ctrl and !shift and !alt)
 {
 get_characters();
-if (ctrl and !shift) copy (read_text);
-else if (shift and !ctrl) spell (read_text);
-else if (!ctrl and !shift) say (read_text, true, false, false, false);
+copy (read_text);
 }
 if (question=="") nav (handle);
 if (speak_ui_help and foreground)
@@ -301,7 +301,10 @@ void read_menu (string text, string separators="\r\n")
 {
 read_text=text;
 string[] split=string_split (text, separators, false);
-split.insert_at (0, "Seznam pro pohodlnìjší ètení delšího textu");
+split.insert_at (0, "Seznam pro pohodlnìjší ètení");
+if (!is_readmenu and !instr (read_text, "ásledující") and !instr (read_text, "stereo") and !instr (read_text, "Potvrzení a pokraèování") and !instr (read_text, "zadávej")) speak_menu_prompt=true;
+else if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
+if (is_custmenu) silence_custmenu();
 ss_start();
 bool old_read=is_readmenu;
 is_readmenu=true;
@@ -317,6 +320,7 @@ if (link!="" and !external (link)) break;
 else is_rerun=true;
 }
 is_readmenu=old_read;
+speak_menu_prompt=old_prompt;
 ss_end();
 read_text="";
 }
@@ -599,6 +603,7 @@ ss_end();
 
 void nav (dynamic_menu@ handle)
 {
+if (ctrl or shift or alt) return;
 string char=get_characters();
 if (char.length() == 1 and char != " ")
 {
@@ -629,7 +634,7 @@ break;
 }
 if (found == -1)
 {
-play_stat ("error");
+if (play_menu_sounds) play_stat ("error");
 found=current;
 }
 else
@@ -639,7 +644,11 @@ handle.menu_position=found+1;
 handle.part=handle.item_list[handle.menu_position-1].section;
 }
 if (is_custmenu and @handle==@menu and question=="") custchanged=true;
-if (found>-1) handle.speak_item=true;
+if (found>-1)
+{
+handle.speak_item=true;
+silence();
+}
 }
 else error ("Nepovolený znak.", forced_output);
 }
@@ -831,70 +840,80 @@ reset_ui_help();
 
 void ui_help (bool speak)
 {
-if (@top_menu is null or (speak and help_read)) return;
+if (@top_menu is null or (speak and help_read) or (speak and !speak_ui_help)) return;
 string msg="";
 ui_help_timer.restart();
 ui_help_timer.pause();
 bool old_help=speak_ui_help;
 if (!speak) speak_ui_help=false;
 msg="Šipka dolù, šipka doprava nebo tab: Následující ";
-if (is_readmenu) msg+="øádek";
+if (is_readmenu and !is_custmenu) msg+="øádek";
 else if (question!="") msg+="odpovìï";
+else if (is_custmenu and !is_readmenu) msg+="zákazník";
 else msg+="položka";
 msg+=".\r\nŠipka nahoru, šipka doleva nebo šift plus tab: Pøedchozí ";
-if (is_readmenu) msg+="øádek";
+if (is_readmenu and !is_custmenu) msg+="øádek";
 else if (question!="") msg+="odpovìï";
+else if (is_custmenu and !is_readmenu) msg+="zákazník";
 else msg+="položka";
 msg+=".\r\n";
-if (!is_readmenu and top_menu.has_sections()>1) msg+="Kontrol plus šipka dolù, kontrol plus šipka doprava nebo kontrol plus tab: Následující záložka.\r\nKontrol plus šipka nahoru, kontrol plus šipka doleva nebo kontrol plus šift+tab: Pøedchozí záložka.\r\n";
+if (@top_menu!=null and top_menu.has_sections()>1) msg+="Kontrol plus šipka dolù, kontrol plus šipka doprava nebo kontrol plus tab: Následující záložka.\r\nKontrol plus šipka nahoru, kontrol plus šipka doleva nebo kontrol plus šift+tab: Pøedchozí záložka.\r\n";
 msg+="Mezerník: Zopakování ";
-if (is_readmenu) msg+="aktuálního øádku.\r\n";
+if (is_readmenu and !is_custmenu) msg+="aktuálního øádku.\r\n";
 else if (question!="") msg+="znìní otázky a vybrané odpovìdi.\r\n";
+else if (is_custmenu) msg+="informací o vybraném zákazníkovi.\r\n";
 else msg+="vybrané položky.\r\n";
 if (is_learnmenu) msg+="Enter: Pøehrání vybraného zvuku. Pokud má zvuk víc variant, budou se pøehrávat náhodnì.\r\n";
-else if (is_custmenu) msg+="Enter: Nabídka akcí pro vybraného zákazníka.\r\n";
+else if (!is_readmenu and is_custmenu) msg+="Enter: Nabídka akcí pro vybraného zákazníka.\r\n";
 else if (!is_statmenu)
 {
 if (question!="") msg+="Enter: Potvrzení vybrané odpovìdi.\r\n";
-else if (is_readmenu and @top_menu!=null and top_menu.get_item_description (top_menu.get_position())!="") msg+="Enter: Otevøení vybraného odkazu.\r\n";
-else if (!is_readmenu) msg+="Enter: Potvrzení vybrané položky.\r\n";
+else if (is_readmenu and !is_custmenu and @top_menu!=null and top_menu.get_item_description (top_menu.get_position())!="") msg+="Enter: Otevøení vybraného odkazu.\r\n";
+else if (!is_readmenu and !is_custmenu) msg+="Enter: Potvrzení vybrané položky.\r\n";
 }
 msg+="Houm: ";
-if (is_readmenu) msg+="První øádek.\r\n";
+if (is_readmenu and !is_custmenu) msg+="První øádek.\r\n";
 else if (question!="") msg+="První odpovìï.\r\n";
+else if (is_custmenu and !is_readmenu) msg+="zákazník";
 else msg+="První položka.\r\n";
 msg+="End: ";
-if (is_readmenu) msg+="Poslední øádek.\r\n";
+if (is_readmenu and !is_custmenu) msg+="Poslední øádek.\r\n";
 else if (question!="") msg+="Poslední odpovìï.\r\n";
+else if (is_custmenu and !is_readmenu) msg+="zákazník";
 else msg+="Poslední položka.\r\n";
-if (top_menu.get_item_count()>10)
+if (@top_menu!=null and top_menu.get_item_count()>10)
 {
 msg+="Pejdž ap: Skok o 10 ";
-if (is_readmenu) msg+="øádkù";
+if (is_readmenu and !is_custmenu) msg+="øádkù";
+else if (is_custmenu and !is_readmenu) msg+="zákazníkù";
 else msg+="položek";
 msg+=" nahoru.\r\nPejdž daun: Skok o 10 ";
-if (is_readmenu) msg+="øádkù";
+if (is_readmenu and !is_custmenu) msg+="øádkù";
+else if (is_custmenu and !is_readmenu) msg+="zákazníkù";
 else msg+="položek";
 msg+=" dolù.\r\n";
 }
-if (is_custmenu) msg+="Kontrol plus er: Zobrazení informací o vybraném zákazníkovi v seznamu pro pohodlnìjší ètení.\r\n";
-if (top_menu.item_list[0].name=="play") msg+="Eskejp nebo alt plus ef ètyøi: Ukonèení programu.\r\n";
+if (is_custmenu and !is_readmenu) msg+="Kontrol plus er: Zobrazení informací o vybraném zákazníkovi v seznamu pro pohodlnìjší ètení.\r\n";
+if (@top_menu!=null and top_menu.item_list[0].name=="play") msg+="Eskejp nebo alt plus ef ètyøi: Ukonèení programu.\r\n";
 else
 {
-if (!onboarding and (question=="" or top_menu.get_item_count()==3)) msg+="Eskejp nebo bekspejs: Návrat do pøedchozí nabídky.\r\n";
+if (!onboarding and (question=="" or (@top_menu!=null and top_menu.get_item_count()==3))) msg+="Eskejp nebo bekspejs: Návrat do pøedchozí nabídky.\r\n";
 if (question!="Ukonèit program?") msg+="Alt plus ef ètyøi: Ukonèení programu.\r\n";
 }
 msg+="Písmena abecedy: ";
 if (question=="")
 {
-msg+="Rychlá navigace na nejbližší ";
-if (is_readmenu) msg+="øádek";
-else msg+="položku";
-msg+=" zaèínající daným písmenem.\r\n";
+msg+="Rychlá navigace na nejbližší";
+if (is_readmenu and !is_custmenu) msg+=" øádek";
+else if (is_custmenu and !is_readmenu) msg+="ho zákazníka";
+else msg+=" položku";
+msg+=" zaèínající";
+if (is_custmenu and !is_readmenu) msg+="ho";
+msg+=" daným písmenem.\r\n";
 }
 else msg+="Rychlý výbìr konkrétní odpovìdi.\r\n";
 if (is_readmenu and msg!=read_text) msg+="Kontrol plus cé: Zkopírování celého seznamu do schránky.\r\n";
-if (!is_readmenu) msg+="Ef jedna: Zobrazení kontextové nápovìdy k ovládání v seznamu pro pohodlnìjší ètení.\r\n";
+if (!is_readmenu) msg+="Ef jedna: Zobrazení kontextové nápovìdy k ovládání této obrazovky v seznamu pro pohodlnìjší ètení.\r\n";
 msg+="Dylít nebo kontrol plus šift plus alt: Umlèení øeèi.";
 if (speak and !help_read)
 {
@@ -913,6 +932,7 @@ ui_help_timer.restart();
 ui_help_timer.pause();
 read_text=old_text;
 }
+speak_ui_help=old_help;
 }
 
 void ui_options()
@@ -1860,7 +1880,9 @@ string help_msg="Text zadávej pomocí standardních kláves obvyklých v jiných prog
 if (singlekey (KEY_F1))
 {
 read_menu (help_msg);
-help_read=false;
+help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
 }
 if (speak_ui_help)
 {
@@ -1879,7 +1901,6 @@ void clear_profile()
 {
 if (ask ("Chceš opravdu smazat celý svùj profil a veškerá nastavení? Budeš pak muset zaèít hrát znovu úplnì od zaèátku jako po prvním spuštìní. Tento krok nejde odvolat!")==1)
 {
-delete_nvda();
 directory_delete (string_trim_right (folder, 1));
 run (SCRIPT_EXECUTABLE, "", false, false);
 exit();

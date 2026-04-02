@@ -94,19 +94,33 @@ if (is_new)
 global=play_stat ("pocket", false, true);
 wait_sound (global, false);
 }
+is_readmenu=true;
 say (rep, true, false, false, false);
 wait_reader (rep, true);
+is_readmenu=false;
 }
 
 void update (bool silent=true)
 {
 string lastver=download ("lastver.dat");
-if (lastver == "") return;
+if (lastver == "")
+{
+fail_download();
+return;
+}
 lastver=string_decrypt (lastver, scramble_update());
-if (lastver == "") return;
+if (lastver == "")
+{
+fail_download();
+return;
+}
 string[] split=string_split (lastver, "\t", true);
 uint8 l=split.length();
-if (l < 6 or l > 7) return;
+if (l < 6 or l > 7)
+{
+fail_download();
+return;
+}
 update_version=split[0];
 uint update_day=string_to_number (split[1]), update_month=string_to_number (split[2]), update_year=string_to_number (split[3]), update_hour=string_to_number (split[4]), update_minute=string_to_number (split[5]);
 string update_command="";
@@ -124,10 +138,16 @@ int8 tempres=1;
 if (!speak_menu_prompt) speak_menu_prompt=true;
 um.insert_last ("update_to_version|Aktualizovat na verzi "+update_version);
 um.insert_last ("view_changelog|Zobrazit historii zmìn|"+browser);
+bool old_write=can_write;
+file temp;
+temp.open ("test.exe", "wb");
+temp.write ("test");
+temp.close();
+if (!file_exists ("test.exe")) can_write=false;
 if (!can_write)
 {
 postpone_update=true;
-um[0]+=" Není ji ale možné automaticky nainstalovat, protože program nemá oprávnìní zapisovat do své datové složky. Bude potøeba z hlavního menu ruènì stáhnout hru pomocí webového prohlížeèe.";
+um[0]+=" Není ji ale možné automaticky nainstalovat, protože program nemá oprávnìní zapisovat do své datové složky. Bude potøeba ruènì stáhnout hru pomocí webového prohlížeèe. Tuto možnost najdeš v nabídce Online funkce.";
 um.remove_at (1);
 }
 else
@@ -135,6 +155,7 @@ else
 um[0]+=" Teï máš verzi "+version+".";
 if (update_command=="c") um[0]+=" Tato aktualizace musí smazat tvùj profil, protože starý profil není kompatibilní s novou verzí. To znamená, že pøijdeš o veškerá nastavení, statistiky, pøemapované klávesy, prùchod hrou, odemèené varianty a režimy hry i získané trofeje a budeš zaèínat znovu od úplného zaèátku jako pøi prvním spuštìní.";
 }
+can_write=old_write;
 um.insert_last ("ignore_update|Ignorovat aktualizaci do pøíštího spuštìní");
 is_updatemenu=true;
 bool is_rerun=false;
@@ -163,6 +184,7 @@ break;
 }
 else file_delete (folder+"profile.dat");
 }
+say ("Aktualizace se stahuje.", true, false);
 download_update();
 break;
 }
@@ -189,26 +211,12 @@ if (output>0)
 if (play_sr_prompt) play_stat ("sr");
 if (speak_sr_prompt) say (prompt, false, false);
 }
+help_read=false;
 frame.restart();
 while (true)
 {
 wait (5);
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
 closekey();
-if (speak_ui_help)
-{
-if (ui_help_timer.elapsed<ui_help_delay and keys>0)  ui_help_timer.restart();
-if (ui_help_timer.elapsed>=ui_help_delay and keys==0 and !help_read)
-{
-if (is_custmenu) silence_custmenu();
-say (helpmsg, false, false);
-help_read=true;
-ui_help_timer.restart();
-ui_help_timer.pause();
-}
-}
 if (lone (KEY_C) and ctrl and !shift and !alt)
 {
 string copy_text=sanitize (phrase);
@@ -235,18 +243,31 @@ else if (keys > 0 and !ctrl and !shift and !alt and !key_down (KEY_LWIN) and !ke
 say (phrase, true, false);
 wait_keys();
 }
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+if (speak_ui_help)
+{
+if (ui_help_timer.elapsed<ui_help_delay and keys>0)  ui_help_timer.restart();
+if (ui_help_timer.elapsed>=ui_help_delay and keys==0 and !help_read)
+{
+if (is_custmenu) silence_custmenu();
+say (helpmsg, false, false);
+help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
+}
+}
 }
 }
 silence();
 wait_keys();
-help_read=false;
 if (call_music) menu_music();
 ss_end();
 }
  
 void download_update()
 {
-silence();
 cleanup();
 string hash=download ("update.002");
 if (hash == "")
@@ -280,6 +301,7 @@ if (!file_decrypt (folder+"update.dat", folder+"beerday.exe", scramble_update())
 fail_download();
 return;
 }
+say ("Aktualizace se instaluje.", true, false, output==0);
 if (!run (folder+"beerday.exe", "overwrite\t"+SCRIPT_EXECUTABLE, false, false))
 {
 fail_install();
@@ -338,7 +360,7 @@ void fail_download()
 postpone_update=true;
 if (is_updatemenu)
 {
-string failure="Aktualizaci se nepodaøilo stáhnout. Zkus si ovìøit, že nemáš problémy s pøipojením k internetu, pøípadnì tento program spouštìt jako správce. Pokud to nepomùže, zbývá ještì možnost z hlavního menu stáhnout hru pomocí webového prohlížeèe.";
+string failure="Aktualizaci se nepodaøilo stáhnout. Zkus si ovìøit, že nemáš problémy s pøipojením k internetu, pøípadnì tento program spouštìt jako správce. Pokud to nepomùže, zbývá ještì možnost stáhnout hru pomocí webového prohlížeèe, kterou najdeš v nabídce Online funkce.";
 play_stat ("error");
 say (failure, true, false);
 wait_reader (failure);
@@ -397,11 +419,13 @@ string download (string resource, bool headers_only=false)
 if (!headers_only and !is_online) return "";
 double downloaded=0, size=0;
 http downloader;
-if (headers_only or is_updatemenu)
-{
 downloader.get_headers (uri+resource);
 while (downloader.progress and get_last_error()==0) downloader.request();
-if (downloader.headers=="" or get_last_error()<0) return "";
+if (downloader.headers=="" or get_last_error()<0)
+{
+warning ("Selhalo stahování hlavièek\r\n"+resource+"\r\nStažená surová data: "+downloader.headers);
+return "";
+}
 else if (headers_only) return downloader.headers;
 if (is_updatemenu)
 {
@@ -414,32 +438,24 @@ size=string_to_number (headers[(i+1)]);
 break;
 }
 }
-}
 sound beep;
 beep.stream("beep"+ext);
-timer loaded;
 double last_percentage=0;
-frame.restart();
 string data=downloader.get (uri+resource);
+timer loaded;
 while (downloader.progress)
 {
-if (get_last_error()<0 or (downloaded<1024 and instr (data, "html")) or (downloaded>0 and data==""))
+data+=downloader.request();
+if (downloaded<10 and instr (data, "html"))
 {
 data="";
+warning ("Selhalo stahování, protože server vrátil chybu\r\n"+resource+"\r\nStažená surová data: "+data);
 break;
 }
-data+=downloader.request();
-if (frame.elapsed>=1000/fps)
-{
-frame.restart();
 if (loaded.elapsed>=10000)
 {
-if (!is_updatemenu)
-{
-play_stat ("error");
-say ("Nepodaøilo se stáhnout "+uri+resource+". Zkus to prosím znovu pozdìji.", true, false, true, false);
-}
 data="";
+warning ("Selhalo stahování, protože zamrzlo\r\n"+resource+"\r\nStažená surová data: "+data);
 break;
 }
 closekey();
@@ -450,10 +466,12 @@ if (percentage>last_percentage)
 {
 loaded.restart();
 last_percentage=percentage;
+wait(1);
 if (is_updatemenu)
 {
 beep.pitch=100+percentage;
-if (!beep.playing) beep.play();
+beep.stop();
+beep.play();
 }
 }
 if (is_updatemenu)
@@ -466,7 +484,6 @@ return "";
 if (singlekey (KEY_SPACE)) say (percentage+" %, staženo "+round (downloaded/1024, 0)+" kilobajtù z "+round (size/1024, 0)+".", true, false);
 }
 }
-}
-if (enable_debugging and (data=="" or get_last_error()<0)) warning ("Selhalo stahování\r\n"+uri+resource+"\r\nChybová hláška: "+get_last_error_text()+"\r\nStažená data: "+data);
+if (data=="" or get_last_error()<0) warning ("Selhalo stahování na konci, protože soubor je prázdný\r\n"+resource+"\r\nStažená surová data: "+data);
 return data;
 }

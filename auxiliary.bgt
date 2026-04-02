@@ -30,6 +30,7 @@ test.close();
 if (!file_exists (name)) can_write=false;
 else file_delete (name);
 }
+if (!can_write and question ("Pozor!", "Program nedokáže zapisovat do svojí datové složky. Hrát sice mùžeš, ale nebudou se ti ukládat žádná nastavení ani postup ve høe. Zkus tento program spouštìt jako správce. Zkratkou alt+enter otevøi vlastnosti souboru beerday.exe a na záložce Kompatibilita zaškrtni volbu Spustit tento program jako správce. Pokud to nepomùže, mùžeš mì kontaktovat pøíslušnou funkcí v nabídce Online funkce. Chceš hru spustit i tak?")==2) exit();
 explorer=windir+"explorer.exe";
 if (!file_exists (explorer)) explorer="";
 if (explorer!="")
@@ -151,7 +152,6 @@ set_stat ("run_times", 1);
 save_stats();
 save_profile();
 }
-delete_nvda();
 exit();
 }
 if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPADENTER) or singlekey (KEY_ESCAPE) or singlekey (KEY_SPACE))
@@ -333,18 +333,7 @@ h.close();
 }
 }
 }
-delete_nvda();
 exit();
-}
-
-void delete_nvda()
-{
-if (file_exists (folder+"nvda.dll"))
-{
-screen_reader_stop_speech (4);
-screen_reader_unload_library (4);
-file_delete (folder+"nvda.dll");
-}
 }
 
 void error (string msg="", bool wait=false, bool interrupt=true)
@@ -514,7 +503,7 @@ if (!is_readmenu) what=sanitize (what);
 if (strip_diacritics) what=fuck_czech (what);
 clipboard_copy_text (what);
 if (!is_readmenu) say (history[history_index]+" skopírováno do schránky.", true, false);
-else say ("Text zkopírován do schránky.", true, false);
+else say ("Seznam zkopírován do schránky.", true, false);
 }
 
 void spell (string entry)

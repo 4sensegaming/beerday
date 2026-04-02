@@ -55,6 +55,7 @@ state=0;
 if (spill>-1 and things.sound_is_playing (spill)) things.destroy_sound (spill);
 spill=-1;
 if (@using != null and using.pour > -1 and things.sound_is_playing (using.pour)) things.pause_sound (using.pour);
+if (@using!=null and using.total>=poured_undermeasure) time_since_served=0;
 @using=null;
 frames=-1;
 if (check_empty and amounts[pipe] == 0) make_empty();

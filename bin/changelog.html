@@ -17,6 +17,36 @@
 </nav>
 </header>
 <main>
+<article aria-labelledby="094">
+<h2 id="094">Verze 0.9.4</h2>
+<p>2. dubna 2024</p>
+<ul aria-labelledby="094">
+<li>Verze 0.9.2 a 0.9.3 jsem ani nepsal, byly jen testovací pro mě, protože jsem upravoval stahování aktualizací a vylepšoval chybové hlášky, když se stahování nepovede.</li>
+<li>Opraveno ještě několik dalších situací, kdy hra nerespektovala nastavení, jestli přehrávat zvuky při pohybu v nabídkách, a s tím souvisejících chyb (díky Chipotlovi).</li>
+<li>Opravena chyba, kdy se zákazník rozhodl pomáhat a vzápětí nato si šel hned zase objednat (díky Majozovi a Míše).</li>
+<li>Snad opravena chyba, kdy jste po přerušení dlouhé volné hry a spuštění nové hry okamžitě prohráli (díky Majozovi).</li>
+<li>Pokus opravit chybu, kdy se ožrala, který dělá bordel, na někoho naštval, došel k němu, ale pak ho nikdy nepraštil a zůstal nad ním zaseknutý stát (díky Majozovi).</li>
+<li>Hra už ze své datové složky při ukončení nebude mazat knihovnu pro komunikaci s NVDA, což pomůže hlavně jednomu doslova hackerovi na Linuxu - protože si to hacknul (díky Trychtýřovi).</li>
+<li>Opravena chyba při zapisování statistiky, kolik si hráč celkem vydělal z jukeboxu, při výhře (díky Míše). Zároveň už se hra rovnou neukončí, pokud dojde k chybě při práci se statistikami, ale jen zobrazí chybovou hlášku a bude pokračovat dál.</li>
+<li>Opravena chyba, kdy nefungovala klávesa F1 ve stejném menu víckrát za sebou (díky Majozovi).</li>
+<li>Pokud při spuštění hra nemůže zapisovat do datové složky, takže by se nemohla uložit žádná nastavení ani postup do profilu, už to jenom tiše neakceptuje, takže vy byste se pak divili, proč se nic neuložilo, ale upozorní na to chybovou hláškou hned při spuštění.</li>
+<li>Před stažením aktualizace teď hra zjistí, jestli může zapisovat i do své vlastní složky, ne jenom do té datové, protože by vás jinak upozornila, že aktualizace nejde nainstalovat, až pozdě (díky Chipotlovi).</li>
+<li>Upravena kontrola špatné obsluhy, takže má teď pro každou obtížnost jiný interval nečinnosti a zároveň se tento časovač vynuluje, i když před zákazníka položíte správný půllitr, nejen teprve až si ho vezme (díky Chipotlovi), a mírně jsem vylepšil ještě několik dalších dílčích podmínek a edge cases této kontroly. Teď už to není o tom, že by byla inherentně, koncepčně a od základu rozbitá celá jako před verzí 0.9, ale jenom o tom, aby byla co nejchytřejší, spravedlivá, přísná, ale přitom pořád relativně dost benevolentní.</li>
+<li>Upravena formulace v informacích o zákazníkovi, pokud má objednané pití, už ho dostal a vzal si ho, ale ještě nezaplatil, nevyřadil se z fronty a nezačal pít (díky Chipotlovi).</li>
+<li>Nový rychlejší způsob zpracování událostí z klávesnice z verze 0.9, nezávislý na ticích za sekundu, se teď používá i při čekání na potvrzení hlášky odečítače enterem.</li>
+<li>Opravena chyba, kdy zákazník mohl v jukeboxu pustit tu samou písničku, která právě hraje.</li>
+<li>Opravena podpora eSpeaku při vytváření hlášek zákazníků.</li>
+<li>Pokud se teď omráčený zákazník probere a předtím odcházel, bude si to pamatovat a opravdu odejde (díky Majozovi).</li>
+<li>Upravena hláška &quot;Žádného vyhazovače jsi ještě neměl&quot; podle pohlaví hráče.</li>
+<li>V přehledu všech zákazníků opraveno nefunkční zobrazení vybraného zákazníka v seznamu pro pohodlnější čtení pomocí ctrl+R (díky Majozovi).</li>
+<li>Při vstupu do seznamu pro pohodlnější čtení (text rozdělený po řádcích, resp. po větách), se teď vždycky přečte název obrazovky, i pokud máte vypnuté čtení názvů nabídek, aby to nebylo matoucí (díky Chipotlovi).</li>
+<li>Upravena kontextová nápověda k ovládání (F1 nebo automaticky), aby dávala relevantní instrukce i pro přehled všech zákazníků.</li>
+<li>Změněna zkratka pro zkopírování celého čtecího seznamu do schránky z ctrl+W na ctrl+C, aby to odpovídalo kontextové nápovědě (díky Chipotlovi).</li>
+<li>Pokud teď v některém menu držíte control, shift nebo alt a zároveň stisknete libovolné písmeno, nebude se už hra pokoušet o rychlou navigaci na položku menu začínající tímto písmenem, jinak by předchozí změna (zkratka ctrl+C ve čtecím seznamu) nemohla fungovat. Zároveň byly odstraněny zkratky pro zopakování a hláskování aktuální položky v tomto seznamu, které se shodovaly s historií řeči, což vedlo ke zmatení a nikdo je stejně nepoužíval; od toho je mezerník, a když si to můžete zkopírovat do schránky celé, tak proč byste to chtěli hláskovat položku po položce přímo ve hře.</li>
+<li>Opraveno samovolné vypínání automatického čtení kontextové nápovědy k ovládání.</li>
+</ul>
+</article>
+<hr>
 <article aria-labelledby="091">
 <h2 id="091">Verze  0.9.1</h2>
 <p>31. března 2026</p>

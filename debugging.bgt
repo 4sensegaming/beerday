@@ -325,8 +325,11 @@ if (custbeep.playing) custbeep.stop();
 if (global>-1 and pool.sound_is_playing(global)) pool.destroy_sound(global);
 global=-1;
 if (is_game) pause();
-alert ("Pozor!", wtf+"\r\nBuï tý lásky a upozorni toho vocasa, kterej to programoval. Máš to ve schránce.");
-clipboard_copy_text (wtf);
+string warning=get_last_error_text();
+if (warning!="") warning="Chyba BGT: "+warning+"\r\n";
+warning+=wtf;
+alert ("Pozor!", warning+"\r\nBuï tý lásky a upozorni toho vocasa, kterej to programoval. Máš to ve schránce.");
+clipboard_copy_text (warning);
 if (!oldpaused and is_game) resume();
 if (quit) exit();
 }

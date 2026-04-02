@@ -24,7 +24,7 @@ mess@[] messes;
 string[] beers, beers4, beers7, used_greetings;
 uint8[] prices;
 
-uint trip_time, sleep_time, all_speed, longest, money, money_total=0, most_patient, mug_path, steps, spawner, spawn_delay, min_drink_time, max_drink_time, wash_time, flushed, flusher, replaced, gratuity, most_gratuity_once, most_gratuity_total, most_paid, max_liquid_mess, puke_count, total_puked, min_price, max_price, time_since_served;
+uint trip_time, sleep_time, all_speed, longest, money, money_total=0, most_patient, mug_path, steps, spawner, spawn_delay, min_drink_time, max_drink_time, wash_time, flushed, flusher, replaced, gratuity, most_gratuity_once, most_gratuity_total, most_paid, max_liquid_mess, puke_count, total_puked, min_price, max_price, time_since_served, serve_interval;
 int8 bottom, stairs, toilet, toiletslot, total_trips;
 uint max, ceiling, aggression, difficulty=1, mug_count, barrel_count, broken, fallen, broken_nonempty, fallen_nonempty, beer_count, maxfled, maxstunned, faucet_distance, helpers, pourers, givers, throwers, cleaners, barrelers, emptiers, calmers, trance, fled, fled_total, hurt, thrown, stunned, total_stuns, most, served, served_correct, undermeasures, dirty_drinks, single_drinks, mixed_drinks, most_beers, washed, total_falls, hit_interval, mistakes, roamers, chasers, slept, most_queue, most_hits, spawned, dried;
 bool paused=false, autoplay, allow_helpers=true, allow_servers=true, allow_givers=true, allow_cleaners=true, allow_barrelers=true, allow_emptiers=true, allow_calmers=true, allow_throwers=true, allow_fled=true, allow_stunned=true, allow_trips=true, allow_falls=true, allow_broken=true, allow_fallen=true, allow_mistakes=true, allow_playerhits=true, allow_messy=true, hardcore=false, endless=false, freeplay=false, said_helpers=false, is_game=false;
@@ -65,6 +65,7 @@ puke_count=3;
 max_drink_time=50;
 min_price=20;
 pay_most_jukebox_once=200;
+serve_interval=180*fps;
 break;
 case 2:
 bottom=-15;
@@ -87,6 +88,7 @@ puke_count=6;
 max_drink_time=45;
 min_price=30;
 pay_most_jukebox_once=300;
+serve_interval=150*fps;
 break;
 case 3:
 bottom=-20;
@@ -109,6 +111,7 @@ puke_count=8;
 max_drink_time=40;
 min_price=40;
 pay_most_jukebox_once=400;
+serve_interval=120*fps;
 break;
 case 4:
 bottom=-25;
@@ -131,6 +134,7 @@ puke_count=12;
 max_drink_time=35;
 min_price=50;
 pay_most_jukebox_once=500;
+serve_interval=90*fps;
 break;
 case 5:
 bottom=-30;
@@ -153,6 +157,7 @@ puke_count=20;
 max_drink_time=30;
 min_price=60;
 pay_most_jukebox_once=600;
+serve_interval=75*fps;
 break;
 }
 min_drink_time=25;
@@ -341,11 +346,13 @@ single_most_gender=1;
 single_drank_gender=1;
 single_longest_gender=1;
 is_game=true;
+elapsed=0;
 game();
 fadein();
 ambience=pool.play_stationary_extended ("ambience"+ext, true, 0, stereo_center, -20, 100);
-elapsed=1;
+elapsed=0;
 clear_player();
+time_since_served=0;
 }
 
 void pause (bool speak=true)
@@ -1313,8 +1320,8 @@ if (enable_lose_check and !is_tutorial and door.closed and !door.playing() and d
 if (mugs.length() ==0) lose();
 if (!freeplay)
 {
-if (count_active()==0 and (fled >= maxfled or (total_stuns >= maxstunned and stunned!=total_stuns) or player.count_state(idle).length()==customers.length() or customers.is_empty())) lose (1);
-if (player.count_state(serving).is_empty() and time_since_served>90*fps and !queue.is_empty())
+if (count_active()==0 and (fled >= maxfled or (total_stuns >= maxstunned and stunned!=total_stuns) or customers.is_empty() or player.count_state(idle).length()==customers.length())) lose (1);
+if (player.count_state(serving).is_empty() and time_since_served>serve_interval and (!queue.is_empty() or !player.count_state(waiting).is_empty()) and (fled>served or stunned>served))
 {
 if (!player.carrying.is_empty() or count_clean_mugs()>0 or say_dirty(false)>0) lose(1);
 }
