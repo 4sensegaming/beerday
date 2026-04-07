@@ -40,7 +40,7 @@ normal_duration_diff5	Na nejtìžší obtížnost	2	5
 normal_completed_duration	Ve vyhraných hrách	2	5
 normal_lost_duration	V prohraných hrách	2	5
 normal_quit_duration	V pøerušených hrách	2	5
-normal_longest_total	Dohromady	2	6
+normal_longest_total	Celkovì	2	6
 normal_longest_diff1	Na nejjednodušší obtížnost	2	6
 normal_longest_diff2	Na jednoduchou obtížnost	2	6
 normal_longest_diff3	Na støední obtížnost	2	6
@@ -91,7 +91,7 @@ normal_hardcore_duration_diff5	Na nejtìžší obtížnost	3	5
 normal_hardcore_completed_duration	Ve vyhraných hrách	3	5
 normal_hardcore_lost_duration	V prohraných hrách	3	5
 normal_hardcore_quit_duration	V pøerušených hrách	3	5
-normal_hardcore_longest_total	Dohromady	3	6
+normal_hardcore_longest_total	Celkovì	3	6
 normal_hardcore_longest_diff1	Na nejjednodušší obtížnost	3	6
 normal_hardcore_longest_diff2	Na jednoduchou obtížnost	3	6
 normal_hardcore_longest_diff3	Na støední obtížnost	3	6
@@ -133,7 +133,7 @@ endless_duration_diff4	Na tìžkou obtížnost	4	4
 endless_duration_diff5	Na nejtìžší obtížnost	4	4
 endless_lost_duration	V prohraných hrách	4	4
 endless_quit_duration	V pøerušených hrách	4	4
-endless_longest_total	Dohromady	4	5
+endless_longest_total	Celkovì	4	5
 endless_longest_diff1	Na nejjednodušší obtížnost	4	5
 endless_longest_diff2	Na jednoduchou obtížnost	4	5
 endless_longest_diff3	Na støední obtížnost	4	5
@@ -176,7 +176,7 @@ endless_hardcore_duration_diff4	Na tìžkou obtížnost	5	4
 endless_hardcore_duration_diff5	Na nejtìžší obtížnost	5	4
 endless_hardcore_lost_duration	V prohraných hrách	5	4
 endless_hardcore_quit_duration	V pøerušených hrách	5	4
-endless_hardcore_longest_total	Dohromady	5	5
+endless_hardcore_longest_total	Celkovì	5	5
 endless_hardcore_longest_diff1	Na nejjednodušší obtížnost	5	5
 endless_hardcore_longest_diff2	Na jednoduchou obtížnost	5	5
 endless_hardcore_longest_diff3	Na støední obtížnost	5	5
@@ -216,7 +216,7 @@ free_duration_diff4	Na tìžkou obtížnost	6	4
 free_duration_diff5	Na nejtìžší obtížnost	6	4
 free_lost_duration	V prohraných hrách	6	4
 free_quit_duration	V pøerušených hrách	6	4
-free_longest_total	Dohromady	6	5
+free_longest_total	Celkovì	6	5
 free_longest_diff1	Na nejjednodušší obtížnost	6	5
 free_longest_diff2	Na jednoduchou obtížnost	6	5
 free_longest_diff3	Na støední obtížnost	6	5
