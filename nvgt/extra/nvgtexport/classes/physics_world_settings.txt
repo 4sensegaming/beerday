@@ -1,0 +1,19 @@
+class physics_world_settings {
+	string world_name;
+	vector gravity;
+	float persistent_contact_distance_threshold;
+	float default_friction_coefficient;
+	float default_bounciness;
+	float restitution_velocity_threshold;
+	bool is_sleeping_enabled;
+	uint16 default_velocity_solver_iterations_count;
+	uint16 default_position_solver_iterations_count;
+	float default_time_before_sleep;
+	float default_sleep_linear_velocity;
+	float default_sleep_angular_velocity;
+	float cos_angle_similar_contact_manifold;
+	physics_world_settings();
+	physics_world_settings(const physics_world_settings&in);
+	physics_world_settings& opAssign(const physics_world_settings&in);
+	string opImplConv();
+}

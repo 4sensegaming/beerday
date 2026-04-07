@@ -1,0 +1,1913 @@
+#include "debugging.nvgt"
+#include "entity.nvgt"
+#include "faucet.nvgt"
+#include "character.nvgt"
+#include "doorway.nvgt"
+#include "basin.nvgt"
+#include "mess.nvgt"
+#include "item.nvgt"
+#include "mug.nvgt"
+#include "barrel.nvgt"
+#include "info.nvgt"
+#include "time.nvgt"
+#include "tutorial.nvgt"
+
+doorway door;
+faucets faucet;
+basin sink;
+character@[] customers, custpool, queue;
+character player;
+mug@[] mugs, dirty;
+barrel@[] barrels;
+mess@[] messes;
+
+string[] beers, beers4, beers7, used_greetings;
+uint8[] prices;
+
+uint trip_time, sleep_time, all_speed, longest, money, money_total=0, most_patient, mug_path, steps, spawner, spawn_delay, min_drink_time, max_drink_time, wash_time, flushed, flusher, replaced, gratuity, most_gratuity_once, most_gratuity_total, most_paid, max_liquid_mess, puke_count, total_puked, min_price, max_price, time_since_served, serve_interval;
+int8 bottom, stairs, toilet, toiletslot, total_trips;
+uint max, ceiling, aggression, difficulty=1, mug_count, barrel_count, broken, fallen, broken_nonempty, fallen_nonempty, beer_count, maxfled, maxstunned, faucet_distance, helpers, pourers, givers, throwers, cleaners, barrelers, emptiers, calmers, trance, fled, fled_total, hurt, thrown, stunned, total_stuns, most, served, served_correct, undermeasures, dirty_drinks, single_drinks, mixed_drinks, most_beers, washed, total_falls, hit_interval, mistakes, roamers, chasers, slept, most_queue, most_hits, spawned, dried;
+bool paused=false, autoplay, allow_helpers=true, allow_servers=true, allow_givers=true, allow_cleaners=true, allow_barrelers=true, allow_emptiers=true, allow_calmers=true, allow_throwers=true, allow_fled=true, allow_stunned=true, allow_trips=true, allow_falls=true, allow_broken=true, allow_fallen=true, allow_mistakes=true, allow_playerhits=true, allow_messy=true, hardcore=false, endless=false, freeplay=false, said_helpers=false, is_game=false;
+string[] tips;
+uint8[] used_tips;
+uint8 single_most_gender, single_drank_gender, single_longest_gender;
+
+void reset ()
+{
+reset_debugging();
+if (!preloads.is_empty())
+{
+wait_keys();
+if (!play_logo) wait_menu();
+if (output == 0) wait_speech();
+}
+@top_menu=null;
+switch (difficulty)
+{
+case 1:
+bottom=-10;
+max=12;
+maxfled=4;
+maxstunned=2;
+limit=15*60*fps;
+trip_time=20;
+spawn_delay=50*fps;
+all_speed=30;
+aggression=4;
+ceiling=4;
+trance=130;
+mug_count=50;
+barrel_count=10;
+beer_count=30;
+hit_interval=120;
+max_liquid_mess=14;
+puke_count=3;
+max_drink_time=50;
+min_price=20;
+pay_most_jukebox_once=200;
+serve_interval=180*fps;
+break;
+case 2:
+bottom=-15;
+max=15;
+maxfled=6;
+maxstunned=5;
+limit=20*60*fps;
+trip_time=40;
+spawn_delay=45*fps;
+all_speed=25;
+aggression=3;
+ceiling=3;
+trance=110;
+mug_count=40;
+barrel_count=15;
+beer_count=25;
+hit_interval=90;
+max_liquid_mess=12;
+puke_count=6;
+max_drink_time=45;
+min_price=30;
+pay_most_jukebox_once=300;
+serve_interval=150*fps;
+break;
+case 3:
+bottom=-20;
+max=20;
+maxfled=9;
+maxstunned=10;
+limit=25*60*fps;
+trip_time=60;
+spawn_delay=40*fps;
+all_speed=20;
+aggression=2;
+ceiling=2;
+trance=90;
+mug_count=30;
+barrel_count=20;
+beer_count=20;
+hit_interval=60;
+max_liquid_mess=10;
+puke_count=8;
+max_drink_time=40;
+min_price=40;
+pay_most_jukebox_once=400;
+serve_interval=120*fps;
+break;
+case 4:
+bottom=-25;
+max=30;
+maxfled=13;
+maxstunned=15;
+limit=30*60*fps;
+trip_time=80;
+spawn_delay=35*fps;
+all_speed=15;
+aggression=1;
+ceiling=1;
+trance=70;
+mug_count=25;
+barrel_count=25;
+beer_count=15;
+hit_interval=30;
+max_liquid_mess=8;
+puke_count=12;
+max_drink_time=35;
+min_price=50;
+pay_most_jukebox_once=500;
+serve_interval=90*fps;
+break;
+case 5:
+bottom=-30;
+max=40;
+maxfled=15;
+maxstunned=20;
+limit=35*60*fps;
+trip_time=100;
+spawn_delay=30*fps;
+aggression=0;
+ceiling=0;
+all_speed=10;
+trance=50;
+mug_count=20;
+barrel_count=30;
+beer_count=10;
+hit_interval=20;
+max_liquid_mess=6;
+puke_count=20;
+max_drink_time=30;
+min_price=60;
+pay_most_jukebox_once=600;
+serve_interval=75*fps;
+break;
+}
+min_drink_time=25;
+max_price=min_price+20;
+time_since_served=0;
+if (endless) limit=0;
+@mission=null;
+current_objectives=objectives;
+total_stuns=0;
+faucet_distance=5+(5*difficulty);
+bottom*=2;
+sleep_time=difficulty*60*fps;
+longest=0;
+most=0;
+served=0;
+served_correct=0;
+undermeasures=0;
+dirty_drinks=0;
+single_drinks=0;
+mixed_drinks=0;
+most_beers=0;
+most_patient=0;
+washed=0;
+broken=0;
+fallen=0;
+broken_nonempty=0;
+fallen_nonempty=0;
+fled=0;
+fled_total=0;
+hurt=0;
+thrown=0;
+stunned=0;
+wash_time=(60-(10*difficulty))*fps;
+total_puked=0;
+@tracking=null;
+tracker=0;
+track_x=-127;
+track_y=-127;
+track_distance=-127;
+track_state=-1;
+helpers=0;
+pourers=0;
+cleaners=0;
+givers=0;
+throwers=0;
+barrelers=0;
+emptiers=0;
+calmers=0;
+total_trips=0;
+total_falls=0;
+mistakes=0;
+roamers=0;
+chasers=0;
+slept=0;
+most_queue=0;
+most_hits=0;
+spawned=0;
+dried=0;
+filter_available_tracks();
+playlist.resize(0);
+playing=0;
+repeat_playlist=false;
+between_jingles=0;
+last_track="";
+reset_objects();
+if (is_tutorial)
+{
+endless=true;
+limit=0;
+faucet.x=sink.x -(20 *step_size);
+player.x=faucet.x;
+stairs=faucet.x-(20*step_size);
+ceiling=1;
+uint l=tutorials.length();
+for (uint i=0; i<l; i++) tutorials[i].said=false;
+@mission=current_objectives[0];
+max_drink_time=min_drink_time;
+}
+flusher=0;
+flushed=0;
+toiletslot=-1;
+nearby=-1;
+global=-1;
+steps=0;
+money=0;
+replaced=0;
+gratuity=0;
+most_gratuity_once=0;
+most_gratuity_total=0;
+most_paid=0;
+paused=false;
+said_helpers=false;
+if (beers.is_empty() and !choose_beers()) return;
+prices.resize (beers.length());
+uint8 p=beers.length(), drink_price;
+for (uint8 x=0; x<p; x++)
+{
+do
+drink_price=random (min_price, max_price);
+while (prices.find (drink_price) > -1);
+prices[x]=drink_price;
+}
+faucet.reset();
+do
+stairs=random (left_edge+step_size, right_edge-step_size);
+while (stairs==faucet.x);
+do
+radio=random (left_edge+step_size, right_edge-step_size);
+while (radio==faucet.x or radio==stairs);
+do
+toilet=random (left_edge+step_size, right_edge-step_size);
+while (toilet==faucet.x or toilet==stairs or toilet==radio);
+if (reset_history) history.resize (0);
+history_index=0;
+history_old_index=0;
+earned_jukebox=0;
+earned_jukebox_most_customer=0;
+played_jukebox=0;
+played_jukebox_player=0;
+played_jukebox_customers=0;
+use_jukebox=random (1, difficulty);
+if (freeplay)
+{
+limit=0;
+enable_roaming=free_roam;
+enable_idle=free_sleep;
+}
+if (preloads.is_empty()) preload_audio();
+if (play_logo)
+{
+wait_keys();
+global=play_stat ("logo");
+frame.restart();
+while (pool.sound_is_playing (global))
+{
+wait (5);
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+closekey();
+if (singlekey (KEY_SPACE) or singlekey (KEY_RETURN) or singlekey (KEY_NUMPAD_ENTER) or singlekey (KEY_ESCAPE)) fadeout();
+else if (menuloop.playing) menuloop.volume=menuloop.volume-0.5;
+}
+}
+if (global > -1) pool.destroy_sound (global);
+if (menuloop.playing) stop_menu_music();
+}
+else
+{
+wait_keys();
+while (output == 0 and sapi.speaking) wait (5);
+if (menuloop.playing) fadeout();
+}
+if (menuloop.playing) stop_menu_music();
+menuloop.volume=0;
+global=-1;
+player.x=faucet.x;
+player.speed=percent (all_speed, 55);
+player.default_speed=player.speed;
+player.transition=((fps/10)*9)-((fps/10)*difficulty);
+mug_path=get_distance(faucet.x,sink.x)*player.speed*2;
+timewarn=false;
+for (uint8 x=0; x<max; x++)
+{
+character new;
+new.reset (false);
+custpool.insert_last (new);
+}
+for (uint8 x=0; x<mug_count; x++)
+{
+mug new;
+mugs.insert_last (new);
+}
+for (uint8 x=0; x<barrel_count; x++)
+{
+barrel new;
+barrels.insert_last (new);
+}
+pool.destroy_all();
+things.destroy_all();
+set_sound_master_volume (minvol);
+faucet.slot=faucet.play ("faucet", true);
+spawner=spawn_delay-(5*fps);
+clear_player();
+single_most_gender=1;
+single_drank_gender=1;
+single_longest_gender=1;
+is_game=true;
+elapsed=0;
+game();
+fadein();
+ambience=pool.play_stationary_extended ("ambience"+ext, true, 0, stereo_center, -20, 100);
+elapsed=0;
+clear_player();
+time_since_served=0;
+}
+
+void pause (bool speak=true)
+{
+garbage_collect();
+if (paused) return;
+silence();
+pool.pause_all();
+things.pause_all();
+paused=true;
+if (speak) say ("Pauza.", true, false);
+}
+
+void resume()
+{
+if (!paused) return;
+garbage_collect();
+if (@tracking == null and tracker == 0) silence();
+if (changed_item_loops) clear_item_loops();
+pool.resume_all();
+uint l=things.items.length();
+for (uint i=0; i<l; i++)
+if (@things.items[i].handle != null and !instr (things.items[i].filename, "pour")) things.resume_sound (i);
+paused=false;
+oldpaused=false;
+}
+
+void lose (uint8 killed=0)
+{
+is_game=false;
+uint8 c=customers.length();
+string cause;
+if (limit > 0 and elapsed >= limit)
+{
+cause="Výborně! Zvládl";
+if (gender==2) cause+="a";
+string survived=get_time (false, elapsed);
+if (survived.length()>0) survived=survived.substr (0, survived.length()-1);
+cause+=" jsi to vydržet celých "+survived+"! Gratuluju!\r\n";
+if (!is_tutorial)
+{
+say ("Zavíráme. Na shle.", false, true);
+play_stat ("timesup");
+}
+if (hardcore) cause+="A navíc s dodatečnými omezeními, protože ani normální, už tak dost vysoká obtížnost ti evidentně nebyla dost dobrá. To už je opravdu výkon. Smekám!\r\n";
+}
+else
+{
+cause="Tak končí tvoje nedlouhá a neslavná kariéra barman";
+if (gender==1 or gender==0) cause+="a";
+else cause+="ky";
+cause+=". Snad příště.\r\n";
+if (player.health <= 0)
+{
+if (((player.fell_from > bottom and player.y<0) or player.state==falldown) and !player.punched)
+{
+cause+="No jo, nemáš tolik padat ze schodů.\r\n";
+set_stat (prefix_mode()+"died_falls", 1);
+}
+else if ((player.state==tripped or player.state==falldown) and !player.punched)
+{
+cause+="No jo, nemáš tolik zakopávat.\r\n";
+set_stat (prefix_mode()+"died_trips", 1);
+}
+else if (player.punched)
+{
+cause+="Anebo radši ne. Třeba by na tebe zase byli zákazníci tak naštvaní, že by tě umlátili až k smrti, jako právě teď.\r\n";
+set_stat (prefix_mode()+"died_punched", 1);
+}
+}
+else if (player.state==closing)
+{
+cause+="Tys normálně zbaběle utek";
+if (gender==2) cause+="la";
+cause+="! Fuuuj!\r\n";
+set_stat (prefix_mode()+"died_player_fled", 1);
+}
+else if (killed == 1)
+{
+cause+="Náš zákazník, náš pán, to ti asi nic neříká. Když na ně budeš takhle kašlat, dlouho ti to procházet nebude.\r\n";
+set_stat (prefix_mode()+"died_player_slouch", 1);
+}
+else if (killed == 2)
+{
+cause+="Když jsi dopustil";
+if (gender==2) cause+="a";
+cause+=", aby ti tu normálně před očima umřel člověk, tak se nediv.\r\n";
+set_stat (prefix_mode()+"died_customer", 1);
+}
+else if (broken == mug_count)
+{
+cause+="Rozbily se ti všechny půllitry.\r\n";
+set_stat (prefix_mode()+"died_mugs", 1);
+}
+if (fled > 0 and !allow_fled)
+{
+cause+="V této hardcore hře nesměl nnikdo nespokojený odejít.\r\n";
+set_stat (prefix_mode()+"died_fled", 1);
+}
+if (stunned > 0 and !allow_stunned)
+{
+cause+="V této hardcore hře jsi nesměl";
+if (gender==2) cause+="a";
+cause+=" nikoho omráčit.\r\n";
+set_stat (prefix_mode()+"died_stunned", 1);
+}
+if (broken > 0 and !allow_broken)
+{
+cause+="V této hardcore hře se nesměl rozbít ani jeden půllitr.\r\n";
+set_stat (prefix_mode()+"died_mug", 1);
+}
+if (fallen > 0 and !allow_fallen)
+{
+cause+="V této hardcore hře se nesměl rozbít ani jeden sud.\r\n";
+set_stat (prefix_mode()+"died_barrel", 1);
+}
+if (total_trips > 0 and !allow_trips)
+{
+cause+="V této hardcore hře jsi nesměl";
+if (gender==2) cause+="a";
+cause+=" ani jednou zakopnout.\r\n";
+set_stat (prefix_mode()+"died_trip", 1);
+}
+if (total_falls > 0 and !allow_falls)
+{
+cause+="V této hardcore hře jsi nesměl";
+if (gender==2) cause+="a";
+cause+=" ani jednou spadnout ze schodů.\r\n";
+set_stat (prefix_mode()+"died_fall", 1);
+}
+if (count_mess (2) +count_mess (3) >= max_liquid_mess and !allow_messy)
+{
+cause+="V této hardcore hře ti nesměli všichni zákazníci utéct kvůli nepořádku.\r\n";
+set_stat (prefix_mode()+"died_messy", 1);
+}
+if (killed == 3)
+{
+cause+="V této hardcore hře jsi nesměl";
+if (gender==2) cause+="a";
+cause+=" donést ani jedno špatné pití nebo podmírák.\r\n";
+set_stat (prefix_mode()+"died_mistake", 1);
+}
+if (killed == 4)
+{
+cause+="V této hardcore hře tě nikdo nesměl ani jednou praštit.\r\n";
+set_stat (prefix_mode()+"died_punch", 1);
+}
+}
+make_stats (false);
+if (hardcore)
+{
+cause+="Měl";
+if (gender==2) cause+="a";
+cause+=" jsi zapnutá tato hardcore omezení:\r\n";
+if (!allow_helpers) cause+="Zakázané všechny pomocníky\r\n";
+else
+{
+cause+="Zakázané pomocníky:\r\n";
+if (!allow_servers) cause+="Na točení\r\n";
+if (!allow_givers) cause+="Na roznášení pití\r\n";
+if (!allow_cleaners) cause+="Na odnášení špinavých půllitrů\r\n";
+if (!allow_emptiers) cause+="Na odnášení prázdných sudů\r\n";
+if (!allow_barrelers) cause+="Na nošení nových sudů\r\n";
+if (!allow_throwers) cause+="Na vyhazování ožralů\r\n";
+if (!allow_calmers) cause+="Na pacifikování agresivních zákazníků\r\n";
+}
+if (!allow_trips)
+{
+cause+="Nesměl";
+if (gender==2) cause+="a";
+cause+=" jsi zakopnout\r\n";
+}
+if (!allow_falls)
+{
+cause+="Nesměl";
+if (gender==2) cause+="a";
+cause+=" jsi spadnout ze schodů\r\n";
+}
+if (!allow_stunned)
+{
+cause+="Nesměl";
+if (gender==2) cause+="a";
+cause+=" jsi nikoho omráčit\r\n";
+}
+if (!allow_playerhits) cause+="Nikdo tě nesměl praštit\r\n";
+if (!allow_fled) cause+="Nikdo nesměl odejít\r\n";
+if (!allow_mistakes)
+{
+cause+="Nesměl";
+if (gender==2) cause+="a";
+cause+=" jsi nikomu dát špatné pití\r\n";
+}
+if (!allow_broken) cause+="Nesměl se rozbít ani jeden půllitr\r\n";
+if (!allow_fallen) cause+="Nesměl se rozbít ani jeden sud\r\n";
+if (!allow_messy) cause+="Nesměli ti utéct všichni zákazníci kvůli nepořádku\r\n";
+}
+if (endless or freeplay or elapsed < limit)
+{
+cause+=" Vydržel";
+if (gender==2) cause+="a";
+cause+=" jsi celkem "+get_time (false, elapsed)+"\r\n";
+if (!endless and !freeplay)
+{
+cause+=" Do konce limitu "+get_time();
+if (instr (cause, "hodina") or instr (cause, "minuta") or instr (cause, "vteřina")) cause=cause.replace ("Zbývá", "zbývala ještě", true);
+else if (instr (cause, "Zbývají")) cause=cause.replace ("Zbývají", "zbývaly ještě", true);
+else cause=cause.replace ("Zbývá", "zbývalo ještě", true);
+cause+="\r\n";
+}
+}
+if (longest > 0) cause+=" Zákazník, který tu byl nejdýl, tu strávil "+get_time (false, longest)+"\r\n";
+if (customers.length() > 0)
+{
+cause+=" Právě teď ";
+if (c == 1) cause+="tu byl jenom jeden zákazník.";
+else if (c < 5) cause+="tu byli jenom "+c+" zákazníci.";
+else cause+="tu bylo "+c+" zákazníků.";
+cause+="\r\n";
+if (!queue.is_empty())
+{
+uint8 q=queue.length();
+if (q == 1) cause+=" Jeden čekal ";
+else if (q < 5) cause+=q+" čekali ";
+else cause+=q+" čekalo ";
+cause+="ve frontě.\r\n";
+}
+else cause+=" Nikdo nečekal ve frontě.\r\n";
+}
+else if (most > 0)
+{
+cause+=" Právě teď jsi tu nikoho neměl";
+if (gender==2) cause+="a";
+cause+=".\r\n";
+}
+if (most > 0)
+{
+if (fled_total > 0)
+{
+if (fled_total == 1) cause+=" Jeden zákazník odešel.";
+else if (fled_total < 5) cause+=" "+fled_total+" zákazníci odešli.";
+else cause+=" "+fled_total+" zákazníků odešlo.";
+cause+="\r\n";
+uint8 happy=fled_total-fled;
+if (happy > 0)
+{
+if (happy==fled_total)
+{
+if (happy==1) cause+="Byl spokojený.";
+else cause+="Byli spokojení.";
+cause+="\r\n";
+}
+else
+{
+if (happy == 1) cause+="Jeden z nich byl spokojený.";
+else if (happy < 5) cause+=happy+" z nich byli spokojení.";
+else cause+=happy+" z nich bylo spokojených.";
+cause+="\r\n";
+}
+}
+if (hurt > 0)
+{
+if (hurt == 1) cause+=" Jeden z nich byl už příliš zraněný.";
+else if (hurt < 5) cause+=" "+hurt+" z nich byli už příliš zranění.";
+else cause+=" "+hurt+" z nich bylo už příliš zraněných.";
+cause+="\r\n";
+}
+}
+else cause+=" Nikdo neodešel.\r\n";
+if (allow_throwers)
+{
+if (thrown > 0)
+{
+cause+=" Vyhazovači vyvedli ";
+if (thrown == 1) cause+="jednoho ožralu.";
+else if (thrown < 5) cause+=thrown+" ožraly.";
+else cause+=thrown+" ožralů.";
+cause+="\r\n";
+}
+}
+if (stunned > 0)
+{
+if (stunned == 1) cause+=" Jeden zákazník byl omráčený.";
+else if (stunned < 5) cause+=" "+stunned+" zákazníci byli omráčení.";
+else cause+=" "+stunned+" zákazníků bylo omráčených.";
+cause+="\r\n";
+}
+if (most == 1)
+{
+cause+=" Promiň, já se ti nechci smát, ale když ty jsi měl";
+if (gender==2) cause+="a";
+cause+=" jenom jednoho chudáčka zákazníčka. To sem asi zabloudil omylem. Rozhodně je mi ho líto víc než tebe.";
+}
+else if (most < 5)
+{
+cause+=" Nejvíc jsi měl";
+if (gender==2) cause+="a";
+cause+=" jenom "+most+" zákazníky.";
+}
+else
+{
+cause+=" Nejvíc jsi měl";
+if (gender==2) cause+="a";
+cause+=" "+most+" zákazníků.";
+}
+cause+="\r\n";
+if (customers.length()==max) cause+=" Bylo narváno do posledního místa!\r\n";
+if (served > 0)
+{
+if (served == 1)
+{
+cause+=" To si z těch zákazníků děláš srandu? Vždyť jsi stačil";
+if (gender==2) cause+="a";
+cause+=" donést pití jenom jednomu!";
+}
+else if (served < 5)
+{
+cause+=" No, moc ses teda nepřetrh";
+if (gender==2) cause+="la";
+cause+=". Stačil";
+if (gender==2) cause+="a";
+cause+=" jsi roznést jenom "+served+" pití. Příště si asi zákazníci dobře rozmyslí, jestli půjdou zrovna sem.";
+}
+else cause+=" "+served+" zákazníků dostalo pití.";
+cause+="\r\n";
+if (served_correct == served)
+{
+if (served == 1) cause+=". Aspoň že bylo správné.";
+else if (served < 5)
+{
+cause+=". Aspoň že ";
+if (served == 2) cause+="obě ";
+else cause+="všechna ";
+cause+="byla správná.";
+}
+else cause+=". Všechna byla správná.";
+cause+="\r\n";
+}
+else if (mistakes == served)
+{
+if (served == 1) cause+=". A navíc ještě špatné. To už přestává všechno.";
+else if (served < 5)
+{
+cause+=". Jen "+served+" pití a ještě špatně. Dělat barman";
+if (gender==2) cause+="ku";
+else cause+="a";
+cause+=" pro tebe evidentně není to pravý ořechový. Radši zkus třeba kariéru testera zdravotních matrací nebo tak něco.";
+}
+else cause+=". Tolik roznesených pití a všechna špatně? Co u toho děláš, prosím tě?";
+cause+="\r\n";
+}
+else
+{
+cause+=", z toho ";
+if (served_correct > 0)
+{
+if (served_correct == 1) cause+="jedno ";
+else cause+=served_correct+" ";
+cause+=" správně";
+if (mistakes > 0) cause+=" a ";
+else cause+=".";
+}
+if (mistakes > 0)
+{
+if (mistakes == 1) cause+="jedno ";
+else cause+=mistakes+" ";
+cause+=" špatně.";
+}
+cause+="\r\n";
+}
+if (single_drinks > 0)
+{
+if (single_drinks == served)
+{
+if (served == 1) cause+=" Bylo jednodruhové.";
+else cause+=" Byla jednodruhová.";
+cause+="\r\n";
+}
+else
+{
+if (single_drinks == 1) cause+=" Jedno bylo jednodruhové";
+else if (single_drinks < 5) cause+=" "+single_drinks+" byla jednodruhová";
+else cause+=" "+single_drinks+" bylo jednodruhových";
+if (mixed_drinks==0) cause+=".";
+else cause+=",";
+}
+cause+="\r\n";
+}
+if (mixed_drinks > 0)
+{
+if (mixed_drinks == served)
+{
+if (served == 1) cause+=" Bylo míchané.";
+else cause+=" Byla míchaná.";
+cause+="\r\n";
+}
+else
+{
+if (mixed_drinks == 1) cause+=" jedno míchané.";
+else if (mixed_drinks < 5) cause+=" "+mixed_drinks+" míchaná.";
+else cause+=" "+mixed_drinks+" míchaných.";
+cause+="\r\n";
+}
+}
+if (dirty_drinks > 0)
+{
+if (dirty_drinks == 1) cause+=" Jedno bylo";
+else if (dirty_drinks < 5) cause+=" "+dirty_drinks+" byla";
+else cause+=" "+dirty_drinks+" bylo";
+cause+=" ve špinavém půllitru.\r\n";
+}
+if (undermeasures > 0)
+{
+if (undermeasures == 1) cause+=" Jedno bylo";
+else if (undermeasures < 5) cause+=" "+undermeasures+" byla";
+else cause+=" "+undermeasures+" bylo";
+cause+=" v podmíráku.\r\n";
+}
+if (money > 0)
+{
+cause+=" Celkem sis vydělal";
+if (gender==2) cause+="a";
+cause+=" "+money+" korun";
+if (gratuity > 0)
+{
+cause+=", z toho ";
+if (gratuity == 1) cause+="jenom jedinou kačku";
+else if (gratuity < 5) cause+=gratuity+" koruny";
+else cause+=gratuity+" korun";
+cause+=" na dýškách.\r\n";
+}
+else cause+=".\r\n";
+if (served > max and money>1000) cause+=" To už ti bárek docela vynáší, koukám.\r\n";
+if (gratuity>0)
+{
+cause+=" Největší dýško bylo "+most_gratuity_once+" korun, ";
+cause+="nejvíc jenom na dýškách od jednoho zákazníka "+most_gratuity_total+".\r\n";
+}
+cause+=" Největší celková útrata jednoho zákazníka byla "+most_paid+" korun.\r\n";
+if (played_jukebox>0)
+{
+if (played_jukebox_player>0)
+{
+cause+="Pustil";
+if (gender==2) cause+="a";
+cause+=" jsi ";
+if (played_jukebox_player==1) cause+="jednu písničku";
+else if (played_jukebox_player<5) cause+=played_jukebox_player+" písničky";
+else cause+=played_jukebox_player+" písniček";
+cause+=" z jukeboxu a zákazníci ";
+if (played_jukebox_customers==0) cause+="žádnou";
+else if (played_jukebox_customers==1) cause+="jednu";
+else cause+=played_jukebox_customers;
+}
+else if (played_jukebox_customers>0)
+{
+cause+="Zákazníci pustili ";
+if (played_jukebox_customers==1) cause+="jednu písničku";
+else if (played_jukebox_customers<5) cause+=played_jukebox_customers+" písničky";
+else cause+=played_jukebox_customers+" písniček";
+cause+=" z jukeboxu";
+}
+if (played_jukebox_customers>0)
+{
+cause+=", dohromady za "+earned_jukebox+" korun.\r\n";
+cause+="Nejvíc v jukeboxu od jednoho zákazníka bylo "+earned_jukebox_most_customer+" korun.\r\n";
+}
+else cause+=".\r\n";
+}
+}
+if (most_beers > 0)
+{
+cause+=" Nejvíc jeden zákazník vypil ";
+if (most_beers==1) cause+="jeden půllitr";
+else if (most_beers<5) cause+=most_beers+" půllitry";
+else cause+=most_beers+" půllitrů";
+cause+=".\r\n";
+}
+}
+else
+{
+cause+=" Cože? Tys nestačil";
+if (gender==2) cause+="a";
+cause+=" donést pití ani jednomu zákazníkovi? To je normálně na žalobu!\r\n";
+}
+if (most_patient > 0) cause+=" Nejtrpělivější zákazník čekal "+get_time (false, most_patient)+"\r\n";
+if (helpers > 0)
+{
+if (helpers == 1) cause+=" Jediný zákazník byl tak hodný, že se ti rozhodl pomoct.";
+else if (helpers < 5) cause+=" "+helpers+" zákazníci se ti rozhodli pomoct.";
+else cause+=" "+helpers+" zákazníků se ti rozhodlo pomoct.";
+cause+="\r\n";
+if (pourers > 0)
+{
+if (pourers == helpers)
+{
+if (pourers == 1) cause+=" Obsluhoval.";
+else cause+=" Obsluhovali.";
+}
+else
+{
+if (pourers == 1) cause+=" Jeden obsluhoval.";
+else if (pourers < 5) cause+=" "+pourers+" obsluhovali.";
+else cause+=" "+pourers+" obsluhovalo.";
+}
+cause+="\r\n";
+}
+if (givers > 0)
+{
+if (givers == helpers)
+{
+if (givers == 1) cause+=" Roznášel pití.";
+else cause+=" Roznášeli pití.";
+}
+else
+{
+if (givers == 1) cause+=" Jeden roznášel pití.";
+else if (givers < 5) cause+=" "+givers+" roznášeli pití.";
+else cause+=" "+givers+" roznášelo pití.";
+}
+cause+="\r\n";
+}
+if (cleaners > 0)
+{
+if (cleaners == helpers)
+{
+if (cleaners == 1) cause+=" Odnášel špinavé půllitry.";
+else cause+=" Odnášeli špinavé půllitry.";
+}
+else
+{
+if (cleaners == 1) cause+=" Jeden odnášel špinavé půllitry.";
+else if (cleaners < 5) cause+=" "+cleaners+" odnášeli špinavé půllitry.";
+else cause+=" "+cleaners+" odnášelo špinavé půllitry.";
+}
+cause+="\r\n";
+}
+if (emptiers > 0)
+ {
+if (emptiers == helpers)
+{
+if (emptiers == 1) cause+=" Odnášel prázdné sudy.";
+else cause+=" Odnášeli prázdné sudy.";
+}
+else
+{
+if (emptiers == 1) cause+=" Jeden odnášel prázdné sudy.";
+else if (emptiers < 5) cause+=" "+emptiers+" odnášeli prázdné sudy.";
+else cause+=" "+emptiers+" odnášelo prázdné sudy.";
+}
+cause+="\r\n";
+}
+if (barrelers > 0)
+ {
+if (barrelers == helpers)
+{
+if (barrelers == 1) cause+=" Nosil nové sudy.";
+else cause+=" Nosili nové sudy.";
+}
+else
+{
+if (barrelers == 1) cause+=" Jeden nosil nové sudy.";
+else if (barrelers < 5) cause+=" "+barrelers+" nosili nové sudy.";
+else cause+=" "+barrelers+" nosilo nové sudy.";
+}
+cause+="\r\n";
+}
+if (throwers > 0)
+{
+if (throwers == helpers)
+{
+if (throwers == 1) cause+=" Vyhazoval ožraly.";
+else cause+=" Vyhazovali ožraly.";
+}
+else
+{
+if (throwers == 1) cause+=" Jeden vyhazoval ožraly.";
+else if (throwers < 5) cause+=" "+throwers+" vyhazovali ožraly.";
+else cause+=" "+throwers+" vyhazovalo ožraly.";
+}
+cause+="\r\n";
+}
+if (calmers > 0)
+ {
+if (calmers == helpers)
+{
+if (calmers == 1) cause+=" Pacifikoval agresivní zákazníky.";
+else cause+=" Pacifikovali agresivní zákazníky.";
+}
+else
+{
+if (calmers == 1) cause+=" Jeden pacifikoval agresivní zákazníky.";
+else if (calmers < 5) cause+=" "+calmers+" pacifikovali agresivní zákazníky.";
+else cause+=" "+calmers+" pacifikovalo agresivní zákazníky.";
+}
+cause+="\r\n";
+}
+}
+else if (allow_helpers)
+{
+cause+=" Nikdo se ti nerozhodl pomoct";
+if (!endless and !freeplay and limit>0 and elapsed<limit and served<5) cause+=". Hm, to asi o něčem vypovídá";
+cause+=".\r\n";
+}
+if (spawned > 0)
+{
+if (spawned == 1) cause+=" Stihl přijít jen jeden zákazník.";
+else if (spawned < 5) cause+=" Stihli přijít "+spawned+" zákazníci.";
+else cause+=" Celkem přišlo "+spawned+" zákazníků.";
+}
+cause+="\r\n";
+}
+else cause+=" Nestihl přijít ani jediný zákazník. To je na zápis do Guinessovy knihy rekordů za nejkratší dobu obsluhování v dějinách.\r\n";
+if (broken > 0 and broken < mug_count)
+{
+if (broken == 1) cause+=" Rozbil se jeden půllitr.";
+else if (broken < 5) cause+=" Rozbily se "+broken+" půllitry.";
+else cause+=" Rozbilo se "+broken+" půllitrů.";
+cause+="\r\n";
+if (broken_nonempty>0)
+{
+if (broken_nonempty==broken)
+{
+if (broken_nonempty==1) cause+=" Bylo v něm pití.";
+else cause+=" Bylo v nich pití.";
+cause+="\r\n";
+}
+else
+{
+if (broken_nonempty==1) cause+=" V jednom bylo pití.";
+else if (broken_nonempty<5) cause+=" Ve "+broken_nonempty+" bylo pití.";
+else cause+=" V "+broken_nonempty+" bylo pití.";
+cause+="\r\n";
+}
+}
+}
+if (fallen > 0)
+{
+if (fallen == barrel_count)
+{
+if (elapsed >= limit)
+{
+cause+=" To je co říct, žes to vůbec dal";
+if (gender==2) cause+="a";
+cause+=", protože se ti rozbily všechny sudy!";
+}
+else
+{
+cause+=" To se nedivím, žes to nedal";
+if (gender==2) cause+="a";
+cause+=". Vždyť se ti normálně rozmlátily všechny sudy, cos tu měl";
+if (gender==2) cause+="a";
+cause+="!";
+}
+cause+="\r\n";
+}
+else if (fallen == 1) cause+=" Rozbil se jeden sud.";
+else if (fallen < 5) cause+=" Rozbily se "+fallen+" sudy.";
+else cause+=" Rozbilo se "+fallen+" sudů.";
+cause+="\r\n";
+if (fallen_nonempty>0)
+{
+if (fallen_nonempty==fallen)
+{
+if (fallen_nonempty==1) cause+=" Byl plný.";
+else cause+=" Byly plné.";
+cause+="\r\n";
+}
+else
+{
+if (fallen_nonempty==1) cause+=" Jeden byl plný.";
+else if (fallen_nonempty<5) cause+=" "+fallen_nonempty+" byly plné.";
+else cause+=" "+fallen_nonempty+" bylo plných.";
+cause+="\r\n";
+}
+}
+}
+if (washed > 0)
+{
+if (washed == 1) cause+=" Celkem se umyl jenom jeden půllitr. Tak nevím, jestli je to pozitivní zpráva, nebo ne.";
+else if (washed < 5) cause+=" Celkem se umyly "+washed+" půllitry.";
+else cause+=" Celkem se umylo "+washed+" půllitrů.";
+cause+="\r\n";
+}
+uint8 d=say_dirty(false);
+if (d > 0)
+{
+if (d == 1) cause+=" Zbýval jeden odložený půllitr.";
+else if (d < 5) cause+=" Zbývaly "+d+" odložené půllitry.";
+else cause+=" Zbývalo "+d+" odložených půllitrů.";
+cause+="\r\n";
+}
+if (most > 0 and (steps > 100 or elapsed > 60*fps))
+{
+if (player.health == 100)
+{
+cause+=" Nebyl";
+if (gender==2) cause+="a";
+cause+=" jsi vůbec zraněn";
+if (gender==2) cause+="á";
+else cause+="ý";
+cause+=".";
+}
+else if (player.health >= 75)
+{
+cause+=" Měl";
+if (gender==2) cause+="a";
+cause+=" jsi sotva škrábnutí.";
+}
+else if (player.health >= 50)
+{
+cause+=" Evidentně bereš své povinnosti tak vážně, že při jejich plnění moc nedbáš na vlastní bezpečí, protože jsi byl";
+if (gender==2) cause+="a";
+cause+=" docela dost zraněn";
+if (gender==2) cause+="á";
+else cause+="ý";
+cause+=". Ale to je vlastně svým způsobem celkem obdivuhodné. Možná. S přivřenýma očima. Když je člověk padlej na hlavu podobně jako ty. Anebo ne. Je to spíš dost vtipný.";
+}
+else if (player.health >= 25)
+{
+cause+=" Nejsi náhodou příbuzn";
+if (gender==2) cause+="á";
+else cause+="ej";
+cause+=" s Rockym Balboou? Protože stejně jako on asi taky neznáš bolest, i když už meleš z posledního.";
+}
+else if (player.health >= player.attack) cause+=" Aby takhle zřízená troska stála u výčepu, to jsem ještě neviděl. Nemůžu se rozhodnout, jestli se tomu mám smát, nebo je to spíš obdivuhodný.";
+else if (player.health > 0)
+{
+cause+=" Tak tohle je síla! Jsi tak zrasovan";
+if (gender==2) cause+="á";
+else cause+="ej";
+cause+=", že už by snad stačilo i jenom to, aby se na tebe někdo křivě podíval, a bylo by po tobě! Proč jsi odsud proboha prostě neutek";
+if (gender==2) cause+="la";
+cause+="? Na druhou stranu, že jsi v takovémhle stavu ještě naživu, je doopravdy úspěch!";
+}
+cause+="\r\n";
+}
+if (steps == 0)
+{
+cause+=" Neudělal";
+if (gender==2) cause+="a";
+cause+=" jsi ani jeden krok! To si ze mě snad děláš srandu! Tak proč jsi sem vůbec lez";
+if (gender==2) cause+="la";
+cause+="?";
+}
+else if (steps == 1)
+{
+cause+=" Udělal";
+if (gender==2) cause+="a";
+cause+=" jsi jenom jeden krok. To snad nemyslíš vážně, ne?";
+}
+else if (steps < 5)
+{
+cause+=" Udělal";
+if (gender==2) cause+="a";
+cause+=" jsi jenom "+steps+" kroky. To snad nemyslíš vážně, ne?";
+}
+else if (steps < 100)
+{
+cause+=" Udělal";
+if (gender==2) cause+="a";
+cause+=" jsi jenom "+steps+" kroků.";
+}
+else
+{
+cause+=" Udělal";
+if (gender==2) cause+="a";
+cause+=" jsi "+steps+" kroků.";
+}
+cause+="\r\n";
+if (steps >= 1000)
+{
+cause+=" To už ses pěkně nachodil";
+if (gender==2) cause+="a";
+cause+=". Respekt!\r\n";
+}
+int has_tripped=total_trips-player.hits;
+if (has_tripped > 0)
+{
+if (has_tripped == 1)
+{
+cause+=" Jednou jsi zakopl";
+if (gender==2) cause+="a";
+cause+=".";
+}
+else
+{
+cause+=" "+has_tripped+"krát jsi zakopl";
+if (gender==2) cause+="a";
+cause+=".";
+}
+cause+="\r\n";
+}
+if (total_falls > 0)
+{
+if (total_falls == 1)
+{
+cause+=" Jednou jsi spadl";
+if (gender==2) cause+="a";
+cause+=" ze schodů.";
+}
+else
+{
+cause+=" "+total_falls+"krát jsi spadl";
+if (gender==2) cause+="a";
+cause+=" ze schodů.";
+}
+cause+="\r\n";
+}
+if (served > 0)
+{
+if (replaced > 0)
+{
+if (replaced == 1) cause+=" Musel se vyměnit jeden sud u pípy.";
+else if (replaced < 5) cause+=" Musely se vyměnit "+replaced+" sudy u pípy.";
+else cause+=" Muselo se vyměnit "+replaced+" sudů u pípy.";
+cause+="\r\n";
+}
+}
+if (chasers > 0)
+{
+if (chasers == 1) cause+=" Jednou ";
+else cause+=" "+chasers+"krát ";
+cause+="byl někdo agresivní.";
+cause+="\r\n";
+}
+if (roamers > 0)
+{
+if (roamers == 1) cause+=" Jednou ";
+else cause+=" "+roamers+"krát ";
+cause+="se někdo ožral a začal dělat bordel.";
+cause+="\r\n";
+}
+if (slept > 0)
+{
+if (slept == 1) cause+=" Jednou ";
+else cause+=" "+slept+"krát ";
+cause+="někdo přebral a usnul.";
+cause+="\r\n";
+}
+if (most_queue > 0)
+{
+if (most_queue == 1) cause+=" Ve frontě najednou čekal jen jeden zákazník.";
+else if (most_queue < 5) cause+=" Ve frontě najednou čekali nejvíc "+most_queue+" zákazníci.";
+else cause+=" Ve frontě najednou čekalo nejvíc "+most_queue+" zákazníků.";
+cause+="\r\n";
+}
+if (most_hits > 0)
+{
+cause+=" Jeden a ten samý zákazník dostal nejvíc ";
+if (most_hits == 1) cause+="jednu ránu.";
+else if (most_hits<5) cause+=most_hits+" rány.";
+else cause+=most_hits+" ran.";
+if (most_hits > 3) cause+=" Chudák...";
+cause+="\r\n";
+}
+if (player.hits > 0)
+{
+if (player.hits == 1) cause+=" Jednou ";
+else cause+=" "+player.hits+"krát ";
+cause+="jsi dostal";
+if (gender==2) cause+="a";
+cause+=" od zákazníků ránu.";
+cause+="\r\n";
+}
+cause=sanitize(cause);
+if (autoplay or freeplay or is_tutorial) clear_earnings();
+while (sapi.speaking) wait(5);
+uint p=pool.items.length();
+for (uint i=0; i<p; i++)
+if (@pool.items[i].handle !is null and !pool.items[i].handle.playing)
+{
+pool.destroy_sound (i);
+i--;
+p--;
+}
+p=things.items.length();
+for (uint i=0; i<p; i++)
+if (@things.items[i].handle !is null and !things.items[i].handle.playing)
+{
+things.destroy_sound (i);
+i--;
+p--;
+}
+string endsound;
+if (limit>0 and elapsed>=limit) endsound="win";
+else endsound="gameover";
+while (door.playing()) wait(5);
+double closing_vol=0;
+if (player.state==closing) closing_vol=0;
+else closing_vol=-30;
+if (player.state==closing) leave (true);
+if (global>-1) pool.destroy_sound (global);
+global=pool.play_stationary_extended (endsound+ext, false, 0, 0, closing_vol, 100, true);
+frame.restart();
+while (pool.sound_is_playing (global))
+{
+if (frame.elapsed >= 1000/fps)
+{
+frame.restart();
+for (uint i=0; i<pool.items.length(); i++)
+{
+if (pool.sound_is_playing(i))
+{
+if (i!=global)
+{
+if (pool.items[i].handle.volume > -100) pool.items[i].handle.volume=pool.items[i].handle.volume-0.1;
+}
+else
+{
+if (pool.items[i].handle.volume<0) pool.items[i].handle.volume=pool.items[i].handle.volume+0.1;
+}
+}
+}
+for (uint i=0; i<things.items.length(); i++)
+{
+if (things.sound_is_playing(i))
+{
+if (things.items[i].handle.volume > -100) things.items[i].handle.volume=things.items[i].handle.volume-0.1;
+}
+}
+}
+wait (5);
+}
+pool.destroy_all();
+things.destroy_all();
+clear_player();
+if (!is_tutorial and play_menu_music)
+{
+if (limit>0 and elapsed>=limit) won.stream("winsong"+ext);
+else won.stream("losesong"+ext);
+won.volume=menuloop_vol;
+won.play();
+}
+paused=false;
+read_menu (cause);
+silence();
+fadeout();
+won.close();
+if (show_tips and !autoplay and !is_tutorial and (endless or elapsed < limit)) read_tip (true);
+autoplay=false;
+reset_objects();
+menus();
+}
+
+int8 get_distance (int8 source_x, int8 target_x, int8 source_y=0, int8 target_y=0)
+{
+int8 distance=0;
+if (source_x > target_x) distance=source_x-target_x;
+else if (target_x > source_x) distance=target_x-source_x;
+if (source_y > target_y) distance+=source_y-target_y;
+else if (target_y > source_y) distance+=target_y-source_y;
+distance/=step_size;
+return distance;
+}
+
+uint percent (double value, uint8 percentage=1)
+{
+double base=abs(value/100);
+return round (base*percentage, 0);
+}
+
+void game()
+{
+track_time();
+if (enable_lose_check and !is_tutorial and door.closed and !door.playing() and door.frames>=fps/2 and spawned>0)
+{
+if (mugs.length() ==0) lose();
+if (!freeplay)
+{
+if (count_active()==0 and (fled >= maxfled or (total_stuns >= maxstunned and stunned!=total_stuns) or customers.is_empty() or player.count_state(idle).length()==customers.length())) lose (1);
+if (player.count_state(serving).is_empty() and time_since_served>serve_interval and (!queue.is_empty() or !player.count_state(waiting).is_empty()) and (fled>served or stunned>served))
+{
+if (!player.carrying.is_empty() or count_clean_mugs()>0 or say_dirty(false)>0) lose(1);
+}
+}
+}
+door.act();
+soundtrack();
+if (count_active() > 0) flush();
+if (enable_new_customers and !is_tutorial and customers.length() < max and fled < maxfled and total_stuns < maxstunned and spawner >= spawn_delay and (most > 0 and count_active() > 0 or most == 0)) spawn();
+player.act();
+track_queue();
+if (@tracking != null) track();
+if (!is_tutorial and spawner > 0) spawner++;
+if (player.state != closing)
+{
+if (!sink.washer.is_empty()) sink.act();
+faucet.act();
+for (uint8 x=0; x<customers.length(); x++) customers[x].act();
+for (uint8 x=0; x<mugs.length(); x++) mugs[x].act();
+for (uint8 x=0; x<barrels.length(); x++) barrels[x].act();
+for (uint x=0; x<messes.length(); x++) messes[x].act();
+if (count_mess (2) +count_mess (3) >= max_liquid_mess) flee();
+else if (said_mess) said_mess=false;
+}
+else
+{
+pool.destroy_all();
+things.destroy_all();
+}
+if (is_tutorial) run_tutorial();
+}
+
+void action()
+{
+if (player.frozen>0 and (player.transition>0 or player.once_transition>0))
+{
+error ("Takhle rychle to nestíháš!");
+return;
+}
+if (player.state == tripped or player.state == falldown or player.state == fleeing or player.state == opening or player.state == closing) return;
+if (@player.has_barrel != null)
+{
+if (get_distance (player.x, faucet.x, player.y, faucet.y) == 0) player.has_barrel.use();
+else player.has_barrel.fall (true);
+return;
+}
+if (@player.hand != null and get_distance (player.x, faucet.x, player.y, faucet.y) > 0)
+{
+player.hand.drop();
+return;
+}
+character@ h=null;
+if (@player.hand == null and @player.has_barrel == null)
+{
+uint8 c=customers.length();
+for (uint8 i=0; i<c; i++)
+if (get_distance (player.x, customers[i].x, player.y, customers[i].y) == 0)
+{
+@h=@customers[i];
+if ((h.is_roaming or h.is_chasing or h.state == waiting or h.state == fleeing) and !h.punched)
+{
+if (h.is_roaming or h.is_chasing)
+{
+player.hit (h);
+@h=null;
+return;
+}
+}
+}
+}
+if (@player.has_barrel == null and @player.hand == null)
+{
+mug@ m=mug_here (player.x, false, player.y);
+if (@m != null)
+{
+m.pickup (player);
+return;
+}
+uint8 l=barrels.length();
+for (uint8 i=0; i<l; i++)
+{
+barrel@ b=barrels[i];
+if (get_distance (player.x, b.x, player.y, b.y)==0 and @b.owner==null and b.falling==0)
+{
+if (b.amount==0 and b.x==faucet.x and b.y==faucet.y and faucet.pipe!=b.kind) continue;
+if (b.pickup (player)) return;
+}
+}
+}
+if (get_distance (player.x, door.x, player.y, door.y)  == 0 and player.frames>=player.speed)
+{
+if (@player.has_barrel != null)
+{
+error ("Nemůžeš otevřít dveře, když neseš sud.");
+return;
+}
+else if (@player.hand != null)
+{
+error ("Nemůžeš otevřít dveře, když držíš půllitr.");
+return;
+}
+else if (!player.count_state(opening).is_empty() or !player.count_state(closing).is_empty())
+{
+error ("Nemůžeš projít dveřmi, dokud jimi prochází někdo jiný.");
+return;
+}
+else if (!door.closed or door.frames<fps/2)
+{
+error ("Nemůžeš projít dveřmi, dokud nejsou úplně zavřené.");
+return;
+}
+player.set_state (opening);
+player.frames=player.transition;
+return;
+}
+if (get_distance (player.x, faucet.x, player.y, faucet.y) == 0 and @player.has_barrel == null)
+{
+double fa=faucet.amounts[faucet.pipe];
+if (faucet.state == 1)
+{
+faucet.stop (player);
+return;
+}
+if (fa > 0 and faucet.state == 0)
+{
+faucet.start (player);
+return;
+}
+else if (fa == 0)
+{
+error ("Nemůžeš točit z prázdného sudu.");
+return;
+}
+else if (fa == -1)
+{
+error ("Na tomto kohoutu není sud.");
+return;
+}
+}
+if (@h != null)
+{
+if (h.state == waiting or h.state == fleeing) player.hit (h);
+@h=null;
+}
+}
+
+void flush()
+{
+if (toiletslot > -1 and pool.sound_is_playing (toiletslot)) return;
+if (flusher == 0)
+{
+flusher=random (15, 150) *fps;
+if (toiletslot > -1) pool.destroy_sound (toiletslot);
+toiletslot=-1;
+}
+flushed++;
+if (flushed >= flusher)
+{
+flusher=0;
+flushed=0;
+if (toiletslot > -1) pool.destroy_sound (toiletslot);
+toiletslot=pool.play_2d (randomize ("flush" +ext), player.x, player.y, toilet, 0, false, true);
+}
+}
+
+void track_queue()
+{
+if (queue.is_empty() and @tracking==null) return;
+character@ q;
+if (@tracking!=null) @q=@tracking;
+else if (!queue.is_empty()) @q=queue[0];
+if (@q==null) return;
+if (cue and ((q.state == waiting and get_distance (player.x, q.seat_x, player.y, q.seat_y) > 0 and get_distance (player.x, q.seat_x, player.y, q.seat_y) <= 10 and q.frozen == 0) or (@q==@tracking and get_distance (player.x, q.x, player.y, q.y)>0)))
+{
+if (nearby == -1 or !pool.sound_is_playing (nearby))
+{
+if (nearby>-1) pool.destroy_sound (nearby);
+if (!queue.is_empty() and @q==@queue[0]) nearby=q.play ("beep", true);
+else nearby=pool.play_2d ("beep"+ext, player.x, player.y, q.x, q.y, true);
+}
+else if (@q==@tracking) pool.update_sound_2d (nearby, q.x, q.y);
+}
+else if (nearby > -1)
+{
+pool.destroy_sound (nearby);
+nearby=-1;
+}
+}
+
+void reset_objects()
+{
+player.reset (true);
+door.reset();
+sink.reset();
+custpool.resize (0);
+customers.resize (0);
+queue.resize (0);
+mugs.resize (0);
+dirty.resize(0);
+barrels.resize (0);
+messes.resize (0);
+said_mess=false;
+prices.resize (0);
+if (selection == selection_unspecified or selection == selection_manual_change or selection == selection_random_change) clear_drinks();
+elapsed=0;
+faucet.slot=-1;
+global=-1;
+nearby=-1;
+radio=-1;
+toiletslot=-1;
+garbage_collect();
+}
+
+mug@ get_nearest (mug@[] entities, character@ person)
+{
+if (entities.is_empty()) return null;
+uint8 l=entities.length();
+mug@ e=entities[0];
+if (l == 1) return e;
+for (uint8 i=1; i<l; i++)
+if (get_distance (entities[i].x, person.x, entities[i].y, person.y) < get_distance (e.x, person.x, e.y, person.y)) @e=entities[i];
+return e;
+}
+
+character@ get_nearest (character@[] entities, character@ person)
+{
+if (entities.is_empty()) return null;
+uint8 l=entities.length();
+character@ e=entities[0];
+if (l == 1) return e;
+for (uint8 i=1; i<l; i++)
+if (get_distance (entities[i].x, person.x, entities[i].y, person.y) < get_distance (e.x, person.x, e.y, person.y)) @e=entities[i];
+return e;
+}
+
+barrel@ get_nearest (barrel@[] entities, character@ person)
+{
+if (entities.is_empty()) return null;
+uint8 l=entities.length();
+barrel@ e=entities[0];
+if (l == 1) return e;
+for (uint8 i=1; i<l; i++)
+if (get_distance (entities[i].x, person.x, entities[i].y, person.y) < get_distance (e.x, person.x, e.y, person.y)) @e=entities[i];
+return e;
+}
+
+bool choose_beers()
+{
+if (selection == selection_unspecified and !is_optionsmenu)
+{
+if (is_tutorial or get_stat("normal_played_total")==0) say ("Nemáš nastaveno, jakým způsobem si chceš vybírat pití. Piv i nealka je totiž k dispozici víc, než kolik se ti vejde na pípu, takže si můžeš do každé hry vybrat na výčep jiná pití, a to buď ručně nebo náhodně, a buď každou hru, nebo jenom jednou a nechat zapamatovat, dokud to zase nezměníš.", true, false, true);
+set_selection();
+}
+if (selection == selection_unspecified) return false;
+if ((selection == selection_random_keep or selection == selection_random_change) and beers.is_empty()) choose_beers_randomly();
+else if ((selection == selection_manual_change or selection == selection_manual_keep) and beers.is_empty()) return choose_beers_manually();
+return true;
+}
+
+void choose_beers_randomly()
+{
+if (beers.length()==7) return;
+int8 a=-1;
+string[]@ drinks, drinks4, drinks7;
+for (uint8 i=0; i<7; i++)
+{
+if (i<6)
+{
+@drinks=all_beers;
+@drinks4=all_beers4;
+@drinks7=all_beers7;
+}
+else
+{
+@drinks=non_alco;
+@drinks4=non_alco4;
+@drinks7=non_alco7;
+}
+do
+a=random (0, drinks.length()-1);
+while (beers.find (drinks[a]) > -1);
+beers.insert_last (drinks[a]);
+beers4.insert_last (drinks4[a]);
+beers7.insert_last (drinks7[a]);
+}
+}
+
+bool choose_beers_manually()
+{
+for (uint8 i=0; i<7; i++)
+{
+string[] drinks, drinks4, drinks7;
+string[]@ all_drinks, all_drinks4, all_drinks7;
+if (i < 6)
+{
+drinks=all_beers;
+drinks4=all_beers4;
+drinks7=all_beers7;
+@all_drinks=all_beers;
+@all_drinks4=all_beers4;
+@all_drinks7=all_beers7;
+}
+else
+{
+drinks=non_alco;
+drinks4=non_alco4;
+drinks7=non_alco7;
+@all_drinks=non_alco;
+@all_drinks4=non_alco4;
+@all_drinks7=non_alco7;
+}
+uint8 bl=beers.length();
+int8 found=-1;
+for (int8 j=0; j<bl; j++)
+{
+found=drinks.find (beers[j]);
+if (found > -1)
+{
+drinks.remove_at (found);
+drinks4.remove_at (found);
+drinks7.remove_at (found);
+}
+}
+if (!speak_menu_prompt) speak_menu_prompt=true;
+drinks.insert_at (0, "Vyber si "+selection_prompts[i]+".");
+pan_menu (selection_pans[i]);
+ss_start();
+int8 drink=make_menu (drinks);
+if (drink < 1)
+{
+if (beers.is_empty())
+{
+pan_menu (0);
+clear_drinks();
+ss_end();
+if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
+return false;
+}
+else
+{
+beers.remove_last();
+if (!beers4.is_empty()) beers4.remove_last();
+if (!beers7.is_empty()) beers7.remove_last();
+i-=2;
+continue;
+}
+}
+found=all_drinks.find (drinks[drink]);
+beers.insert_last (all_drinks[found]);
+beers4.insert_last (all_drinks4[found]);
+beers7.insert_last (all_drinks7[found]);
+}
+pan_menu (0);
+ss_end();
+if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
+return true;
+}
+
+void clear_drinks()
+{
+uint8 l=beers.length();
+for (uint8 i=0; i<l; i++)
+if (profile.exists (beers[i])) profile.delete (beers[i]);
+beers.resize (0);
+beers4.resize (0);
+beers7.resize(0);
+}
+
+void flee()
+{
+if (count_active()==0) return;
+if (!said_mess)
+{
+play_stat ("alert");
+say ("Všichni zákazníci odcházejí, protože je tu moc velký nepořádek.", false);
+said_mess=true;
+}
+uint8 l=customers.length();
+for (uint8 i=0; i<l; i++)
+{
+character@ h=customers[i];
+if (h.state != tripped and h.state != falldown and h.state != idle and h.state != fleeing and h.state != opening and h.state != closing and !h.punched and !h.is_roaming)
+{
+h.set_state (fleeing, false);
+}
+}
+if (!player.count_state(fleeing).is_empty() and !allow_messy) lose();
+}
+
+void save_drinks()
+{
+uint8 l=beers.length();
+for (uint8 i=0; i<l; i++)
+profile.set (beers[i], i);
+}
+
+void load_drinks()
+{
+bool loaded=false;
+for (uint8 i=0; i<7; i++)
+{
+beers.insert_last ("");
+beers4.insert_last ("");
+beers7.insert_last ("");
+}
+uint8 l=all_beers.length();
+for (uint8 i=0; i<l; i++)
+if (profile.exists (all_beers[i]))
+{
+uint8 value;
+profile.get (all_beers[i], value);
+beers[value]=all_beers[i];
+beers4[value]=all_beers4[i];
+beers7[value]=all_beers7[i];
+loaded=true;
+}
+l=non_alco.length();
+for (uint8 i=0; i<l; i++)
+if (profile.exists (non_alco[i]))
+{
+beers[beers.length()-1]=non_alco[i];
+beers4[beers4.length()-1]=non_alco4[i];
+beers7[beers7.length()-1]=non_alco7[i];
+loaded=true;
+}
+if (!loaded)
+{
+beers.resize(0);
+beers4.resize(0);
+beers7.resize(0);
+}
+}
+
+void save_player()
+{
+profile.set ("money_total", money_total);
+profile.set ("lastrun_day", lastrun_day);
+profile.set ("lastrun_month", lastrun_month);
+profile.set ("lastrun_year", lastrun_year);
+profile.set ("lastrun_hour", lastrun_hour);
+profile.set ("lastrun_minute", lastrun_minute);
+profile.set ("is_tutorial", is_tutorial);
+profile.set ("gender", gender);
+}
+
+void load_player()
+{
+if (profile.exists ("money_total")) profile.get ("money_total", money_total);
+if (profile.exists ("lastrun_day")) profile.get ("lastrun_day", lastrun_day);
+if (profile.exists ("lastrun_month")) profile.get ("lastrun_month", lastrun_month);
+if (profile.exists ("lastrun_year")) profile.get ("lastrun_year", lastrun_year);
+if (profile.exists ("lastrun_hour")) profile.get ("lastrun_hour", lastrun_hour);
+if (profile.exists ("lastrun_minute")) profile.get ("lastrun_minute", lastrun_minute);
+if (profile.exists ("is_tutorial")) profile.get ("is_tutorial", is_tutorial);
+if (profile.exists ("gender")) profile.get ("gender", gender);
+if (profile.exists ("name_day")) profile.get ("name_day", name_day);
+if (profile.exists ("name_month")) profile.get ("name_month", name_month);
+if (profile.exists ("birth_day")) profile.get ("birth_day", birth_day);
+if (profile.exists ("birth_month")) profile.get ("birth_month", birth_month);
+if (profile.exists ("created_day")) profile.get ("created_day", created_day);
+if (profile.exists ("created_month")) profile.get ("created_month", created_month);
+if (profile.exists ("created_year")) profile.get ("created_year", created_year);
+if (profile.exists ("created_hour")) profile.get ("created_hour", created_hour);
+if (profile.exists ("created_minute")) profile.get ("created_minute", created_minute);
+}
+
+void reset_hardcore()
+{
+allow_helpers=true;
+allow_servers=true;
+allow_givers=true;
+allow_cleaners=true;
+allow_barrelers=true;
+allow_emptiers=true;
+allow_calmers=true;
+allow_throwers=true;
+allow_broken=true;
+allow_fallen=true;
+allow_fled=true;
+allow_stunned=true;
+allow_trips=true;
+allow_falls=true;
+allow_mistakes=true;
+allow_playerhits=true;
+allow_messy=true;
+hardcore=false;
+}
+
+void leave (bool from_game)
+{
+if (!from_game) wait_keys();
+uint8 walked=0, paces=random (7, 18);
+double vol=get_sound_master_volume(), volume_step=round (abs(minvol/paces), 0), step_interval=random(40,60)*10;
+int8 x=door.x;
+sound smoke, burp, puke;
+smoke.load ("smoke"+ext);
+puke.load ("puke"+ext);
+timer closer, pacer;
+if (!from_game)
+{
+play_stat ("dooropen");
+door.clean();
+door.slot=door.play ("doorbell");
+}
+while (walked<paces)
+{
+wait(5);
+if (!from_game)
+{
+bool wants_skip=singlekey (KEY_RETURN) or singlekey (KEY_NUMPAD_ENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE) or (key_down (KEY_LALT) and key_pressed (KEY_F4));
+if (wants_skip)
+{
+fadeout (0.5, false);
+return;
+}
+}
+pool.update_listener_2d (x, 0);
+things.update_listener_2d (x, 0);
+if (closer.running and closer.elapsed>=2000 and (!player.count_state(opening).is_empty() or !player.count_state(closing).is_empty() or !from_game))
+{
+if (from_game)
+{
+pool.destroy_all();
+things.destroy_all();
+}
+play_stat ("doorclose");
+closer.restart();
+closer.pause();
+}
+if (pacer.elapsed>=step_interval)
+{
+play_stat ("floor");
+x-=step_size;
+vol-=volume_step;
+set_sound_master_volume (vol);
+if (vol<=minvol) break;
+walked++;
+pacer.restart();
+if (!smoke.playing and random(0,3)==3) smoke.play();
+if (!burp.playing and random(0,6)==6)
+{
+burp.load (randomize ("burp") +ext);
+burp.play();
+}
+if (!puke.playing and random(0,10)==10) puke.play();
+}
+}
+pool.destroy_all();
+things.destroy_all();
+burp.close();
+smoke.close();
+puke.close();
+set_sound_master_volume (loudness);
+if (!from_game)
+{
+say ("Tak ahoj a zase příště!", true, false, output==0);
+if (output>0) wait_delay (2000);
+}
+}
+
+void clear_earnings()
+{
+money_total-=money;
+money=0;
+}
+
+void clear_player()
+{
+player.frames=player.speed+player.transition;
+player.frozen=0;
+player.once_transition=0;
+player.state=-1;
+player.prev_state=-1;
+}
+
+void read_tip (bool wait)
+{
+if (used_tips.length() == tips.length()) used_tips.resize(0);
+int8 tip=-1;
+do
+tip=random (0, tips.length()-1);
+while (used_tips.find(tip)>-1);
+say ("Tip: "+tips[tip], false, false, wait);
+used_tips.insert_last (tip);
+}
+
+

@@ -1,0 +1,72 @@
+void main()
+{
+chdir(SCRIPT_MAIN_PATH);
+show_window("Profile reader");
+string profile_path=DIRECTORY_LOCAL_APPDATA+"/4Sense Gaming/Beerday/profile.dat";
+if (!file_exists(profile_path))
+{
+alert("Profile not found.", "");
+return;
+}
+string raw=string_aes_decrypt(file_get_contents(profile_path), scramble());
+if (raw == "")
+{
+alert("Empty string", ""+get_last_error());
+return;
+}
+dictionary profile;
+profile=deserialize(raw);
+if (profile.is_empty())
+{
+alert("No keys.", ""+get_last_error());
+return;
+}
+string[] keys=profile.get_keys();
+string result="";
+uint l=keys.length();
+for (uint i=0; i<l; i++)
+{
+string value="";
+string sval;
+if (profile.get(keys[i], sval)) value=keys[i]+": "+sval;
+if (value == "")
+{
+int ival;
+if (profile.get(keys[i], ival)) value=keys[i]+": "+ival;
+}
+if (value == "")
+{
+bool bval;
+if (profile.get(keys[i], bval)) value=keys[i]+": "+bval;
+}
+if (value == "")
+{
+alert("Empty value", keys[i]);
+exit();
+}
+value+="\r\n";
+result+=value;
+}
+if (result == "")
+{
+alert("Empty result.", ""+get_last_error());
+return;
+}
+string[] split=result.split("\r\n", true);
+split.sort_ascending();
+result="";
+l=split.length();
+for (uint i=0; i<l; i++) result+=split[i]+"\r\n";
+clipboard_set_text(result);
+}
+
+string scramble()
+{
+const string key="Jedno pivooo, dvě pivaaa, tři pivaaa, čtyři pivaaa, pět, šest, sedum, vosum piiiv, devět, deset piiiv.";
+string temp=key.reverse_bytes();
+temp=temp.replace("a", "\0", true);
+string result;
+uint l=temp.length();
+for (uint i=0; i<l; i++) result+=string(character_to_ascii(temp[i]) + 46);
+return result;
+}

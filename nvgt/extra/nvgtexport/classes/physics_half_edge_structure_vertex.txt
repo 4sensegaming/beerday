@@ -1,0 +1,5 @@
+class physics_half_edge_structure_vertex {
+	uint vertex_point_index;
+	uint vertex_edge_index;
+	physics_half_edge_structure_vertex(uint vertex_coords_index);
+}

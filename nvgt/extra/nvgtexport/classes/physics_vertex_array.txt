@@ -1,0 +1,6 @@
+class physics_vertex_array {
+	physics_vertex_data_type get_data_type() const property;
+	uint get_nb_vertices() const property;
+	uint get_stride() const property;
+	vector get_vertex(uint index) const;
+}

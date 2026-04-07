@@ -1,0 +1,103 @@
+void main()
+{
+chdir(SCRIPT_MAIN_PATH);
+show_window("Steps");
+string[] steps=find_files("../pack/*.ogg");
+for (int i=int(steps.length())-1; i>=0; i--)
+if (steps[i].find("floor") == -1 and steps[i].find("stairs") == -1)
+steps.remove_at(i);
+tts_voice sapi;
+uint l=steps.length();
+if (l == 0)
+{
+sapi.speak_interrupt_wait("Žádné kroky nenalezeny.");
+exit();
+}
+sound@[] sounds;
+sounds.reserve(l);
+for (uint i=0; i<l; i++)
+{
+sound@ new_sound=sound();
+sounds.insert_last(new_sound);
+if (!sounds[sounds.length()-1].load("../pack/"+steps[i]))
+{
+sapi.speak_interrupt_wait("Zvuk "+steps[i]+" se nepodařilo načíst.\r\n"+SOUNDSYSTEM_LAST_ERROR_TEXT);
+exit();
+}
+}
+sapi.speak_interrupt_wait("Načteno "+sounds.length()+" zvuků.");
+if (sounds.length() != l) exit();
+uint index=0;
+bool autoplay=true;
+while (true)
+{
+wait(5);
+if (key_pressed(KEY_ESCAPE) or (key_down(KEY_LALT) and key_pressed(KEY_F4))) exit();
+else if (key_pressed(KEY_RETURN) or key_pressed(KEY_NUMPAD_ENTER))
+{
+sapi.stop();
+sounds[index].stop();
+sounds[index].play();
+}
+else if (key_pressed(KEY_SPACE))
+{
+audio_format format=AUDIO_FORMAT_UNKNOWN;
+uint channels=0, sample_rate=0;
+sounds[index].get_data_format(format, channels, sample_rate);
+sapi.speak_interrupt("Zvuk "+steps[index]+". "+(index+1)+" z "+l+". Délka "+sounds[index].length+", sample rate "+sample_rate+", kanály "+channels+", formát "+get_audio_format_name(format)+".");
+clipboard_set_text(steps[index]);
+}
+else if ((key_pressed(KEY_UP) or key_pressed(KEY_LEFT)) and index > 0)
+{
+if (autoplay) sounds[index].stop();
+index--;
+if (!autoplay) sapi.speak_interrupt(steps[index]);
+else sounds[index].play();
+}
+else if ((key_pressed(KEY_RIGHT) or key_pressed(KEY_DOWN)) and index < l-1)
+{
+if (autoplay) sounds[index].stop();
+index++;
+if (!autoplay) sapi.speak_interrupt(steps[index]);
+else sounds[index].play();
+}
+else if (key_pressed(KEY_HOME) and index > 0)
+{
+if (autoplay) sounds[index].stop();
+index=0;
+if (!autoplay) sapi.speak_interrupt(steps[index]);
+else sounds[index].play();
+}
+else if (key_pressed(KEY_END) and index < l-1)
+{
+if (autoplay) sounds[index].stop();
+index=l-1;
+if (!autoplay) sapi.speak_interrupt(steps[index]);
+else sounds[index].play();
+}
+else if (key_pressed(KEY_LCTRL) or key_pressed(KEY_RCTRL) or key_pressed(KEY_LSHIFT) or key_pressed(KEY_RSHIFT) or key_pressed(KEY_LALT) or key_pressed(KEY_RALT)) sapi.stop();
+else if (key_pressed(KEY_TAB))
+{
+if (autoplay)
+{
+autoplay=false;
+sapi.speak_interrupt("Autoplay off.");
+}
+else
+{
+autoplay=true;
+sapi.speak_interrupt("Autoplay on.");
+}
+}
+}
+}
+
+string get_audio_format_name(audio_format format)
+{
+if (format == AUDIO_FORMAT_U8) return "8-bit unsigned";
+if (format == AUDIO_FORMAT_S16) return "16-bit signed";
+if (format == AUDIO_FORMAT_S24) return "24-bit signed";
+if (format == AUDIO_FORMAT_S32) return "32-bit signed";
+if (format == AUDIO_FORMAT_F32) return "32-bit float";
+return "unknown";
+}

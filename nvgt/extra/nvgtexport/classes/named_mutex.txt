@@ -1,0 +1,6 @@
+class named_mutex {
+	named_mutex(const string&in);
+	void lock();
+	bool try_lock();
+	void unlock();
+}

@@ -1,0 +1,201 @@
+#include "build_constants.nvgt"
+string credits;
+const uint pour_length=16430;
+const uint8 fps=60;
+const double left_edge=-30, right_edge=30, step_size=1, full_mug=round ((pour_length/1000)*fps, 0), min_music_vol=-40;
+const uint poured_full=percent (full_mug, 95), poured_undermeasure=percent (full_mug, 85), poured_bigger_half=percent (full_mug, 60), poured_half=percent (full_mug, 40), poured_almost_empty=percent (full_mug, 20), poured_bottom=percent (full_mug, 1);
+const string ext=".ogg", title="Happy Beerday", stereo_test_description="Umožňuje zkontrolovat, jak zní přehrávání ve stereu s aktuálním nastavením okrajů a středu stereopole, a také jestli máš správně umístěné reproduktory či sluchátka.", clear_profile_description="Přijdeš úplně o všechno a celá hra začne znovu od prvního spuštění! Tento krok nemůžeš odvolat!", browser="Otevře se ve výchozím webovém prohlížeči.";
+const string windir=read_environment_variable ("windir")+"\\";
+enum char_states
+{
+idle=0,
+roaming,
+opening,
+closing,
+arriving,
+ordering,
+returning,
+waiting,
+drinking,
+chasing,
+serving,
+barreling,
+emptiing,
+calming,
+fleeing,
+tripped,
+falldown,
+disposing,
+throwing,
+mugging,
+piping,
+cleaning,
+led,
+giving,
+wanting_jukebox,
+jukeboxing
+}
+const string[] statedesc={"Spí", "Dělá bordel", "Otevírá dveře", "Prochází dveřmi", "Jde objednávat", "Objednává", "Jde na své místo", "Čeká", "Pije", "Zuří", "Obsluhuje", "Nosí nové sudy", "Odnáší prázdné sudy", "Pacifikuje agresivní zákazníky", "Odchází", "Zakopl", "Padá", "Odnáší půllitr", "Vyhazuje ožraly", "Jde pro půllitry", "Obsluhuje", "Sbírá špinavé půllitry", "Jde s vyhazovačem", "Roznáší pití", "Jde k jukeboxu", "Pouští jukebox"};
+const string[] statedesc_plural234={"Spí", "Dělají bordel", "Otevírají dveře", "Procházejí dveřmi", "Jdou objednávat", "Objednávají", "Jdou na své místo", "Čekají", "Pijí", "Zuří", "Obsluhují", "Nosí nové sudy", "Odnášejí prázdné sudy", "Pacifikují agresivní zákazníky", "Odcházejí", "Zakopli", "Padají", "Odnášejí půllitr", "Vyhazují ožraly", "Jdou pro půllitry", "Obsluhují", "Sbírají špinavé půllitry", "Jdou s vyhazovačem", "Roznášejí pití", "Jdou k jukeboxu", "Pouštějí jukebox"};
+
+string[] all_beers={"Bernard", "Braník", "Březňák", "Budvar", "Korona", "Dačice", "Démon", "Fényx", "Gambrinus", "Gines", "Hajneken", "Klášter", "Kocour", "Kozel", "Krušovice", "Litovel", "Plzeň", "Polička", "Poutník", "Radegast", "Sanmigel", "Starobahno", "Staropramen", "Stela", "Svijany", "Šerák", "Zlatopramen"};
+string[] all_beers4={"Bernarda", "Braník", "Březňáka", "Budvar", "Koronu", "Dačice", "Démona", "Fényxe", "Gambrinus", "Ginese", "Hajnekena", "Klášter", "Kocoura", "Kozla", "Krušovice", "Litovel", "Plzeň", "Poličku", "Poutníka", "Radegasta", "Sanmigela", "Starobahno", "Staropramen", "Stelu", "Svijany", "Šeráka", "Zlatopramen"};
+string[] all_beers7={"Bernardem", "Braníkem", "Březňákem", "Budvarem", "Koronou", "Dačicema", "Démonem", "Fényxem", "Gambrinusem", "Ginesem", "Hajnekenem", "Klášterem", "Kocourem", "Kozlem", "Krušovicema", "Litovlí", "Plzní", "Poličkou", "Poutníkem", "Radegastem", "Sanmigelem", "Starobahnem", "Staropramenem", "Stelou", "Svijanama", "Šerákem", "Zlatopramenem"};
+string[] non_alco={"Birel", "citrónka", "čaj", "domácí limonáda", "džus", "kafe", "Kofola", "Kola", "malinovka", "Rádler", "voda", "Zonka", "žlutá"};
+string[] non_alco4={"Birela", "citrónku", "čaj", "domácí limonádu", "džus", "kafe", "Kofolu", "Kolu", "malinovku", "Rádlera", "vodu", "Zonku", "žlutou"};
+string[] non_alco7={"Birelem", "citrónkou", "čajem", "domácí limonádou", "džusem", "kafem", "Kofolou", "Kolou", "malinovkou", "Rádlerem", "vodou", "Zonkou", "žlutou"};
+
+const string[] upper={" ", "A", "Á", "B", "C", "Č", "D", "Ď", "E", "É", "Ě", "F", "G", "H", "I", "Í", "J", "K", "L", "M", "N", "Ň", "O", "Ó", "P", "Q", "R", "Ř", "S", "Š", "T", "Ť", "U", "Ú", "Ů", "V", "W", "X", "Y", "Ý", "Z", "Ž"};
+const string[] lower={" ", "a", "á", "b", "c", "č", "d", "ď", "e", "é", "ě", "f", "g", "h", "i", "í", "j", "k", "l", "m", "n", "ň", "o", "ó", "p", "q", "r", "ř", "s", "š", "t", "ť", "u", "ú", "ů", "v", "w", "x", "y", "ý", "z", "ž"};
+const string[] symbols={" ", ",", ".", "?", "!", "\"", ":", ";"};
+const string[] descriptions={"mezera", "čárka", "tečka", "otazník", "vykřičník", "uvozovky", "dvojtečka", "středník"};
+
+const int[] indkeys={KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_NUMPAD_0, KEY_NUMPAD_1, KEY_NUMPAD_2, KEY_NUMPAD_3, KEY_NUMPAD_4, KEY_NUMPAD_5, KEY_NUMPAD_6, KEY_NUMPAD_7, KEY_NUMPAD_8, KEY_NUMPAD_9, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, KEY_PAGEUP, KEY_PAGEDOWN, KEY_HOME, KEY_END, KEY_L, KEY_S, KEY_NUMPAD_PLUS, KEY_COMMA, KEY_NUMPAD_MINUS, KEY_PERIOD, KEY_SLASH, KEY_NUMPAD_ENTER, KEY_RETURN, KEY_DELETE, KEY_R, KEY_V, KEY_H, KEY_N, KEY_E, KEY_O, KEY_B, KEY_A, KEY_U, KEY_F, KEY_SPACE, KEY_C, KEY_X, KEY_Y, KEY_Q, KEY_P, KEY_GRAVE, KEY_T, KEY_G, KEY_J, KEY_F1, KEY_F2, KEY_F3, KEY_F4, KEY_F5, KEY_F6, KEY_F7, KEY_F8, KEY_F9, KEY_F10, KEY_F11, KEY_F12, KEY_F13, KEY_F14, KEY_F15, KEY_APPLICATION, KEY_PRINTSCREEN, KEY_D, KEY_I, KEY_K, KEY_M, KEY_W, KEY_Z, KEY_TAB, KEY_INSERT, KEY_EQUALS, KEY_NUMPAD_EQUALS, KEY_ESCAPE, KEY_LGUI, KEY_RGUI, KEY_BACK, KEY_LEFTBRACKET, KEY_RIGHTBRACKET, KEY_APOSTROPHE, KEY_BACKSLASH, KEY_SEMICOLON, KEY_NONUSBACKSLASH, KEY_MINUS, KEY_NUMPAD_DIVIDE, KEY_NUMPAD_MULTIPLY, KEY_CAPSLOCK, KEY_PAUSE, KEY_NUMPAD_PERIOD};
+const string[] key_names={"alfanumerická nula", "alfanumerická jednička", "alfanumerická dvojka", "alfanumerická trojka", "alfanumerická čtyřka", "alfanumerická pětka", "alfanumerická šestka", "alfanumerická sedmička", "alfanumerická osmička", "alfanumerická devítka", "numerická nula", "numerická jednička", "numerická dvojka", "numerická trojka", "numerická čtyřka", "numerická pětka", "numerická šestka", "numerická sedmička", "numerická osmička", "numerická devítka", "levá šipka", "pravá šipka", "horní šipka", "dolní šipka", "pejdž ap", "pejdž daun", "houm", "end", "el", "es", "numerické plus", "alfanumerická čárka", "numerické minus", "alfanumerická tečka", "alfanumerická pomlčka", "numerický enter", "alfanumerický enter", "dylít", "er", "vé", "há", "en", "E", "O", "bé", "A", "U", "ef", "mezerník", "cé", "iks", "zet", "qé", "pé", "středník", "té", "gé", "jé", "ef jedna", "ef dva", "ef tři", "ef čtyři", "ef pět", "ef šest", "ef sedm", "ef osm", "ef devět", "ef deset", "ef jedenáct", "ef dvanáct", "ef třináct", "ef čtrnáct", "ef patnáct", "kontextové menu", "kontextové menu", "dé", "I", "ká", "em", "dvojité vé", "ipsilon", "tab", "inzert", "háček", "paragraf", "eskejp", "Vindous", "Vindous", "bekspejs", "U s čárkou", "pravá závorka", "paragraf", "přehláska", "U s kroužkem", "obrácené lomítko", "rovná se", "numerické lomítko", "numerická hvězdička", "kapslok", "pauza", "numerická desetinná čárka"};
+const int[] rowkeys={KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0}, numkeys={KEY_NUMPAD_1, KEY_NUMPAD_2, KEY_NUMPAD_3, KEY_NUMPAD_4, KEY_NUMPAD_5, KEY_NUMPAD_6, KEY_NUMPAD_7, KEY_NUMPAD_8, KEY_NUMPAD_9, KEY_NUMPAD_0};
+const uint8[] numvals={0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+const double defvol=-12, minvol=-50;
+
+string[] learnmenu={"Seznámení se zvuky", "snd_faucet|Pípa| |1", "snd_pour|Točení| |1", "snd_spill|Točení mimo půllitr| |1", "snd_mug|Půllitr|Víc variant|2", "snd_pick_mug|Sebrání půllitru| |2", "snd_drop_mug|Položení půllitru|Víc variant|2", "snd_break_mug|Rozbití půllitru|Víc variant|2", "snd_break_nonempty|Rozbití půllitru nebo sudu s pitím; chůze po tekutém nepořádku|Víc variant|2", "snd_throw_mug|Hození půllitru| |2", "snd_wash|Mytí půllitru|Víc variant|2", "snd_barrel|Sud| |3", "snd_pick_barrel|Sebrání sudu| |3", "snd_drop_barrel|Položení sudu|Víc variant|3", "snd_use_barrel|Umístění sudu na pípu|Víc variant|3", "snd_break_barrel|Rozbití sudu|Víc variant|3", "snd_walk_floor|Chůze po podlaze|Víc variant|4", "snd_walk_stairs|Chůze po schodech|Víc variant|4", "snd_floor_creak|Vrzání podlahy ve sklepě|Víc variant|4", "snd_walk_glass|Chůze po střepech|Víc variant|4", "snd_trip|Zakopnutí|Víc variant|4", "snd_fall|Pád na zem|Víc variant|4", "snd_walk_door|Náraz do dveří| |5", "snd_walk_faucet|Náraz do pípy| |5", "snd_walk_jukebox|Náraz do jukeboxu| |5", "snd_walk_sink|Náraz do dřezu| |5", "snd_walk_wall|Náraz do zdi| |5", "snd_customer|Stojíš u zákazníka| |6", "snd_dangerous_customer|Stojíš u naštvaného nebo ožralého zákazníka| |6", "snd_customer_beep|Jsi blízko u prvního zákazníka ve frontě; pozice sledovaného zákazníka; indikátor průběhu při stahování aktualizace| |6", "snd_dangerous_customer|Pozice naštvaného nebo ožralého zákazníka| |6", "snd_running_customer|Pozice utíkajícího zraněného zákazníka| |6", "snd_helper|Získáváš pomocníka| |6", "snd_customer_pay|Zákazník platí|Víc variant|6", "snd_customer_pay_jukebox|Zákazník hází peníze do jukeboxu|Víc variant|6", "snd_customer_gratuity|Zákazník dává dýško; stažena nová zpráva dne při spuštění hry| |6", "snd_customer_sit|Zákazník si sedá|Víc variant|6", "snd_customer_stand|Zákazník vstává ze židle|Víc variant|6", "snd_customer_puke|Zákazník zvrací| |6", "snd_door_open|Otevření dveří| |7", "snd_door_close|Zavření dveří| |7", "snd_doorbell|Dveřní zvonek| |7", "snd_purchased|Dokončení nákupu| |8", "snd_little_money|Nemáš dost peněz| |8", "snd_mess_dry|Zaschl nepořádek| |9", "snd_min_left|Minuta do konce| |9", "snd_timesup|Hra končí výhrou| |9", "snd_new_utterance|Nová promluva v historii řeči| |9", "snd_error|Neplatná akce; chyba při hře| |9", "snd_confirm_screen_reader|Potvrď důležitou hlášku| |9", "snd_achievement|Získáváš odměnu za úspěch| |9", "snd_inmenu|Otevřela se nabídka| |10", "snd_menu_move|Pohyb po nabídce| |10", "snd_wrap|Přetočení cyklické nabídky| |10", "snd_submenu|Položka má podnabídku| |10", "snd_edge|Jsi na okraji nabídky| |10", "snd_confirm_menu|Potvrzení položky| |10", "snd_quit|Zavření nabídky bez potvrzení, návrat o úroveň zpět| |10"};
+const string[] learn_sounds={"faucet", "pour", "spill", "mugloop", "pickmug", "drop", "break", "splash", "throw", "wash", "barrel", "pickup", "down", "place", "fall", "floor", "stairs", "creak", "glass", "trip", "fell", "entrance", "pipe", "collidejukebox", "basin", "wall", "customer", "heart", "beep", "alert", "beat", "helper", "pay", "coin", "pocket", "sit", "stand", "puke", "dooropen", "doorclose", "doorbell", "bought", "nomoney", "tidy", "minleft", "timesup", "say", "error", "sr", "achievement", "prompt", "move", "turn", "sub", "edge", "enter", "esc"}, looping_sounds={"faucet", "spill", "mugloop", "barrel", "alert", "beat", "beep"};
+const string[] pause_music={"bought", "nomoney", "pocket", "helper", "minleft", "timesup", "doorbell", "achievement", "tidy"};
+string[] main_menu={"Hlavní menu", "play|Hrát| |1|2|1", "options|Nastavení|Během hry můžeš nabídku nastavení kdykoli otevřít klávesou F2 nebo z kontextového menu.|1|2|1", "learn_sounds|Seznámení se zvuky|Obsahuje klíčové zvuky, které potřebuješ znát. Během hry můžeš nabídku seznámení se zvuky kdykoli otevřít klávesou ef 3 nebo z kontextového menu|2|2|1", "stereo_test|Otestovat přehrávání ve stereu|"+stereo_test_description+" Tuto funkci najdeš i v nabídce nastavení zvuku.|2|2|0|", "menu_music|Přehrávat hudbu v nabídkách|Toto nastavení najdeš i v nabídce nastavení zvuku. Ovlivňuje i hudbu na závěrečné obrazovce na konci hry.|2|1", "stats|Statistiky|Sleduj nejrůznější statistiky, jak dlouho už hraješ a jak si vedeš, od prvního spuštění programu|3|2|1", "repeat_motd|Zopakovat poslední zprávu od autora| |3|2|0|", "online|Online funkce|Ruční kontrola aktualizací, stažení instalátoru a různé komunikační kanály a sociální sítě.", "clear_profile|Smazat profil|"+clear_profile_description+"|3|2|1|", "tips|Zobrazit tipy, jak hrát|Ve výchozím stavu se jeden náhodný tip zobrazí vždycky, když prohraješ. Můžeš to změnit v nabídce nastavení rozhraní.|3|2|1", "credits|Titulky|Kdo všechno se na hře podílel.|3|2|1", "quit|Konec| |3"};
+string[] diff={"Zvol si obtížnost.", "Nejjednodušší", "Jednoduchá", "Střední", "Těžká", "Nejtěžší"};
+string[] diff_desc={"", "15 minut", "20 minut", "25 minut", "30 minut", "35 minut"};
+string[] diff4={"nejjednodušší", "jednoduchou", "střední", "těžkou", "nejtěžší"};
+string[] selection_menu={"Nastav způsob vybírání piv na čepu.", "drinks_random|Náhodně každou hru", "drinks_random_remember|Náhodně a zapamatovat", "drinks_manual|Ručně každou hru", "drinks_manual_remember|Ručně a zapamatovat"};
+
+enum selection_modes
+{
+selection_unspecified=0,
+selection_random_change,
+selection_random_keep,
+selection_manual_change,
+selection_manual_keep
+}
+
+string[] selection_prompts={"první pivo", "druhé pivo", "třetí pivo", "čtvrté pivo", "páté pivo", "poslední pivo", "nealko"};
+double[] selection_pans={-30, -20, -10, 0, 10, 20, 30};
+const string[] greetings={"Dobrý den, ",
+"Dobrej den, ",
+"Brej den, ",
+"Dobrej, ",
+"Ahoj, ",
+"Ahojík, ",
+"Ahojky, ",
+"Ahojda, ",
+"Čau, ",
+"Čauky, ",
+"Čus, ",
+"Čusík, ",
+"Čusíček, ",
+"Čus bus, ", 
+"Čus pičus, ", 
+"Zdar, ",
+"Zdarec, ",
+"Zdar jak sviňa, ",
+"Zduř, ",
+"Nazdar, ",
+"Nazdárek, ",
+"Zdárek, ",
+"Nazdarec, ",
+"Dobrého dne přeji, ",
+"Dobrý večer, ",
+"Dobrej večer, ",
+"Dobrej večír, ",
+"Brej večer, ",
+"Brej večír, ",
+"Dobrý den přeji, ",
+"Dobrý den přeju, ",
+"Dobrej den přeju, ",
+"Dobrý večer přeji, ",
+"Dobrý večer přeju, ",
+"Dobrej večer přeju, ",
+"Dobrej večír přeju, ",
+"Dobrého večera přeji, ",
+"Brej večír přeju, ",
+"Brej večer přeju, ",
+"Dám si ",
+"Dej sem ",
+"Naval ",
+"Okamžitě ",
+"Kurva, ",
+"Kurva fix, ",
+"Hospodo, ",
+"Sakra, ",
+"Davaj ",
+"Dej mi ",
+"Dejte mi ",
+"Prosím ",
+"Prosím si ",
+"Poprosím ",
+"Poprosím o ",
+"Hele, ",
+"Vole, ",
+"Servus, ",
+"Zdař bůh, ",
+"Pozdrav pánbůh, ",
+"Zdrávstvuj, ",
+"More, ",
+"Pičo, ",
+"Kde je ten prďola, co tady čepuje to pivo. ",
+"Nyga, ",
+"Jak to že ještě nemám ",
+"Proč ještě nemám ",
+"Vidím to na ",
+"Hned teď ",
+"Jako, ",
+"Tak třeba ",
+"Třeba ",
+"Zkusím ",
+"Vyzkouším ",
+"Pro mě za mě ",
+"Tak co třeba ",
+"Co takhle ",
+"Dejme tomu že ",
+"Něco mi řiká že si dám ",
+"Sem s tim. ",
+"Jak to de. ",
+"Jak je. ",
+"Jak se máš. ",
+"Jak se máme. ",
+"Tak co, jak to de. ",
+"Tak co, jak je. ",
+"Jak ti dupou králíci. ",
+"Jak se máte. ",
+"Jak se daří. ", 
+"Hezký den, ",
+"Hezkej den, ",
+"Ale už. ",
+"Ale okamžitě ",
+"Okamžitě a střelhbitě ",
+"Tak co, jak se máš? ",
+"Tak co, jak se máme? ",
+"Tak co, jak se máte? "};
+
+const string[] queue_order_m={"První", "Druhý", "Třetí", "Čtvrtý", "Pátý", "Šestý", "Sedmý", "Osmý", "Devátý", "Desátý"};
+const string[] queue_order_f={"První", "Druhá", "Třetí", "Čtvrtá", "Pátá", "Šestá", "Sedmá", "Osmá", "Devátá", "Desátá"};
+const string[] queue_order_m4={"prvního", "druhého", "třetího", "čtvrtého", "pátého", "šestého", "sedmého", "osmého", "devátého", "desátého"};
+const string[] queue_order_f4={"první", "druhou", "třetí", "čtvrtou", "pátou", "šestou", "sedmou", "osmou", "devátou", "desátou"};
+const string[] queue_order_m3={"prvnímu", "druhému", "třetímu", "čtvrtému", "pátému", "šestému", "sedmému", "osmému", "devátému", "desátému"};
+const string[] queue_order_f3={"první", "druhé", "třetí", "čtvrté", "páté", "šesté", "sedmé", "osmé", "deváté", "desáté"};
+
+const uint8 helping_states=7;
+
+string[] volmenu_items={"Nastav hlasitost", "100_percent|100 procent", "95_percent|95 procent", "90_percent|90 procent", "85_percent|85 procent", "80_percent|80 procent", "75_percent|75 procent", "70_percent|70 procent", "65_percent|65 procent", "60_percent|60 procent", "55_percent|55 procent", "50_percent|50 procent", "45_percent|45 procent", "40_percent|40 procent", "35_percent|35 procent", "30_percent|30 procent", "25_percent|25 procent", "20_percent|20 procent", "15_percent|15 procent", "10_percent|10 procent", "5_percent|5 procent"};
+const double[] volmenu_values={0, -2, -4, -6, -8, -10, -12, -14, -16, -18, -20, -22, -24, -26, -28, -30, -32, -34, -36, -38};
+string[] genders={"Nastavení pohlaví", "gender_male|Muž", "gender_female|Žena", "gender_undefined|Neuvedeno|Mluvnický mužský rod"};
+string[] help_items={"Nastav prodlevu", "1_sec|jedna vteřina", "2_sec|dvě vteřiny", "3_sec|3 vteřiny", "4_sec|4 vteřiny", "5_sec|5 vteřin", "10_sec|10 vteřin", "15_sec|15 vteřin", "20_sec|20 vteřin", "25_sec|25 vteřin", "30_sec|30 vteřin", "35_sec|35 vteřin", "40_sec|40 vteřin", "45_sec|45 vteřin", "50_sec|50 vteřin", "55_sec|55 vteřin", "60_sec|60 vteřin"};
+const uint8[] help_values={1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
+const string[] options_menu={"Nabídka nastavení", "ui_options|Rozhraní| |1|2|1", "audio_options|Zvuk| |1|2|1", "game_options|Hra| |1|2|1", "control_options|Ovládání| |1|2|1", "profile_options|Profil| |1|2|1", "restore_all_defaults|Obnovit všechna výchozí nastavení"};
+
+const string escape_symbols="<>{}[]@$|&^;+/\\'\"";
+const string[] diacritics={"á", "Á", "č", "Č", "ď", "Ď", "é", "É", "ě", "Ě", "í", "Í", "ň", "Ň", "ó", "Ó", "ř", "Ř", "š", "Š", "ť", "Ť", "ú", "Ú", "ů", "Ů", "ý", "Ý", "ž", "Ž"};
+const string[] normal={"a", "A", "c", "C", "d", "D", "e", "E", "e", "E", "i", "I", "n", "N", "o", "O", "r", "R", "s", "S", "t", "T", "u", "U", "u", "U", "y", "Y", "z", "Z"};
+uint8 diacritics_length=diacritics.length();
+const string[] replacements={" ", ",", ".", "!", "\r\n"};
+const uint8 replacements_length=replacements.length();
+
+string[] days={"Prvního", "Druhého", "Třetího", "Čtvrtého", "Pátého", "Šestého", "Sedmého", "Osmého", "Devátého", "Desátého", "Jedenáctého", "Dvanáctého", "Třináctého", "Čtrnáctého", "Patnáctého", "Šestnáctého", "Sedmnáctého", "osmnáctého", "Devatenáctého", "Dvacátého", "Dvacátého prvního", "Dvacátého druhého", "Dvacátého třetího", "Dvacátého čtvrtého", "Dvacátého pátého", "Dvacátého šestého", "Dvacátého sedmého", "Dvacátého osmého", "Dvacátého devátého", "Třicátého", "Třicátého prvního"};
+string[] months={"ledna", "února", "března", "dubna", "května", "června", "července", "srpna", "září", "října", "listopadu", "prosince"};

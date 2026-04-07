@@ -1,0 +1,24 @@
+class timestamp {
+	timestamp();
+	timestamp(int64);
+	timestamp(const timestamp&in);
+	timestamp& opAssign(const timestamp&in);
+	timestamp& opAssign(int64);
+	void update();
+	bool opEquals(const timestamp&in) const;
+	int opCmp(const timestamp&in) const;
+	timestamp opAdd(int64) const;
+	timestamp opAdd(const timespan&in) const;
+	timestamp opSub(int64) const;
+	timestamp opSub(const timespan&in) const;
+	int64 opSub(const timestamp&in) const;
+	timestamp& opAddAssign(int64);
+	timestamp& opAddAssign(const timespan&in);
+	timestamp& opSubAssign(int64);
+	timestamp& opSubAssign(const timespan&in);
+	int64 get_UTC_time() const property;
+	int64 get_elapsed() const property;
+	bool has_elapsed(int64) const;
+	int64 opImplConv() const;
+	string format(const string&in fmt, int tzd = 0xffff);
+}

@@ -1,0 +1,21 @@
+class engine_key_event {
+	int find(engine_key_event_listener@ listener) const;
+	bool insert(engine_key_event_listener@ listener, int index = -1);
+	bool opAddAssign(engine_key_event_listener@ listener);
+	bool remove(engine_key_event_listener@ listener);
+	bool opSubAssign(engine_key_event_listener@ listener);
+	int find(engine_key_event_callback@ listener) const;
+	bool insert(engine_key_event_callback@ listener, int index = -1);
+	bool opAddAssign(engine_key_event_callback@ listener);
+	bool remove(engine_key_event_callback@ listener);
+	bool opSubAssign(engine_key_event_callback@ listener);
+	int find(engine_key_event_passthrough_callback@ listener) const;
+	bool insert(engine_key_event_passthrough_callback@ listener, int index = -1);
+	bool opAddAssign(engine_key_event_passthrough_callback@ listener);
+	bool remove(engine_key_event_passthrough_callback@ listener);
+	bool opSubAssign(engine_key_event_passthrough_callback@ listener);
+	bool remove(uint index);
+	void opCall(int key);
+	void clear();
+	uint get_count() const property;
+}

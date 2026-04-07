@@ -1,0 +1,35 @@
+class mail_message {
+	mail_message();
+	void set_sender(const string&in);
+	string get_sender() const property;
+	void add_recipient(const mail_recipient&in);
+	void add_recipient(const string&in, mail_recipient_type = RECIPIENT_TO);
+	array<mail_recipient@>@ get_recipients() const;
+	void set_subject(const string&in);
+	string get_subject() const property;
+	void set_content(const string&in, const string&in = \text/plain\);
+	string get_content() const property;
+	bool add_attachment_file(const string&in, const string&in);
+	bool add_attachment_string(const string&in, const string&in, const string&in = \application/octet-stream\);
+	void set_html_content(const string&in, const string&in = \\);
+	void set_priority(mail_priority);
+	int get_priority() const property;
+	void add_header(const string&in, const string&in);
+	string get_header(const string&in) const;
+	void set_reply_to(const string&in) property;
+	string get_reply_to() const property;
+	void set_read_receipt(const string&in);
+	string get_message_id() const property;
+	void set_message_id(const string&in) property;
+	string add_inline_attachment_file(const string&in, const string&in = \\);
+	string add_inline_attachment_string(const string&in, const string&in, const string&in);
+	string get_last_error() const property;
+	void set_in_reply_to(const string&in) property;
+	string get_in_reply_to() const property;
+	void set_references(const string&in) property;
+	string get_references() const property;
+	void set_return_receipt_to(const string&in) property;
+	string get_return_receipt_to() const property;
+	void set_disposition_notification_to(const string&in) property;
+	string get_disposition_notification_to() const property;
+}

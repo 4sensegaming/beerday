@@ -1,0 +1,26 @@
+class sqlite3statement {
+	int step();
+	int reset();
+	string get_expanded_sql_statement() property;
+	string get_sql_statement() property;
+	int get_bind_param_count() property;
+	int get_column_count() property;
+	int bind_blob(int, const string&in, bool = true);
+	int bind_double(int, double);
+	int bind_int(int, int);
+	int bind_int64(int, int64);
+	int bind_null(int);
+	int bind_param_index(const string&in);
+	string bind_param_name(int);
+	int bind_text(int, const string&in, bool = true);
+	int clear_bindings();
+	string column_blob(int);
+	int column_bytes(int);
+	string column_decltype(int);
+	double column_double(int);
+	int column_int(int);
+	int64 column_int64(int);
+	string column_name(int);
+	int column_type(int);
+	string column_text(int);
+}

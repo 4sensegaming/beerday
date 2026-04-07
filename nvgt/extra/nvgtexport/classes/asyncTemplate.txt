@@ -1,0 +1,25 @@
+class async<T> {
+	async(int&in);
+	async(int&in, const ?&in);
+	async(int&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	async(int&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in, const ?&in);
+	const T& get_value() property;
+	bool get_complete() const property;
+	bool get_failed() const property;
+	string get_exception() const property;
+	void wait();
+	bool try_wait(uint ms);
+}

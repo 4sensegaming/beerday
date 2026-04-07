@@ -1,0 +1,37 @@
+class ip_address {
+	ip_address();
+	ip_address(spec::ip_address_family);
+	ip_address(const string&in addr);
+	ip_address(const string&in addr, spec::ip_address_family);
+	ip_address(const spec::ip_address&in);
+	spec::ip_address& opAssign(const spec::ip_address&in addr);
+	bool get_is_v4() const property;
+	bool get_is_v6() const property;
+	spec::ip_address_family get_family() const property;
+	uint get_scope() const property;
+	string opImplConv() const;
+	bool get_is_wildcard() const property;
+	bool get_is_broadcast() const property;
+	bool get_is_loopback() const property;
+	bool get_is_multicast() const property;
+	bool get_is_unicast() const property;
+	bool get_is_link_local() const property;
+	bool get_is_site_local() const property;
+	bool get_is_IPV4_compatible() const property;
+	bool get_is_IPV4_mapped() const property;
+	bool get_is_well_known_multicast() const property;
+	bool get_is_node_local_multicast() const property;
+	bool get_is_link_local_multicast() const property;
+	bool get_is_site_local_multicast() const property;
+	bool get_is_org_local_multicast() const property;
+	bool get_is_global_multicast() const property;
+	bool opEquals(const spec::ip_address&in addr) const;
+	int opCmp(const spec::ip_address&in);
+	spec::ip_address opAnd(const spec::ip_address&in addr) const;
+	spec::ip_address opOr(const spec::ip_address&in addr) const;
+	spec::ip_address opXor(const spec::ip_address&in addr) const;
+	spec::ip_address opCom() const;
+	uint get_prefix_length() const property;
+	void mask(const spec::ip_address&in mask);
+	void mask(const spec::ip_address&in mask, const spec::ip_address&in set);
+}

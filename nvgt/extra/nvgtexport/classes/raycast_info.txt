@@ -1,0 +1,9 @@
+class raycast_info {
+	vector world_point;
+	vector world_normal;
+	float hit_fraction;
+	int triangle_index;
+	physics_body@ body;
+	physics_collider@ collider;
+	raycast_info();
+}

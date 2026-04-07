@@ -1,0 +1,6 @@
+class spinlock_mutex {
+	spinlock_mutex(const string&in);
+	void lock();
+	bool try_lock();
+	void unlock();
+}

@@ -1,0 +1,36 @@
+class audio_wav_encoder {
+	audio_wav_encoder(audio_engine@ engine = sound_default_engine);
+	uint get_input_bus_count() const property;
+	uint get_output_bus_count() const property;
+	uint get_input_channels(uint bus) const;
+	uint get_output_channels(uint bus) const;
+	bool attach_output_bus(uint output_bus, audio_node@ destination, uint destination_input_bus);
+	bool detach_output_bus(uint bus);
+	bool detach_all_output_buses();
+	bool set_output_bus_volume(uint bus, float volume);
+	float get_output_bus_volume(uint bus);
+	bool set_state(audio_node_state state);
+	audio_node_state get_state();
+	bool set_state_time(audio_node_state state, uint64 time);
+	uint64 get_state_time(uint64 global_time);
+	audio_node_state get_state_by_time(uint64 global_time);
+	audio_node_state get_state_by_time_range(uint64 global_time_begin, uint64 global_time_end);
+	uint64 get_time() const;
+	bool set_time(uint64 local_time);
+	audio_node@ opImplCast();
+	uint get_default_open_flags() const property;
+	bool open(uint sample_rate, uint channels, uint flags = AUDIO_ENCODER_DEFAULTS);
+	bool open(const string&in filename, uint sample_rate, uint channels, uint flags = AUDIO_ENCODER_DEFAULTS);
+	bool open(datastream@ stream, uint sample_rate, uint channels, uint flags = AUDIO_ENCODER_DEFAULTS);
+	bool close();
+	bool get_active() const property;
+	uint64 get_frames_written() const property;
+	uint write(const array<float>@ frames);
+	uint write(const memory_buffer<float>&inout frames);
+	string read();
+	string get_format() const property;
+	uint get_sample_rate() const property;
+	uint get_channels() const property;
+	audio_encoder@ opImplCast();
+	audio_format get_wav_format() const property;
+}

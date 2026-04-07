@@ -1,0 +1,26 @@
+class physics_concave_mesh_shape {
+	physics_concave_mesh_shape(physics_triangle_mesh@ triangle_mesh, const vector&in scaling = vector(1,1,1));
+	physics_shape_name get_name() const property;
+	physics_shape_type get_type() const property;
+	bool get_is_convex() const property;
+	bool get_is_polyhedron() const property;
+	aabb get_local_bounds() const;
+	int get_id() const property;
+	vector get_local_inertia_tensor(float mass) const;
+	float get_volume() const property;
+	aabb compute_transformed_aabb(const physics_transform&in transform) const;
+	string opImplConv() const;
+	physics_triangle_raycast_side get_raycast_test_type() const property;
+	void set_raycast_test_type(physics_triangle_raycast_side side) property;
+	vector get_scale() const property;
+	void set_scale(const vector&in scale) property;
+	uint get_nb_vertices() const property;
+	uint get_nb_triangles() const property;
+	void get_triangle_vertices_indices(uint triangle_index, uint&out v1_index, uint&out v2_index, uint&out v3_index) const;
+	void get_triangle_vertices(uint triangle_index, vector&out v1, vector&out v2, vector&out v3) const;
+	void get_triangle_vertices_normals(uint triangle_index, vector&out n1, vector&out n2, vector&out n3) const;
+	vector get_vertex(uint vertex_index) const;
+	const vector& get_vertex_normal(uint vertex_index) const;
+	physics_collision_shape@ opImplCast();
+	const physics_collision_shape@ opImplCast() const;
+}

@@ -1,0 +1,12 @@
+class regexp {
+	regexp(const string&in, regexp_options = RE_UTF8);
+	bool match(const string&in, uint64 = 0) const;
+	bool match(const string&in, uint64, int) const;
+	bool opEquals(const string&in) const;
+	string extract(const string&in, uint64 = 0) const;
+	string extract(const string&in, uint64, int) const;
+	int subst(string&inout, uint64, const string&in, int = RE_UTF8) const;
+	int subst(string&inout, const string&in, int = RE_UTF8) const;
+	array<string>@ split(const string&in, uint64 = 0) const;
+	array<string>@ split(const string&in, uint64, int) const;
+}

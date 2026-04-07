@@ -1,0 +1,3 @@
+class physics_logger {
+	void log(physics_logger_level level, const string&in worldName, physics_logger_category category, const string&in message);
+}

@@ -1,0 +1,9 @@
+class atomic_flag {
+	atomic_flag();
+	bool test(memory_order order = MEMORY_ORDER_SEQ_CST) const;
+	void clear(memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool test_and_set(memory_order order = MEMORY_ORDER_SEQ_CST);
+	void wait(bool old, memory_order order = MEMORY_ORDER_SEQ_CST) const;
+	void notify_one();
+	void notify_all();
+}

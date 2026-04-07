@@ -1,0 +1,9 @@
+class system_tray_menu {
+	system_tray_menu_item@ insert_item(const string&in label, system_tray_callback@ callback = null, bool disabled = false, int pos = -1);
+	system_tray_menu_item@ insert_checkbox(const string&in label, bool checked = false, system_tray_callback@ callback = null, bool disabled = false, int pos = -1);
+	system_tray_menu_item@ insert_submenu(const string&in label, bool disabled = false, int pos = -1);
+	system_tray_menu_item@ insert_separator(int pos = -1);
+	void remove_entry(system_tray_menu_item@ item);
+	int get_entry_count() const property;
+	array<system_tray_menu_item@>@ get_entries() const property;
+}

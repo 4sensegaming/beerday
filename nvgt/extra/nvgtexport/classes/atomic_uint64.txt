@@ -1,0 +1,31 @@
+class atomic_uint64 {
+	atomic_uint64();
+	bool is_lock_free();
+	void store(uint64 val, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint64 opAssign(uint64 val);
+	uint64 load(memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint64 opImplConv();
+	uint64 exchange(uint64 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_weak(uint64&inout expected, uint64 desired, memory_order success, memory_order failure);
+	bool compare_exchange_weak(uint64&inout expected, uint64 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_strong(uint64&inout expected, uint64 desired, memory_order success, memory_order failure);
+	bool compare_exchange_strong(uint64&inout expected, uint64 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void wait(uint64 old, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void notify_one();
+	void notify_all();
+	uint64 fetch_add(uint64 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint64 fetch_sub(uint64 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint64 opAddAssign(uint64 arg);
+	uint64 opSubAssign(uint64 arg);
+	uint64 opPreInc();
+	uint64 opPostInc(uint64 arg);
+	uint64 opPreDec();
+	uint64 opPostDec(uint64 arg);
+	uint64 fetch_and(uint64 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint64 fetch_or(uint64 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint64 fetch_xor(uint64 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint64 opAndAssign(uint64 arg);
+	uint64 opOrAssign(uint64 arg);
+	uint64 opXorAssign(uint64 arg);
+	bool get_is_always_lock_free() property;
+}

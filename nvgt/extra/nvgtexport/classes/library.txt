@@ -1,0 +1,8 @@
+class library {
+	library();
+	bool load(const string&in filename);
+	bool unload();
+	bool get_active() const property;
+	library_function@ get(const string&in sig);
+	var@ call(const string&in sig, ?&in...);
+}

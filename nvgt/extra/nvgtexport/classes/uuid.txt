@@ -1,0 +1,19 @@
+class uuid {
+	uuid();
+	uuid(const string&in str);
+	uuid(const uuid&in);
+	uuid& opAssign(const uuid&in);
+	string to_string() const;
+	string get_str() const property;
+	string opConv() const;
+	string opImplConv() const;
+	void parse(const string&in);
+	bool try_parse(const string&in);
+	int get_version() const property;
+	int get_variant() const property;
+	bool get_is_null() const property;
+	bool opEquals(const uuid&in) const;
+	int opCmp(const uuid&in);
+	string get_bytes() const;
+	void set_bytes(const string&in);
+}

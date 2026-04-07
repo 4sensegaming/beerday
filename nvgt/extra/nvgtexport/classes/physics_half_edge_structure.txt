@@ -1,0 +1,8 @@
+class physics_half_edge_structure {
+	void compute_half_edges();
+	uint add_vertex(uint vertex_point_index);
+	uint get_nb_faces() const property;
+	uint get_nb_half_edges() const property;
+	uint get_nb_vertices() const property;
+	const physics_half_edge_structure_face& get_face(uint index) const property;
+}

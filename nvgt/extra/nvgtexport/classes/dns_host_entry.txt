@@ -1,0 +1,8 @@
+class dns_host_entry {
+	dns_host_entry();
+	dns_host_entry(const dns_host_entry&in);
+	dns_host_entry& opAssign(const dns_host_entry&in e);
+	const string& get_name() const property;
+	array<string>@ get_aliases() const;
+	array<spec::ip_address>@ get_addresses() const;
+}

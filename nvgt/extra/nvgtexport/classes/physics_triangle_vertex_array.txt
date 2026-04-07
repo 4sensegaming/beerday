@@ -1,0 +1,14 @@
+class physics_triangle_vertex_array {
+	physics_triangle_vertex_data_type get_vertex_data_type() const property;
+	physics_triangle_normal_data_type get_vertex_normal_data_type() const property;
+	bool get_has_normals() const property;
+	physics_triangle_index_data_type get_index_data_type() const property;
+	uint get_nb_vertices() const property;
+	uint get_nb_triangles() const property;
+	uint get_vertices_stride() const property;
+	uint get_vertices_normals_stride() const property;
+	uint get_indices_stride() const property;
+	void get_triangle_vertices_indices(uint triangle_index, uint&out v1_index, uint&out v2_index, uint&out v3_index) const;
+	vector get_vertex(uint vertex_index) const;
+	vector get_vertex_normal(uint vertex_index) const;
+}

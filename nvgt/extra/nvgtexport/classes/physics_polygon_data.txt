@@ -1,0 +1,3 @@
+class physics_polygon_data {
+	physics_polygon_data(array<float>@ vertices, array<array<uint>>@ faces);
+}

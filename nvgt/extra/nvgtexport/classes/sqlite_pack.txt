@@ -1,0 +1,30 @@
+class sqlite_pack {
+	sqlite_pack();
+	bool open(const string&in filename, const int mode = SQLITE_PACK_OPEN_MODE_READ_ONLY, const string&inout key = \\);
+	bool rekey(const string&inout key);
+	bool close();
+	bool add_file(const string&in disc_filename, const string&in pack_filename, bool allow_replace = false);
+	bool add_directory(const string&in dir, const bool allow_replace = false);
+	bool add_memory(const string&in pack_filename, const string&in data, bool allow_replace = false);
+	bool delete_file(const string&in pack_filename);
+	bool file_exists(const string&in pack_filename) const;
+	string get_file_name(int64 index) const;
+	array<string>@ list_files() const;
+	uint get_file_size(const string&in pack_filename) const;
+	string read_file(const string&in pack_filename, uint offset_in_file, uint read_byte_count) const;
+	bool get_active() const property;
+	uint get_size() const property;
+	datastream@ open_file(const string&inout file_name, const bool rw);
+	void allocate_file(const string&inout file_name, const int64 size, const bool allow_replace = false);
+	bool rename_file(const string&inout old, const string&inout new_);
+	void clear();
+	sqlite3statement@ prepare(const string&inout statement, const bool persistant = false);
+	array<string>@ find(const string&inout what, const sqlite_pack_find_mode mode = SQLITE_PACK_FIND_MODE_LIKE);
+	array<dictionary@>@ exec(const string&inout sql);
+	pack_interface@ opImplCast();
+	bool create(const string&in filename, const string&in key = \\);
+	bool open(const string&in filename, const string&in key = \\);
+	bool add_stream(const string&in internal_name, datastream@ ds, const bool allow_replace = false);
+	int64 get_file_count() const property;
+	bool extract_file(const string&in internal_name, const string&in file_on_disk);
+}

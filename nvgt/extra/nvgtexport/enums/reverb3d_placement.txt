@@ -1,0 +1,3 @@
+reverb3d_prepan = 0;
+reverb3d_postpan = 1;
+reverb3d_postattenuate = 2;

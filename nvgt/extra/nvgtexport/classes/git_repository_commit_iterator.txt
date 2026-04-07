@@ -1,0 +1,5 @@
+class git_repository_commit_iterator {
+	git_repository_commit@ get_commit() property;
+	git_repository_commit@ opImplCast();
+	bool opPostInc();
+}

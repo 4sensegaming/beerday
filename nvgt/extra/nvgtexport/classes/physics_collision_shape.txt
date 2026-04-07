@@ -1,0 +1,12 @@
+class physics_collision_shape {
+	physics_shape_name get_name() const property;
+	physics_shape_type get_type() const property;
+	bool get_is_convex() const property;
+	bool get_is_polyhedron() const property;
+	aabb get_local_bounds() const;
+	int get_id() const property;
+	vector get_local_inertia_tensor(float mass) const;
+	float get_volume() const property;
+	aabb compute_transformed_aabb(const physics_transform&in transform) const;
+	string opImplConv() const;
+}

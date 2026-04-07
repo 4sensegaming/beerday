@@ -1,0 +1,101 @@
+float absolute_value(float n)
+{
+return n<0 ? -n : n;
+}
+
+void position_sound_1d(sound@ handle, int listener_x, int source_x, float pan_step, float volume_step)
+{
+position_sound_custom_1d(handle, listener_x, source_x, pan_step, volume_step, 0.0, 0.0);
+}
+
+void position_sound_custom_1d(sound@ handle, int listener_x, int source_x, float pan_step, float volume_step, float start_pan, float start_volume)
+{
+int delta=0;
+float final_pan=start_pan;
+
+if(source_x<listener_x)
+{
+delta=listener_x-source_x;
+final_pan-=(delta*pan_step);
+}
+if(source_x>listener_x)
+{
+delta=source_x-listener_x;
+final_pan+=(delta*pan_step);
+}
+if(final_pan<-100)
+{
+final_pan=-100;
+}
+if(final_pan>100)
+{
+final_pan=100;
+}
+if(handle.pan!=final_pan)
+handle.pan=final_pan;
+}
+
+void position_sound_2d(sound@ handle, int listener_x, int listener_y, int source_x, int source_y, float pan_step, float volume_step, float behind_pitch_decrease)
+{
+position_sound_custom_2d(handle, listener_x, listener_y, source_x, source_y, pan_step, volume_step, behind_pitch_decrease, 0.0, 0.0, 100.0);
+}
+
+void position_sound_custom_2d(sound@ handle, int listener_x, int listener_y, int source_x, int source_y, float pan_step, float volume_step, float behind_pitch_decrease, float start_pan, float start_volume, float start_pitch)
+{
+int delta_x=0;
+int delta_y=0;
+float final_pan=start_pan;
+float final_volume=start_volume;
+float final_pitch=start_pitch;
+
+if(source_x<listener_x)
+{
+delta_x=listener_x-source_x;
+final_pan-=(delta_x*pan_step);
+}
+else if(source_x>listener_x)
+{
+delta_x=source_x-listener_x;
+final_pan+=(delta_x*pan_step);
+}
+if(source_y<listener_y)
+{
+delta_y=listener_y-source_y;
+final_volume-=(delta_y*volume_step);
+final_pitch-=(behind_pitch_decrease*delta_y);
+}
+else if(source_y>listener_y)
+{
+delta_y=source_y-listener_y;
+final_volume-=(delta_y*volume_step);
+}
+
+if(final_pan<-100)
+{
+final_pan=-100;
+}
+if(final_pan>100)
+{
+final_pan=100;
+}
+if(final_volume<-100)
+{
+final_volume=-100;
+}
+if(final_pitch<handle.pitch_lower_limit)
+{
+final_pitch=handle.pitch_lower_limit;
+}
+if (stereo_invert) final_pan=-final_pan;
+if (final_pan < stereo_left) final_pan=stereo_left;
+if (final_pan > stereo_right) final_pan=stereo_right;
+if (stereo_center < 0) final_pan-=absolute_value(stereo_center);
+if (stereo_center > 0) final_pan+=stereo_center;
+if (mono_audio) final_pan=0;
+if(handle.pan!=final_pan)
+handle.pan=final_pan;
+if(handle.volume!=final_volume)
+handle.volume=final_volume;
+if(handle.pitch!=final_pitch)
+handle.pitch=final_pitch;
+}

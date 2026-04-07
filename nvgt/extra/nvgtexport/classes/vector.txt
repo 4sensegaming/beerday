@@ -1,0 +1,36 @@
+class vector {
+	float x;
+	float y;
+	float z;
+	vector();
+	vector(float x, float y, float z = 0.0f);
+	vector& opAddAssign(const vector&in);
+	vector& opSubAssign(const vector&in);
+	vector& opMulAssign(float);
+	vector& opDivAssign(float);
+	bool opEquals(const vector&in) const;
+	vector opAdd(const vector&in) const;
+	vector opSub(const vector&in) const;
+	vector opMul(const vector&in) const;
+	vector opDiv(const vector&in) const;
+	vector opMul(float) const;
+	vector opDiv(float) const;
+	void set(float x, float y, float z);
+	void setToZero();
+	float length() const;
+	float length_square() const;
+	bool get_is_zero() const property;
+	bool get_is_unit() const property;
+	bool get_is_finite() const property;
+	float dot(const vector&in) const;
+	vector cross(const vector&in) const;
+	void normalize();
+	vector get_absolute() const property;
+	int get_min_axis() const property;
+	int get_max_axis() const property;
+	float get_min_value() const property;
+	float get_max_value() const property;
+	float& opIndex(int index);
+	const float& opIndex(int index) const;
+	string opImplConv() const;
+}

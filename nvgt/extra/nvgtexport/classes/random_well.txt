@@ -1,0 +1,13 @@
+class random_well {
+	random_well();
+	random_well(uint seed);
+	uint next();
+	float nextf();
+	int range(int min, int max);
+	void seed(uint s);
+	string get_state() const;
+	bool set_state(const string&in state);
+	bool next_bool(int percent = 50);
+	string next_character(const string&in min, const string&in max);
+	random_interface@ opImplCast();
+}

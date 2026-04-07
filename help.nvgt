@@ -1,0 +1,120 @@
+command@[] shortcuts;
+
+class command
+{
+string ui_name, name, combo, combo2, desc, longdesc;
+uint8 section=0;
+}
+
+void read_help()
+{
+shortcuts.reserve (200);
+datastream@ helptext=pack.get_file ("help.dat");
+string[] entries=string_aes_decrypt (helptext.read(), scramble()).split ("\r\n", true);
+uint e=entries.length();
+for (uint xl=0; xl<e; xl++)
+{
+command new;
+string[] sep=entries[xl].split ("\t", true);
+uint8 sl=sep.length();
+new.ui_name=sep[0];
+new.name=sep[1];
+new.combo=sep[2];
+if (sl>3 and sep[3]!="" and sep[3]!=" ") new.combo2=sep[3];
+if (sl>4 and sep[4]!="" and sep[4]!=" ") new.desc=sep[4];
+if (sl>5 and sep[5]!="" and sep[5]!=" ") new.longdesc=sep[5];
+if (sl>6 and sep[6]!="" and sep[6]!=" " and sep[6]!="0") new.section=int(parse_int(sep[6]));
+shortcuts.insert_last (new);
+bool invalid_shortcut=new.name=="" or new.name==" " or new.ui_name=="" or new.ui_name==" " or new.combo=="" or new.combo==" ";
+if (enable_debugging and invalid_shortcut) warning ("Chyba při parsování nápovědy. Řádek "+(xl+1)+", zkratka:\r\n"+entries[xl]);
+}
+}
+
+void help()
+{
+ss_start();
+keyhelp=true;
+help_read=false;
+string help_on="Klávesová nápověda zapnuta.";
+if (is_optionsmenu) help_on+=" Do nabídky nastavení ovládání se vrátíš klávesou ef jedna.";
+say (help_on, true, false);
+uint8 count=0;
+string lastkey="";
+uint counter=0;
+ui_help_timer.restart();
+while (!singlekey (KEY_F1))
+{
+if (speak_ui_help and !help_read)
+{
+if (ui_help_timer.elapsed<ui_help_delay and down_keys()>0) ui_help_timer.restart();
+if (ui_help_timer.elapsed>=ui_help_delay and down_keys()==0)
+{
+say ("Libovolná klávesa nebo kombinace kláves: Vysvětlí, co tato zkratka dělá ve hře. Některé zkratky mají navíc i dlouhý popis s více informacemi, který zjistíš, když danou zkratku stiskneš dvakrát rychle za sebou.", true, false);
+help_read=true;
+ui_help_timer.restart();
+ui_help_timer.pause();
+}
+}
+menu_music();
+closekey();
+if (singlekey (KEY_F1)) break;
+counter++;
+string keylist="";
+if (mod_ctrl() and !instr (keylist, "kontrol")) keylist+="kontrol plus ";
+if (mod_shift() and !instr (keylist, "šift")) keylist+="šift plus ";
+if (mod_alt() and !instr (keylist, "alt")) keylist+="alt plus ";
+int[] keyb=keys_pressed();
+if (keyb.length() > 0)
+{
+uint8 ikl=indkeys.length();
+for (uint xl=0; xl<ikl; xl++)
+{
+if (keyb[0] == indkeys[xl])
+{
+keylist+=key_names[xl];
+if (instr (keylist, "vindous") or keylist == "alt plus tab" or keylist == "šift plus alt plus tab" or keylist == "kontrol plus eskejp" or keylist=="kontrol plus alt plus dylít") break;
+if (keylist == lastkey and count == 1) count=2;
+else count=1;
+counter=0;
+lastkey=keylist;
+say (keylist, true, false);
+uint8 sl=shortcuts.length();
+for (uint yl=0; yl<sl; yl++)
+{
+if (keylist == shortcuts[yl].combo or keylist == shortcuts[yl].combo2)
+{
+if (count == 2)
+{
+if (shortcuts[yl].longdesc=="" or shortcuts[yl].longdesc==" ") say ("Tato zkratka nemá žádný dlouhý popis.", true, false);
+else say (shortcuts[yl].longdesc, true, false);
+}
+else
+{
+if (shortcuts[yl].desc!="" and shortcuts[yl].desc!=" ") say (shortcuts[yl].desc, false, false);
+else say (shortcuts[yl].name, false, false);
+}
+break;
+}
+if (yl == shortcuts.length() -1 and keylist != shortcuts[yl].combo and keylist != shortcuts[yl].combo2)
+{
+say ("Nevyužito.", false, false);
+count=0;
+break;
+}
+}
+break;
+}
+}
+}
+if (counter >= fps/2)
+{
+counter=0;
+count=0;
+}
+wait(5);
+}
+if (oldpaused) say ("Klávesová nápověda vypnuta.", true, false);
+reset_ui_help();
+keyhelp=false;
+ss_end();
+}

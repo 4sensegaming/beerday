@@ -1,0 +1,10 @@
+class grid<T> {
+	grid(int&in);
+	grid(int&in, uint, uint);
+	grid(int&in, uint, uint, const T&in);
+	T& opIndex(uint, uint);
+	const T& opIndex(uint, uint) const;
+	void resize(uint width, uint height);
+	uint width() const;
+	uint height() const;
+}

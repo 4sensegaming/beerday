@@ -1,0 +1,24 @@
+class json_object {
+	json_object();
+	json_object(json_object@ other);
+	json_object& opAssign(json_object@ other);
+	var@ get_opIndex(const string&in key) const property;
+	void set_opIndex(const string&in key, const var&in value) property;
+	void set(const string&in key, const var&in value);
+	var@ get(const string&in key, var@ default_value = null) const;
+	var@ opCall(const string&in path, var@ default_value = null) const;
+	json_array@ get_array(const string&in key) const;
+	json_object@ get_object(const string&in key) const;
+	string stringify(uint indent = 0, int step = -1) const;
+	void stringify(datastream@ stream, uint indent = 0, int step = -1) const;
+	uint size() const;
+	bool get_escape_unicode() const property;
+	void set_escape_unicode(bool value) property;
+	void clear();
+	void remove(const string&in key);
+	bool exists(const string&in key) const;
+	bool is_array(const string&in key) const;
+	bool is_null(const string&in key) const;
+	bool is_object(const string&in key) const;
+	array<string>@ get_keys() const;
+}

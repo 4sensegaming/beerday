@@ -1,0 +1,7 @@
+class touch_finger {
+	const uint64 id;
+	const float x;
+	const float y;
+	const float pressure;
+	;
+}

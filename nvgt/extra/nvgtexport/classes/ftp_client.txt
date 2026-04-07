@@ -1,0 +1,33 @@
+class ftp_client {
+	ftp_client(uint16 active_data_port = 0);
+	ftp_client(const string&in host, uint16 port = 21, const string&in username = \\, const string&in password = \\, uint16 active_data_port = 0);
+	void set_passive(bool passive, bool use_rfc1738 = true);
+	bool get_passive() const property;
+	void open(const string&in host, uint16 port, const string&in username = \\, const string&in password = \\);
+	void login(const string&in username, const string&in password);
+	void logout();
+	void close();
+	string system_type();
+	void set_file_type(ftp_file_type type);
+	ftp_file_type get_file_type() const property;
+	void set_working_directory(const string&in path);
+	string get_working_directory();
+	void cdup();
+	void rename(const string&in source, const string&in destination);
+	void remove(const string&in path);
+	void create_directory(const string&in path);
+	void remove_directory(const string&in path);
+	datastream@ begin_download(const string&in path, const string&in encoding = \\, int byteorder = STREAM_BYTE_ORDER_NATIVE);
+	void end_download();
+	datastream@ begin_upload(const string&in path, const string&in encoding = \\, int byteorder = STREAM_BYTE_ORDER_NATIVE);
+	void end_upload();
+	datastream@ begin_list(const string&in path = \\, bool extended = false, const string&in encoding = \\, int byteorder = STREAM_BYTE_ORDER_NATIVE);
+	void end_list();
+	void abort();
+	int send_command(const string&in command, string&inout response);
+	int send_command(const string&in command, const string&in argument, string&inout response);
+	bool get_is_open() const property;
+	bool get_is_logged_in() const property;
+	bool get_is_secure() const property;
+	const string& get_welcome_message() const property;
+}

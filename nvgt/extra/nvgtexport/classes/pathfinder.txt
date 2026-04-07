@@ -1,0 +1,16 @@
+class pathfinder {
+	const bool solving;
+	const float total_cost;
+	int desperation_factor;
+	bool allow_diagonals;
+	bool automatic_reset;
+	int search_range;
+	pathfinder(int = 1024, bool = true);
+	void set_callback_function(pathfinder_callback@);
+	void set_callback_function(pathfinder_callback_ex@);
+	void cancel();
+	void set_callback_function(pathfinder_callback_legacy@);
+	void reset();
+	array<vector>@ find(int, int, int, int, int, int, any@ = null);
+	array<vector>@ find(int, int, int, int, string = \\);
+}

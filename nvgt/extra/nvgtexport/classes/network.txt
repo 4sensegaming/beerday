@@ -1,0 +1,36 @@
+class network {
+	bool IPV6enabled;
+	bool receive_timeout_event;
+	bool send_immediately;
+	network();
+	void destroy(bool flush = true);
+	bool setup_client(uint8 max_channels, uint16 max_peers);
+	bool setup_server(uint16 port, uint8 max_channels, uint16 max_peers);
+	bool setup_local_server(uint16 port, uint8 max_channels, uint16 max_peers);
+	uint64 connect(const string&in host, uint16 port);
+	const network_event@ request(uint timeout = 0);
+	string get_peer_address(uint64 peer_id) const;
+	uint get_peer_average_round_trip_time(uint64 peer_id) const;
+	bool send(uint64 peer_id, const string&in message, uint8 channel, bool reliable = true);
+	bool send_reliable(uint64 peer_id, const string&in message, uint8 channel);
+	bool send_unreliable(uint64 peer_id, const string&in message, uint8 channel);
+	bool send_peer(uint64 peer_pointer, const string&in message, uint8 channel, bool reliable = true);
+	bool send_reliable_peer(uint64 peer_pointer, const string&in message, uint8 channel);
+	bool send_unreliable_peer(uint64 peer_pointer, const string&in message, uint8 channel);
+	bool flush();
+	bool disconnect_peer_softly(uint64 peer_id);
+	bool disconnect_peer(uint64 peer_id);
+	bool disconnect_peer_forcefully(uint64 peer_id);
+	array<uint64>@ get_peer_list() const;
+	uint64 get_connected_peers() const property;
+	bool get_packet_compression() const property;
+	void set_packet_compression(bool compressed) property;
+	uint get_duplicate_peers() const property;
+	void set_duplicate_peers(uint max_duplicates) property;
+	uint get_bytes_received() const property;
+	uint get_bytes_sent() const property;
+	uint get_packets_received() const property;
+	uint get_packets_sent() const property;
+	void set_bandwidth_limits(uint max_incoming_bytes_per_second, uint max_outgoing_bytes_per_second);
+	bool get_active() const property;
+}

@@ -1,0 +1,151 @@
+const string folder="../pack/", ext=".ogg";
+sound test;
+string[] files;
+int index;
+
+void main()
+{
+chdir(SCRIPT_MAIN_PATH);
+show_window("Sound browser");
+files=find_files(folder+"*"+ext);
+alert("Found "+files.length()+" sounds.", "");
+if (files.is_empty()) exit();
+load();
+while (true)
+{
+if (key_pressed(KEY_ESCAPE) or key_down(KEY_LALT) and key_pressed(KEY_F4)) exit();
+else if (key_pressed(KEY_SPACE))
+{
+if (!test.playing) test.play_looped();
+else test.stop();
+}
+else if (key_pressed(KEY_RETURN) or key_pressed(KEY_NUMPAD_ENTER))
+{
+if (test.playing) test.stop();
+else test.play();
+}
+else if (key_pressed(KEY_DELETE) and question("delete "+files[index]+"?", "For real?") == 1)
+{
+test.close();
+if (!file_delete(folder+files[index])) alert("Error!", "The delete operation failed. Error code: "+get_last_error());
+else
+{
+files.remove_at(index);
+if (index > 0) index--;
+load();
+}
+}
+else if (key_pressed(KEY_UP) and index > 0)
+{
+index--;
+load();
+}
+else if (key_pressed(KEY_DOWN) and index < int(files.length()) - 1)
+{
+index++;
+load();
+}
+else if (key_pressed(KEY_HOME) and index > 0)
+{
+index=0;
+load();
+}
+else if (key_pressed(KEY_END) and index < int(files.length()) - 1)
+{
+index=int(files.length())-1;
+load();
+}
+else if (key_pressed(KEY_F2))
+{
+test.close();
+string new_name=input_box("Enter the new filename, without the extension.", "", files[index].substr(0, files[index].length()-ext.length()));
+if (new_name != "" and !file_copy(folder+files[index], folder+new_name+ext, false)) alert("Error!", "The rename operation failed. Error code: "+get_last_error());
+else if (new_name != "")
+{
+if (!file_delete(folder+files[index])) alert("Error!", "The delete original file operation failed. Error code: "+get_last_error());
+else
+{
+files=find_files(folder+"*"+ext);
+index=files.find(new_name+ext);
+if (index == -1) alert("Error!", "The rename operation failed. Error code: "+get_last_error());
+else
+{
+load();
+}
+}
+}
+else if (new_name == "")
+{
+say("Canceled.");
+wait(300);
+}
+}
+else if (key_pressed(KEY_F1))
+{
+file f;
+f.open(folder+files[index], "rb");
+audio_format format=AUDIO_FORMAT_UNKNOWN;
+uint channels=0, sample_rate=0;
+test.get_data_format(format, channels, sample_rate);
+string info="Length "+test.length+" milliseconds. Channels "+channels+". Format "+get_audio_format_name(format)+". Sample rate "+sample_rate+". File size "+f.size+" bytes.";
+say(info);
+f.close();
+clipboard_set_text(files[index]+"\t"+test.length+"\t");
+}
+else if (key_pressed(KEY_F3))
+{
+if (test.playing) test.pause();
+else test.play();
+}
+else if (key_pressed(KEY_F4)) alert("Length "+test.length, "Current position "+test.position+", which is "+round(test.length/test.position, 0)+" percent.");
+string char=get_characters();
+if (char.length() == 1 and char.is_alphabetic())
+{
+int current=index;
+uint fl=files.length();
+int found=-1;
+for (uint i=current+1; i<fl; i++)
+if (files[i][0] == char)
+{
+found=i;
+break;
+}
+if (found == -1)
+for (uint i=0; i<uint(current); i++)
+if (files[i][0] == char)
+{
+found=i;
+break;
+}
+if (found > -1)
+{
+index=found;
+say(files[index]);
+if (found != current) load();
+}
+}
+wait(5);
+}
+}
+
+void say(string text)
+{
+screen_reader_speak(text, true);
+}
+
+void load()
+{
+say("Loading.");
+test.load(folder+files[index]);
+say(files[index]);
+}
+
+string get_audio_format_name(audio_format format)
+{
+if (format == AUDIO_FORMAT_U8) return "8-bit unsigned";
+if (format == AUDIO_FORMAT_S16) return "16-bit signed";
+if (format == AUDIO_FORMAT_S24) return "24-bit signed";
+if (format == AUDIO_FORMAT_S32) return "32-bit signed";
+if (format == AUDIO_FORMAT_F32) return "32-bit float";
+return "unknown";
+}

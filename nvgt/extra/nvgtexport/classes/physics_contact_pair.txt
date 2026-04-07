@@ -1,0 +1,10 @@
+class physics_contact_pair {
+	physics_contact_pair(const physics_contact_pair&in pair);
+	uint get_nb_contact_points() const property;
+	physics_contact_point@ get_contact_point(uint index) const;
+	physics_body@ get_body1() const property;
+	physics_body@ get_body2() const property;
+	physics_collider@ get_collider1() const property;
+	physics_collider@ get_collider2() const property;
+	physics_contact_event_type get_event_type() const property;
+}

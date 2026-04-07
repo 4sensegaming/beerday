@@ -1,0 +1,30 @@
+class script_module {
+	uint max_statement_count;
+	int add_section(const string&in, const string&in, uint = 0);
+	int build(array<string>@ = null);
+	string get_bytecode(bool);
+	int set_bytecode(const string&in, bool&out, array<string>@ = null);
+	int reset_globals(array<string>@ = null);
+	int bind_all_imported_functions();
+	int bind_imported_function(uint, script_function@);
+	int compile_global(const string&in, const string&in, uint = 0);
+	script_function@ compile_function(const string&in, const string&in, array<string>@ = null, bool = false, uint = 0);
+	void discard();
+	script_function@ get_function_by_decl(const string&in);
+	script_function@ get_function_by_index(uint);
+	script_function@ get_function_by_name(const string&in);
+	any@ get_global(uint);
+	const string get_global_decl(uint);
+	int get_global_index_by_decl(const string&in);
+	int get_global_index_by_name(const string&in);
+	const string get_global_name(uint);
+	uint get_function_count();
+	uint get_global_count();
+	uint get_imported_function_count();
+	uint set_access_mask(uint);
+	const string get_imported_function_decl(uint);
+	int get_imported_function_index(const string&in);
+	const string get_imported_function_module(uint);
+	string get_name() property;
+	void set_name(const string&in) property;
+}

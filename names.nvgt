@@ -1,0 +1,234 @@
+class char_name
+{
+string[] case1, case3, case4;
+uint8 gender;
+bool used=false;
+
+char_name()
+{
+case1.reserve(20);
+case3.reserve(20);
+case4.reserve(20);
+}
+}
+
+char_name@[] names;
+uint used_names=0, available_names=0;
+
+string preview_name(string value, uint length=15)
+{
+if (value.length()<=length) return value;
+return value.substr(0, length);
+}
+
+void read_names()
+{
+datastream@ nam=pack.get_file("names.dat");
+string raw=string_aes_decrypt(nam.read(), scramble());
+string[] entries=raw.split("#", true);
+uint e=entries.length();
+for (uint i=0; i<e; i++)
+{
+string[] singlename=entries[i].split("\r\n", true);
+if (singlename.length()!=4)
+{
+warning("Neplatné jméno na řádku "+(i+1)+": "+entries[i]);
+continue;
+}
+if (singlename[0]!="m" and singlename[0]!="f")
+{
+warning("Jméno "+preview_name(entries[i])+" na řádku "+(i+1)+" nemá rod.");
+continue;
+}
+int found1=raw.find(entries[i]), found2=-1;
+if (found1>-1) found2=raw.find(entries[i], found1+1);
+if (found1>-1 and found2>-1)
+{
+warning("Stejné jméno "+preview_name(entries[i])+" na pozicích "+(found1+1)+" a "+(found2+1)+".");
+continue;
+}
+char_name new;
+if (singlename[0]=="m") new.gender=1;
+else new.gender=2;
+new.case1=singlename[1].split(" ", true);
+new.case3=singlename[2].split(" ", true);
+new.case4=singlename[3].split(" ", true);
+if ((new.case1.length()!=new.case3.length() or new.case1.length()!=new.case4.length()))
+{
+warning("Jméno "+preview_name(entries[i])+" na řádku "+(i+1)+" nemá stejně pádů.");
+continue;
+}
+if (profile.exists("name"+i+"_used")) new.used=true;
+names.insert_last(new);
+}
+available_names=names.length();
+}
+
+void name_customer_randomly(character@ h)
+{
+if (used_names>=available_names)
+{
+used_names=0;
+for (uint i=0; i<available_names; i++)
+{
+names[i].used=false;
+if (profile.exists("name"+i+"_used")) profile.delete("name"+i+"_used");
+}
+}
+int chosen=-1;
+while (chosen==-1 or names[chosen].used or h.sex!=names[chosen].gender) chosen=random(0, available_names-1);
+names[chosen].used=true;
+used_names++;
+uint8 chosen_form=random(0, names[chosen].case1.length()-1);
+h.name=names[chosen].case1[chosen_form];
+h.name3=names[chosen].case3[chosen_form];
+h.name4=names[chosen].case4[chosen_form];
+}
+
+void name_customer_manually(character@ h)
+{
+ss_start();
+is_namemenu=true;
+string prompt="Zadej ";
+if (h.name!="") prompt+="nové ";
+prompt+="jméno pro ";
+player.set_append(h);
+prompt+=player.append+".";
+string old_name=h.name, old_name3=h.name3, old_name4=h.name4;
+dynamic_menu tempmenu;
+int8 tempres=1;
+old_prompt=speak_menu_prompt;
+speak_menu_prompt=true;
+while (true)
+{
+wait_keys();
+string item="";
+string[] nm={prompt};
+string case1="case1|První pád (kdo, co)", case3="case3|Třetí pád (komu, čemu)", case4="case4|Čtvrtý pád (koho, co)";
+if (h.name!="") case1+=": "+h.name;
+if (h.name3!="") case3+=": "+h.name3;
+if (h.name4!="") case4+=": "+h.name4;
+nm.insert_last(case1);
+nm.insert_last(case3);
+nm.insert_last(case4);
+nm.insert_last("confirm|Potvrdit");
+tempres=make_menu(nm, tempres, @tempmenu);
+if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
+item=tempmenu.get_item_name(tempres);
+if (tempres==0)
+{
+h.name=old_name;
+h.name3=old_name3;
+h.name4=old_name4;
+say("Zrušeno.", true, false);
+is_namemenu=false;
+ss_end();
+return;
+}
+if (tempres>0 and tempres<tempmenu.get_item_count())
+{
+if (item=="case1")
+{
+say("Zadej první pád.", true, false);
+input.set_text(h.name);
+}
+else if (item=="case3")
+{
+say("Zadej třetí pád.", true, false);
+input.set_text(h.name3);
+}
+else
+{
+say("Zadej čtvrtý pád.", true, false);
+input.set_text(h.name4);
+}
+string inp=input.run(30);
+silence();
+play_enter();
+if (item=="case1") h.name=inp;
+else if (item=="case3") h.name3=inp;
+else if (item=="case4") h.name4=inp;
+continue;
+}
+if (item=="confirm")
+{
+bool proceed=true;
+if (h.name=="")
+{
+play_stat("error");
+say("Musíš zadat první pád jména.", true, false, true);
+proceed=false;
+}
+else if (h.name3=="")
+{
+play_stat("error");
+say("Musíš zadat třetí pád jména.", true, false, true);
+proceed=false;
+}
+else if (h.name4=="")
+{
+play_stat("error");
+say("Musíš zadat čtvrtý pád jména.", true, false, true);
+proceed=false;
+}
+uint l=customers.length();
+for (uint i=0; i<l; i++)
+if (@customers[i]!=@h and customers[i].name==h.name)
+{
+string msg="";
+if (customers[i].sex==1) msg="Zákazník";
+else msg="Zákaznice";
+msg+=" se jménem "+h.name+" už tady je. Každý zákazník by měl mít jedinečné jméno. Zadej prosím jiné.";
+say(msg, true, false, true);
+proceed=false;
+break;
+}
+if (proceed) break;
+}
+}
+for (uint i=0; i<available_names; i++)
+{
+uint8 forms=names[i].case1.length();
+for (uint8 j=0; j<forms; j++)
+if (names[i].case1[j]==h.name)
+{
+if (!names[i].used) used_names++;
+names[i].used=true;
+if (h.sex!=names[i].gender) h.sex=names[i].gender;
+i=available_names;
+break;
+}
+}
+say("Hotovo.", true, false);
+is_namemenu=false;
+ss_end();
+}
+
+character@ name_local_customer(bool silent=false)
+{
+character@ h=null;
+character@[] w=player.count_state(waiting);
+uint8 l=w.length();
+for (uint8 i=0; i<l; i++)
+if (w[i].x==player.x and w[i].y==player.y and w[i].x==w[i].seat_x and w[i].y==w[i].seat_y and queue.find(w[i])>-1)
+{
+@h=@w[i];
+break;
+}
+if (@h==null)
+{
+if (!silent) error("Tady nesedí nikdo s objednávkou.");
+return h;
+}
+if (!silent) name_customer_manually(h);
+return h;
+}
+
+void save_names()
+{
+for (uint i=0; i<available_names; i++)
+{
+if (names[i].used) profile.set("name"+i+"_used", 1);
+else if (profile.exists("name"+i+"_used")) profile.delete("name"+i+"_used");
+}
+}

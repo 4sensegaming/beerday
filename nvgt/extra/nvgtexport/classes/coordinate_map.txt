@@ -1,0 +1,8 @@
+class coordinate_map {
+	coordinate_map();
+	coordinate_map_area@ add_area(float minx, float maxx, float miny, float maxy, float minz, float maxz, float rotation, any@ primary_data, const string&in data1, const string&in data2, const string&in data3, int priority, int64 flags = 0);
+	array<coordinate_map_area@>@ get_areas(float x, float y, float z, float d = 0.0, coordinate_map_filter_callback@ = null, int64 required_flags = 0, int64 excluded_flags = 0) const;
+	array<coordinate_map_area@>@ get_areas(float minx, float maxx, float miny, float maxy, float minz, float maxz, float d = 0.0, coordinate_map_filter_callback@ = null, int64 required_flags = 0, int64 excluded_flags = 0) const;
+	coordinate_map_area@ get_area(float x, float y, float z, int priority = -1, float d = 0.0, coordinate_map_filter_callback@ = null, int64 required_flags = 0, int64 excluded_flags = 0) const;
+	void reset();
+}

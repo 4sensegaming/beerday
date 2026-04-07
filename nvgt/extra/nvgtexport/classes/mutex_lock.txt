@@ -1,0 +1,5 @@
+class mutex_lock {
+	mutex_lock(mutex@);
+	mutex_lock(mutex@, uint);
+	void unlock();
+}

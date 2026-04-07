@@ -1,0 +1,11 @@
+class graphics_texture {
+	int get_width() const property;
+	int get_height() const property;
+	bool get_is_valid() const property;
+	bool set_color_mod(uint r, uint g, uint b);
+	bool get_color_mod(uint&out r, uint&out g, uint&out b) const;
+	bool set_alpha_mod(uint alpha);
+	uint get_alpha_mod() const;
+	bool set_blend_mode(blend_mode mode);
+	blend_mode get_blend_mode() const;
+}

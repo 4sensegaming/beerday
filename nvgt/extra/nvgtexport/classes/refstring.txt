@@ -1,0 +1,4 @@
+class refstring {
+	string str;
+	refstring();
+}

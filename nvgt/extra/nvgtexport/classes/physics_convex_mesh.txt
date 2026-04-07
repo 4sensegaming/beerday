@@ -1,0 +1,11 @@
+class physics_convex_mesh {
+	uint get_nb_vertices() const property;
+	const vector& get_vertex(uint index) const;
+	uint get_nb_faces() const property;
+	const vector& get_face_normal(uint index) const;
+	const physics_half_edge_structure& get_half_edge_structure() const property;
+	const vector& get_centroid() const property;
+	const aabb& get_bounds() const property;
+	float get_volume() const property;
+	vector get_local_inertia_tensor(float mass, vector scale) const;
+}

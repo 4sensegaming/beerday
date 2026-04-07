@@ -1,0 +1,130 @@
+﻿bool encrypt=true;
+string pack_name="../pack.dat";
+string pack_folder="../pack/";
+string key="Jedno pivooo, dvě pivaaa, tři pivaaa, čtyři pivaaa, pět, šest, sedum, vosum piiiv, devět, deset piiiv.";
+string[] skip={};
+string[] encrypt_as_string={"help.dat", "navchars.dat", "tutorial.dat", "objectives.dat", "tips.dat", "credits.dat", "stats.dat", "soundtrack.dat", "names.dat", "voices.dat"};
+pack_file pack;
+string[] names;
+string error="\r\nThe pack could not be created.";
+
+void main()
+{
+chdir(SCRIPT_MAIN_PATH);
+show_window("Packer");
+if (encrypt and key == "")
+{
+string cliptext=clipboard_get_text();
+if (cliptext != "")
+{
+uint8 q=question("The following text has been found in the clipboard: "+cliptext, "Do you wish to encrypt the files in the pack with this string using the obfuscation function declared lower down in the script code?");
+if (q == 1)
+{
+encrypt=true;
+key=cliptext;
+}
+}
+}
+if (encrypt and key == "")
+{
+uint8 q=question("Error!", "In the global variables declaration, it's stated that files in the pack should be encrypted, but no string to be used as the encryption key has been found. Do you wish to manually enter the required key string? If no encryption key is entered, the files in the pack cannot be encrypted.");
+if (q == 1)
+{
+key=input_box("Enter the encryption key:", "Enter the string that will be used as the encryption key. During the actual encryption process for every individual file, this string will be obfuscated according to the mentioned function declared further below in the code.");
+if (key == "") encrypt=false;
+}
+else encrypt=false;
+}
+while (pack_name == "")
+{
+pack_name=input_box("Error!", "The pack file name to be used is not declared in the code. Enter the required name now.");
+if (get_last_error() != 0) quit();
+}
+while (pack_folder == "")
+{
+pack_folder=input_box("Error!", "No string is declared in the code that should be used as the name of the folder containing the files to be packed. Enter the required name of the folder where the files that should be packed are located.");
+if (get_last_error() != 0) quit();
+}
+if (pack_folder[pack_folder.length()-1] != "/" and pack_folder[pack_folder.length()-1] != "\\") pack_folder+="/";
+names.reserve(1000000);
+skip.reserve(1000000);
+encrypt_as_string.reserve(1000000);
+if (encrypt and skip.is_empty()) skip=input_box("Files to skip:", "You may optionally enter the names of any files that you wish to be excluded from the encryption phase before they are added to the actual pack. Separate the individual file names with semicolons. If no individual file names are entered or you use any other delimiter than semicolon, all files found in the source folder will be encrypted.").split(";", true);
+if (encrypt and encrypt_as_string.is_empty()) encrypt_as_string=input_box("Encrypt as string:", "You may optionally enter the names of any files that you wish to be encrypted as strings rather than directly as files. Any files you enter here will first be read into memory in their entirety before being encrypted and added straight into the final pack. The contents of these files will be encrypted with string_aes_encrypt rather than asset encryption. This can be useful if you wish to have encrypted data files in your pack that can be manipulated directly inside your final game executable, without the need to be extracted to some location on the disk. Just like above, separate the individual file names with semicolons. If another delimiter is used or nothing is entered, no files will be processed this way and they will instead be encrypted directly as assets, unless they should be skipped entirely. If a file is to be skipped, entering its name here will have no effect at all and the file will just be skipped during the encryption phase.").split(";", true);
+if (!pack.create(pack_name))
+{
+alert("Error!", "The pack file could not be created. Error code: "+get_last_error()+error);
+quit();
+}
+names=find_files(pack_folder+"*.*");
+for (int x=int(names.length())-1; x>=0; x--)
+if (names[x] == "packer.bgt") names.remove_at(x);
+uint l=names.length();
+for (uint x=0; x<l; x++)
+if (!add(names[x], skip.find(names[x]) > -1))
+{
+alert("Error!", "The file "+names[x]+" could not be packed. Error code: "+get_last_error()+error);
+quit();
+}
+pack.close();
+if (!pack.open(pack_name))
+{
+alert("Error!", "The freshly built pack could not be reopened. Error code: "+get_last_error());
+quit();
+}
+alert("The pack contains "+pack.file_count+" files.", "");
+}
+
+bool add(string file, bool skipped)
+{
+if (encrypt and !skipped)
+{
+if (encrypt_as_string.find(file) > -1) return eas(file);
+return add_encrypted_file(file);
+}
+return pack.add_file(pack_folder+file, file);
+}
+
+bool eas(string file)
+{
+file src;
+if (!src.open(pack_folder+file, "rb")) return false;
+string raw=src.read();
+src.close();
+string encrypted=string_aes_encrypt(raw, scramble());
+return pack.add_memory(file, encrypted);
+}
+
+bool add_encrypted_file(string file)
+{
+file src;
+if (!src.open(pack_folder+file, "rb")) return false;
+string raw=src.read();
+src.close();
+datastream buffer;
+buffer.binary=true;
+asset_encryptor enc;
+enc.binary=true;
+string obfuscated_key=scramble();
+if (!enc.open(buffer, obfuscated_key)) return false;
+if (raw.length() > 0 and enc.write(raw) == 0) return false;
+enc.close();
+return pack.add_memory(file, buffer.str());
+}
+
+void quit()
+{
+pack.close();
+file_delete(pack_name);
+exit();
+}
+
+string scramble()
+{
+string temp=key.reverse_bytes();
+temp=temp.replace("a", "\0", true);
+string result;
+uint l=temp.length();
+for (uint i=0; i<l; i++) result+=string(character_to_ascii(temp[i]) + 46);
+return result;
+}

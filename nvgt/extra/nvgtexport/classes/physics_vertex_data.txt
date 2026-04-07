@@ -1,0 +1,3 @@
+class physics_vertex_data {
+	physics_vertex_data(array<float>@ vertices);
+}

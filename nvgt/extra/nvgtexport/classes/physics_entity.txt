@@ -1,0 +1,7 @@
+class physics_entity {
+	uint id;
+	physics_entity(uint index, uint generation);
+	uint get_index() const property;
+	uint get_generation() const property;
+	bool opEquals(const physics_entity&in entity) const;
+}

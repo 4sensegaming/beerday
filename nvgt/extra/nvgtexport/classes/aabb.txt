@@ -1,0 +1,22 @@
+class aabb {
+	aabb();
+	aabb(const vector&in min, const vector&in max);
+	vector get_center() const property;
+	const vector& get_min() const property;
+	const vector& get_max() const property;
+	void set_min(const vector&in min) property;
+	void set_max(const vector&in max) property;
+	vector get_extent() const property;
+	void inflate(float x, float y, float z);
+	void inflate_with_point(const vector&in point);
+	bool test_collision(const aabb&in aabb) const;
+	void merge_with(const aabb&in aabb);
+	void merge(const aabb&in aabb1, const aabb&in aabb2);
+	bool contains(const aabb&in aabb) const;
+	bool contains(const vector&in point, float epsilon = EPSILON) const;
+	bool test_collision_triangle_aabb(const array<vector>@ points) const;
+	float get_volume() const property;
+	void apply_scale(const vector&in scale);
+	bool test_ray_intersect(const vector&in ray_origin, const vector&in ray_direction, float ray_max_fraction);
+	bool raycast(const ray&in ray, vector&out hit_point);
+}

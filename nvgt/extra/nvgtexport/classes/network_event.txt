@@ -1,0 +1,8 @@
+class network_event {
+	const network_event_type type;
+	const uint64 peer_id;
+	const uint channel;
+	const string message;
+	network_event();
+	network_event& opAssign(const network_event&in);
+}

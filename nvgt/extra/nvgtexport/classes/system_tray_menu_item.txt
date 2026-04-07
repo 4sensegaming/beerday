@@ -1,0 +1,13 @@
+class system_tray_menu_item {
+	bool get_valid() const property;
+	system_tray_menu_item_type get_type() const property;
+	void set_label(const string&in label) property;
+	string get_label() const property;
+	void set_checked(bool checked) property;
+	bool get_checked() const property;
+	void set_enabled(bool enabled) property;
+	bool get_enabled() const property;
+	void click();
+	void set_callback(system_tray_callback@ func);
+	system_tray_menu@ get_submenu() property;
+}

@@ -1,0 +1,14 @@
+class git_repository_commit {
+	uint get_time() property;
+	int get_parent_count() property;
+	git_repository_commit@ get_parent(uint);
+	const string get_id() property;
+	const string get_message() property;
+	string get_summary() property;
+	const string get_body() property;
+	const string get_raw_header() property;
+	const string get_committer() property;
+	const string get_committer_email() property;
+	const string get_author() property;
+	const string get_author_email() property;
+}

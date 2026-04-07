@@ -1,0 +1,13 @@
+class any {
+	any();
+	any(?&in);
+	any(const int64&in);
+	any(const double&in);
+	any& opAssign(any&in);
+	void store(?&in);
+	void store(const int64&in);
+	void store(const double&in);
+	bool retrieve(?&out);
+	bool retrieve(int64&out);
+	bool retrieve(double&out);
+}

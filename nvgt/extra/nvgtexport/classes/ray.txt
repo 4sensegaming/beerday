@@ -1,0 +1,6 @@
+class ray {
+	vector point1;
+	vector point2;
+	float max_fraction;
+	ray(const vector&in p1, const vector&in p2, float max_frac = 1.0f);
+}

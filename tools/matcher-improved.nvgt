@@ -1,0 +1,49 @@
+void main() {
+chdir(SCRIPT_MAIN_PATH);
+show_window("Matcher improved");
+int lquotes;
+bool uquotes=false;
+string fn=input_box("File name", "Enter the name of the file to check:");
+string text=file_get_contents(fn);
+int quotes=0;
+int braces=0;
+int parentheses=0;
+int brackets=0;
+string[] lines=text.split("\n", true);
+for (uint i=0; i<lines.length(); i++) {
+lquotes=int(lines[i].count("\""));
+int oddnum=lquotes%2;
+if (oddnum>0) {
+uquotes=true;
+alert("Oops!", "Unmatched quotes at line "+i+": "+lines[i]);
+clipboard_set_text(lines[i]);
+}
+}
+for (uint i=0; i<text.length(); i++) {
+if (text[i] == "\"") {
+if ((i>0) and (text[i-1] == "\\")) continue;
+quotes++;
+}
+else if (text[i] == "(") parentheses++;
+else if (text[i] == ")") parentheses--;
+else if (text[i] == "{") braces++;
+else if (text[i] == "}") braces--;
+else if (text[i] == "[") brackets++;
+else if (text[i] == "]") brackets--;
+if ((braces<0) or (parentheses<0) or (brackets<0)) {
+alert("Negative numbers!", " There are too many " + text[i] + ", starting at " + i + ". ");
+string context="";
+uint j=0;
+if (i<10) j=0;
+else j=i-10;
+for (j=j; (j<i+10) and (j<text.length()); j++) context += text[j];
+clipboard_set_text(context);
+alert("Context", context);
+if (braces<0) braces=0;
+if (brackets<0) brackets=0;
+if (parentheses<0) parentheses=0;
+}
+}
+if (!uquotes) alert("no unclosed quotes", "No unclosed quotes found.");
+alert("Results", "There are " + quotes + " quotation marks.\nThere are " + braces + " unclosed braces, " + parentheses + " unclosed parentheses, and " + brackets + " unclosed brackets. ");
+}

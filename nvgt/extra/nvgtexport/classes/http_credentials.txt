@@ -1,0 +1,18 @@
+class http_credentials {
+	http_credentials();
+	http_credentials(const string&in username, const string&in password);
+	void from_user_info(const string&in user_info);
+	void from_uri(const spec::uri&in uri);
+	void clear();
+	void set_username(const string&in username) property;
+	string get_username() const property;
+	void set_password(const string&in password) property;
+	string get_password() const property;
+	void set_host(const string&in host) property;
+	string get_host() const property;
+	bool get_empty() const property;
+	void authenticate(http_request&inout request, const http_response&in response);
+	void update_auth_info(http_request&inout request);
+	void proxy_authenticate(http_request&inout request, const http_response&in response);
+	void update_proxy_auth_info(http_request&inout request);
+}

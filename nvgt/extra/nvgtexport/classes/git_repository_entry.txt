@@ -1,0 +1,7 @@
+class git_repository_entry {
+	uint get_ctime() property;
+	uint get_mtime() property;
+	uint get_file_size() property;
+	string get_oid() property;
+	string get_path() property;
+}

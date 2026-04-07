@@ -1,0 +1,11 @@
+class physics_polygon_vertex_array {
+	physics_polygon_vertex_data_type get_vertex_data_type() const property;
+	physics_polygon_index_data_type get_index_data_type() const property;
+	uint get_nb_vertices() const property;
+	uint get_nb_faces() const property;
+	uint get_vertices_stride() const property;
+	uint get_indices_stride() const property;
+	uint get_vertex_index_in_face(uint face_index, uint vertex_in_face) const;
+	vector get_vertex(uint vertex_index) const;
+	physics_polygon_face@ get_polygon_face(uint face_index) const;
+}

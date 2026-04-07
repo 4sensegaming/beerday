@@ -1,0 +1,7 @@
+class physics_half_edge_structure_edge {
+	uint vertex_index;
+	uint twin_edge_index;
+	uint face_index;
+	uint next_edge_index;
+	physics_half_edge_structure_edge();
+}

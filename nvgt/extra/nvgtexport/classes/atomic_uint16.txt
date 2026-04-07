@@ -1,0 +1,31 @@
+class atomic_uint16 {
+	atomic_uint16();
+	bool is_lock_free();
+	void store(uint16 val, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint16 opAssign(uint16 val);
+	uint16 load(memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint16 opImplConv();
+	uint16 exchange(uint16 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_weak(uint16&inout expected, uint16 desired, memory_order success, memory_order failure);
+	bool compare_exchange_weak(uint16&inout expected, uint16 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_strong(uint16&inout expected, uint16 desired, memory_order success, memory_order failure);
+	bool compare_exchange_strong(uint16&inout expected, uint16 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void wait(uint16 old, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void notify_one();
+	void notify_all();
+	uint16 fetch_add(uint16 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint16 fetch_sub(uint16 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint16 opAddAssign(uint16 arg);
+	uint16 opSubAssign(uint16 arg);
+	uint16 opPreInc();
+	uint16 opPostInc(uint16 arg);
+	uint16 opPreDec();
+	uint16 opPostDec(uint16 arg);
+	uint16 fetch_and(uint16 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint16 fetch_or(uint16 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint16 fetch_xor(uint16 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint16 opAndAssign(uint16 arg);
+	uint16 opOrAssign(uint16 arg);
+	uint16 opXorAssign(uint16 arg);
+	bool get_is_always_lock_free() property;
+}

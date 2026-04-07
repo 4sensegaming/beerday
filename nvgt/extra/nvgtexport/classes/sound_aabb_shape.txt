@@ -1,0 +1,9 @@
+class sound_aabb_shape {
+	int left_range;
+	int right_range;
+	int backward_range;
+	int forward_range;
+	int lower_range;
+	int upper_range;
+	sound_aabb_shape(int left_range, int right_range, int backward_range, int forward_range, int lower_range, int upper_range);
+}

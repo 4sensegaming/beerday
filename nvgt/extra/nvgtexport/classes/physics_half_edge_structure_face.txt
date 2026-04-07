@@ -1,0 +1,4 @@
+class physics_half_edge_structure_face {
+	void set_face_vertices(array<uint>@ face_vertices);
+	array<uint>@ get_face_vertices() const;
+}

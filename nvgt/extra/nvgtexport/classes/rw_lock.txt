@@ -1,0 +1,8 @@
+class rw_lock {
+	rw_lock();
+	void read_lock();
+	bool try_read_lock();
+	void write_lock();
+	bool try_write_lock();
+	void unlock();
+}

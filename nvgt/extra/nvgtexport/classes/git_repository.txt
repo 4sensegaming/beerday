@@ -1,0 +1,25 @@
+class git_repository {
+	git_repository();
+	int open(const string&in path);
+	int create(const string&in path);
+	bool close();
+	int add(const string&in path);
+	int add_all(array<string>@ paths, int flags = 0);
+	int add_all(array<string>@ paths, int flags, git_repository_match_callback@ callback, const string&in callback_data = \\);
+	int update_all(array<string>@ paths);
+	int update_all(array<string>@ paths, git_repository_match_callback@ callback, const string&in callback_data = \\);
+	int remove(const string&in path);
+	int remove_all(array<string>@ paths);
+	int remove_all(array<string>@ paths, git_repository_match_callback@ callback, const string&in callback_data = \\);
+	git_repository_commit@ commit(const string&in author, const string&in author_email, const string&in message, const string&in ref = \HEAD\);
+	git_repository_commit@ commit(const string&in author, const string&in author_email, const string&in committer, const string&in committer_email, const string&in message, const string&in ref = \HEAD\);
+	string commit_diff(git_repository_commit@ commit1, git_repository_commit@ commit2, uint context_lines = 3, uint interhunk_lines = 0, uint flags = 0, uint format = 1, array<string>@ pathspec = {}, const string&in old_prefix = \a\, const string&in new_prefix = \b\);
+	git_repository_commit@ commit_lookup(const string&in oid);
+	git_repository_commit_iterator@ commit_iterate(array<string>@ path_filter = {}, const string&in author_filter = '', const string&in message_filter = '', uint64 min_time_filter = 0, uint64 max_time_filter = 0, uint start = 0, uint count = 0);
+	git_repository_entry@ get_entry(uint index);
+	int get_entry_count() property;
+	int get_is_empty() property;
+	string get_path() property;
+	string get_workdir() property;
+	bool get_active() property;
+}

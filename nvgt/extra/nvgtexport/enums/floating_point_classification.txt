@@ -1,0 +1,5 @@
+FP_NORMAL = -1;
+FP_SUBNORMAL = -2;
+FP_ZERO = 0;
+FP_INFINITE = 1;
+FP_NAN = 2;

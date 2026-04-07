@@ -1,0 +1,2 @@
+audio_attenuator_basic = 0;
+audio_attenuator_phonon = 1;

@@ -1,0 +1,14 @@
+class thread {
+	thread();
+	thread(const string&in name);
+	int get_id() const property;
+	void set_priority(thread_priority priority) property;
+	thread_priority get_priority() const property;
+	void set_name(const string&in name) property;
+	string get_name() const property;
+	void join();
+	bool join(uint ms);
+	bool get_running() const property;
+	void start(thread_callback@ routine, dictionary@ args = null);
+	void wake_up();
+}

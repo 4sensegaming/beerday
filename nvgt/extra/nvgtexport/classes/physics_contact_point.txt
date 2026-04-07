@@ -1,0 +1,5 @@
+class physics_contact_point {
+	const vector& get_world_normal() const property;
+	const vector& get_local_point_on_collider1() const property;
+	const vector& get_local_point_on_collider2() const property;
+}

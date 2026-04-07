@@ -1,0 +1,11 @@
+class joystick_power_info {
+	int state;
+	int percentage;
+	joystick_power_info();
+	joystick_power_info(int, int);
+	joystick_power_info(const joystick_power_info&in);
+	string get_state_name() const property;
+	string to_string() const;
+	string opConv() const;
+	string opImplConv() const;
+}

@@ -1,302 +1,302 @@
-runtime	Celkovı èas	1
-run_times	Poèet spuštìní	1
+runtime	CelkovÃ½ Äas	1
+run_times	PoÄet spuÅ¡tÄ›nÃ­	1
 normal_played_total	Dohromady	2	1
-normal_played_diff1	Na nejjednodušší obtínost	2	1
-normal_played_diff2	Na jednoduchou obtínost	2	1
-normal_played_diff3	Na støední obtínost	2	1
-normal_played_diff4	Na tìkou obtínost	2	1
-normal_played_diff5	Na nejtìší obtínost	2	1
+normal_played_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	2	1
+normal_played_diff2	Na jednoduchou obtÃ­Å¾nost	2	1
+normal_played_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	2	1
+normal_played_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	2	1
+normal_played_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	2	1
 normal_completed_total	Dohromady	2	2
-normal_completed_diff1	Na nejjednodušší obtínost	2	2
-normal_completed_diff2	Na jednoduchou obtínost	2	2
-normal_completed_diff3	Na støední obtínost	2	2
-normal_completed_diff4	Na tìkou obtínost	2	2
-normal_completed_diff5	Na nejtìší obtínost	2	2
+normal_completed_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	2	2
+normal_completed_diff2	Na jednoduchou obtÃ­Å¾nost	2	2
+normal_completed_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	2	2
+normal_completed_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	2	2
+normal_completed_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	2	2
 normal_lost_total	Dohromady	2	3
-normal_lost_diff1	Na nejjednodušší obtínost	2	3
-normal_lost_diff2	Na jednoduchou obtínost	2	3
-normal_lost_diff3	Na støední obtínost	2	3
-normal_lost_diff4	Na tìkou obtínost	2	3
-normal_lost_diff5	Na nejtìší obtínost	2	3
-normal_died_falls	Padáním ze schodù	2	3
-normal_died_punched	Umlácením hráèe	2	3
-normal_died_trips	Zakopáváním	2	3
+normal_lost_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	2	3
+normal_lost_diff2	Na jednoduchou obtÃ­Å¾nost	2	3
+normal_lost_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	2	3
+normal_lost_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	2	3
+normal_lost_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	2	3
+normal_died_falls	PadÃ¡nÃ­m ze schodÅ¯	2	3
+normal_died_punched	UmlÃ¡cenÃ­m hrÃ¡Äe	2	3
+normal_died_trips	ZakopÃ¡vÃ¡nÃ­m	2	3
 normal_died_player_fled	Odchodem	2	3
-normal_died_player_slouch	Špatnou obsluhou	2	3
-normal_died_customer	Umlácením zákazníka	2	3
-normal_died_mugs	Rozbitím všech pùllitrù	2	3
+normal_died_player_slouch	Å patnou obsluhou	2	3
+normal_died_customer	UmlÃ¡cenÃ­m zÃ¡kaznÃ­ka	2	3
+normal_died_mugs	RozbitÃ­m vÅ¡ech pÅ¯llitrÅ¯	2	3
 normal_quit_total	Dohromady	2	4
-normal_quit_diff1	Na nejjednodušší obtínost	2	4
-normal_quit_diff2	Na jednoduchou obtínost	2	4
-normal_quit_diff3	Na støední obtínost	2	4
-normal_quit_diff4	Na tìkou obtínost	2	4
-normal_quit_diff5	Na nejtìší obtínost	2	4
+normal_quit_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	2	4
+normal_quit_diff2	Na jednoduchou obtÃ­Å¾nost	2	4
+normal_quit_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	2	4
+normal_quit_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	2	4
+normal_quit_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	2	4
 normal_duration_total	Dohromady	2	5
-normal_duration_diff1	Na nejjednodušší obtínost	2	5
-normal_duration_diff2	Na jednoduchou obtínost	2	5
-normal_duration_diff3	Na støední obtínost	2	5
-normal_duration_diff4	Na tìkou obtínost	2	5
-normal_duration_diff5	Na nejtìší obtínost	2	5
-normal_completed_duration	Ve vyhranıch hrách	2	5
-normal_lost_duration	V prohranıch hrách	2	5
-normal_quit_duration	V pøerušenıch hrách	2	5
-normal_longest_total	Celkovì	2	6
-normal_longest_diff1	Na nejjednodušší obtínost	2	6
-normal_longest_diff2	Na jednoduchou obtínost	2	6
-normal_longest_diff3	Na støední obtínost	2	6
-normal_longest_diff4	Na tìkou obtínost	2	6
-normal_longest_diff5	Na nejtìší obtínost	2	6
-normal_completed_longest	Vyhraná hra	2	6
-normal_lost_longest	Prohraná hra	2	6
-normal_quit_longest	Pøerušená hra	2	6
+normal_duration_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	2	5
+normal_duration_diff2	Na jednoduchou obtÃ­Å¾nost	2	5
+normal_duration_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	2	5
+normal_duration_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	2	5
+normal_duration_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	2	5
+normal_completed_duration	Ve vyhranÃ½ch hrÃ¡ch	2	5
+normal_lost_duration	V prohranÃ½ch hrÃ¡ch	2	5
+normal_quit_duration	V pÅ™eruÅ¡enÃ½ch hrÃ¡ch	2	5
+normal_longest_total	CelkovÄ›	2	6
+normal_longest_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	2	6
+normal_longest_diff2	Na jednoduchou obtÃ­Å¾nost	2	6
+normal_longest_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	2	6
+normal_longest_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	2	6
+normal_longest_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	2	6
+normal_completed_longest	VyhranÃ¡ hra	2	6
+normal_lost_longest	ProhranÃ¡ hra	2	6
+normal_quit_longest	PÅ™eruÅ¡enÃ¡ hra	2	6
 normal_hardcore_played_total	Dohromady	3	1
-normal_hardcore_played_diff1	Na nejjednodušší obtínost	3	1
-normal_hardcore_played_diff2	Na jednoduchou obtínost	3	1
-normal_hardcore_played_diff3	Na støední obtínost	3	1
-normal_hardcore_played_diff4	Na tìkou obtínost	3	1
-normal_hardcore_played_diff5	Na nejtìší obtínost	3	1
+normal_hardcore_played_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	3	1
+normal_hardcore_played_diff2	Na jednoduchou obtÃ­Å¾nost	3	1
+normal_hardcore_played_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	3	1
+normal_hardcore_played_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	3	1
+normal_hardcore_played_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	3	1
 normal_hardcore_completed_total	Dohromady	3	2
-normal_hardcore_completed_diff1	Na nejjednodušší obtínost	3	2
-normal_hardcore_completed_diff2	Na jednoduchou obtínost	3	2
-normal_hardcore_completed_diff3	Na støední obtínost	3	2
-normal_hardcore_completed_diff4	Na tìkou obtínost	3	2
-normal_hardcore_completed_diff5	Na nejtìší obtínost	3	2
+normal_hardcore_completed_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	3	2
+normal_hardcore_completed_diff2	Na jednoduchou obtÃ­Å¾nost	3	2
+normal_hardcore_completed_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	3	2
+normal_hardcore_completed_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	3	2
+normal_hardcore_completed_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	3	2
 normal_hardcore_lost_total	Dohromady	3	3
-normal_hardcore_lost_diff1	Na nejjednodušší obtínost	3	3
-normal_hardcore_lost_diff2	Na jednoduchou obtínost	3	3
-normal_hardcore_lost_diff3	Na støední obtínost	3	3
-normal_hardcore_lost_diff4	Na tìkou obtínost	3	3
-normal_hardcore_lost_diff5	Na nejtìší obtínost	3	3
-normal_hardcore_died_fled	Odchodem zákazníka	3	3
-normal_hardcore_died_stunned	Omráèením zákazníka	3	3
-normal_hardcore_died_mug	Rozbitím pùllitru	3	3
-normal_hardcore_died_barrel	Rozbitím sudu	3	3
-normal_hardcore_died_trip	Zakopnutím	3	3
-normal_hardcore_died_fall	Pádem ze schodù	3	3
-normal_hardcore_died_mistake	Chybou pøi obsluze	3	3
-normal_hardcore_died_punch	Praštìním hráèe	3	3
-normal_hardcore_died_messy	odchodem všech zákazníkù kvùli nepoøádku	3	3
+normal_hardcore_lost_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	3	3
+normal_hardcore_lost_diff2	Na jednoduchou obtÃ­Å¾nost	3	3
+normal_hardcore_lost_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	3	3
+normal_hardcore_lost_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	3	3
+normal_hardcore_lost_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	3	3
+normal_hardcore_died_fled	Odchodem zÃ¡kaznÃ­ka	3	3
+normal_hardcore_died_stunned	OmrÃ¡ÄenÃ­m zÃ¡kaznÃ­ka	3	3
+normal_hardcore_died_mug	RozbitÃ­m pÅ¯llitru	3	3
+normal_hardcore_died_barrel	RozbitÃ­m sudu	3	3
+normal_hardcore_died_trip	ZakopnutÃ­m	3	3
+normal_hardcore_died_fall	PÃ¡dem ze schodÅ¯	3	3
+normal_hardcore_died_mistake	Chybou pÅ™i obsluze	3	3
+normal_hardcore_died_punch	PraÅ¡tÄ›nÃ­m hrÃ¡Äe	3	3
+normal_hardcore_died_messy	odchodem vÅ¡ech zÃ¡kaznÃ­kÅ¯ kvÅ¯li nepoÅ™Ã¡dku	3	3
 normal_hardcore_quit_total	Dohromady	3	4
-normal_hardcore_quit_diff1	Na nejjednodušší obtínost	3	4
-normal_hardcore_quit_diff2	Na jednoduchou obtínost	3	4
-normal_hardcore_quit_diff3	Na støední obtínost	3	4
-normal_hardcore_quit_diff4	Na tìkou obtínost	3	4
-normal_hardcore_quit_diff5	Na nejtìší obtínost	3	4
+normal_hardcore_quit_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	3	4
+normal_hardcore_quit_diff2	Na jednoduchou obtÃ­Å¾nost	3	4
+normal_hardcore_quit_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	3	4
+normal_hardcore_quit_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	3	4
+normal_hardcore_quit_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	3	4
 normal_hardcore_duration_total	Dohromady	3	5
-normal_hardcore_duration_diff1	Na nejjednodušší obtínost	3	5
-normal_hardcore_duration_diff2	Na jednoduchou obtínost	3	5
-normal_hardcore_duration_diff3	Na støední obtínost	3	5
-normal_hardcore_duration_diff4	Na tìkou obtínost	3	5
-normal_hardcore_duration_diff5	Na nejtìší obtínost	3	5
-normal_hardcore_completed_duration	Ve vyhranıch hrách	3	5
-normal_hardcore_lost_duration	V prohranıch hrách	3	5
-normal_hardcore_quit_duration	V pøerušenıch hrách	3	5
-normal_hardcore_longest_total	Celkovì	3	6
-normal_hardcore_longest_diff1	Na nejjednodušší obtínost	3	6
-normal_hardcore_longest_diff2	Na jednoduchou obtínost	3	6
-normal_hardcore_longest_diff3	Na støední obtínost	3	6
-normal_hardcore_longest_diff4	Na tìkou obtínost	3	6
-normal_hardcore_longest_diff5	Na nejtìší obtínost	3	6
-normal_hardcore_completed_longest	Vyhraná hra	3	6
-normal_hardcore_lost_longest	Prohraná hra	3	6
-normal_hardcore_quit_longest	Pøerušená hra	3	6
+normal_hardcore_duration_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	3	5
+normal_hardcore_duration_diff2	Na jednoduchou obtÃ­Å¾nost	3	5
+normal_hardcore_duration_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	3	5
+normal_hardcore_duration_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	3	5
+normal_hardcore_duration_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	3	5
+normal_hardcore_completed_duration	Ve vyhranÃ½ch hrÃ¡ch	3	5
+normal_hardcore_lost_duration	V prohranÃ½ch hrÃ¡ch	3	5
+normal_hardcore_quit_duration	V pÅ™eruÅ¡enÃ½ch hrÃ¡ch	3	5
+normal_hardcore_longest_total	CelkovÄ›	3	6
+normal_hardcore_longest_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	3	6
+normal_hardcore_longest_diff2	Na jednoduchou obtÃ­Å¾nost	3	6
+normal_hardcore_longest_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	3	6
+normal_hardcore_longest_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	3	6
+normal_hardcore_longest_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	3	6
+normal_hardcore_completed_longest	VyhranÃ¡ hra	3	6
+normal_hardcore_lost_longest	ProhranÃ¡ hra	3	6
+normal_hardcore_quit_longest	PÅ™eruÅ¡enÃ¡ hra	3	6
 endless_played_total	Dohromady	4	1
-endless_played_diff1	Na nejjednodušší obtínost	4	1
-endless_played_diff2	Na jednoduchou obtínost	4	1
-endless_played_diff3	Na støední obtínost	4	1
-endless_played_diff4	Na tìkou obtínost	4	1
-endless_played_diff5	Na nejtìší obtínost	4	1
+endless_played_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	4	1
+endless_played_diff2	Na jednoduchou obtÃ­Å¾nost	4	1
+endless_played_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	4	1
+endless_played_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	4	1
+endless_played_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	4	1
 endless_lost_total	Dohromady	4	2
-endless_lost_diff1	Na nejjednodušší obtínost	4	2
-endless_lost_diff2	Na jednoduchou obtínost	4	2
-endless_lost_diff3	Na støední obtínost	4	2
-endless_lost_diff4	Na tìkou obtínost	4	2
-endless_lost_diff5	Na nejtìší obtínost	4	2
-endless_died_falls	Padáním ze schodù		4	2
-endless_died_punched	Umlácením hráèe	4	2
-endless_died_trips	Zakopáváním	4	2
+endless_lost_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	4	2
+endless_lost_diff2	Na jednoduchou obtÃ­Å¾nost	4	2
+endless_lost_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	4	2
+endless_lost_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	4	2
+endless_lost_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	4	2
+endless_died_falls	PadÃ¡nÃ­m ze schodÅ¯		4	2
+endless_died_punched	UmlÃ¡cenÃ­m hrÃ¡Äe	4	2
+endless_died_trips	ZakopÃ¡vÃ¡nÃ­m	4	2
 endless_died_player_fled	Odchodem	4	2
-endless_died_player_slouch	Špatnou obsluhou	4	2
-endless_died_customer	Umlácením zákazníka	4	2
-endless_died_mugs	Rozbitím všech pùllitrù	4	2
+endless_died_player_slouch	Å patnou obsluhou	4	2
+endless_died_customer	UmlÃ¡cenÃ­m zÃ¡kaznÃ­ka	4	2
+endless_died_mugs	RozbitÃ­m vÅ¡ech pÅ¯llitrÅ¯	4	2
 endless_quit_total	Dohromady	4	3
-endless_quit_diff1	Na nejjednodušší obtínost	4	3
-endless_quit_diff2	Na jednoduchou obtínost	4	3
-endless_quit_diff3	Na støední obtínost	4	3
-endless_quit_diff4	Na tìkou obtínost	4	3
-endless_quit_diff5	Na nejtìší obtínost	4	3
+endless_quit_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	4	3
+endless_quit_diff2	Na jednoduchou obtÃ­Å¾nost	4	3
+endless_quit_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	4	3
+endless_quit_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	4	3
+endless_quit_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	4	3
 endless_duration_total	Dohromady	4	4
-endless_duration_diff1	Na nejjednodušší obtínost	4	4
-endless_duration_diff2	Na jednoduchou obtínost	4	4
-endless_duration_diff3	Na støední obtínost	4	4
-endless_duration_diff4	Na tìkou obtínost	4	4
-endless_duration_diff5	Na nejtìší obtínost	4	4
-endless_lost_duration	V prohranıch hrách	4	4
-endless_quit_duration	V pøerušenıch hrách	4	4
-endless_longest_total	Celkovì	4	5
-endless_longest_diff1	Na nejjednodušší obtínost	4	5
-endless_longest_diff2	Na jednoduchou obtínost	4	5
-endless_longest_diff3	Na støední obtínost	4	5
-endless_longest_diff4	Na tìkou obtínost	4	5
-endless_longest_diff5	Na nejtìší obtínost	4	5
-endless_lost_longest	Prohraná hra	4	5
-endless_quit_longest	Pøerušená hra	4	5
+endless_duration_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	4	4
+endless_duration_diff2	Na jednoduchou obtÃ­Å¾nost	4	4
+endless_duration_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	4	4
+endless_duration_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	4	4
+endless_duration_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	4	4
+endless_lost_duration	V prohranÃ½ch hrÃ¡ch	4	4
+endless_quit_duration	V pÅ™eruÅ¡enÃ½ch hrÃ¡ch	4	4
+endless_longest_total	CelkovÄ›	4	5
+endless_longest_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	4	5
+endless_longest_diff2	Na jednoduchou obtÃ­Å¾nost	4	5
+endless_longest_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	4	5
+endless_longest_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	4	5
+endless_longest_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	4	5
+endless_lost_longest	ProhranÃ¡ hra	4	5
+endless_quit_longest	PÅ™eruÅ¡enÃ¡ hra	4	5
 endless_hardcore_played_total	Dohromady	5	1
-endless_hardcore_played_diff1	Na nejjednodušší obtínost	5	1
-endless_hardcore_played_diff2	Na jednoduchou obtínost	5	1
-endless_hardcore_played_diff3	Na støední obtínost	5	1
-endless_hardcore_played_diff4	Na tìkou obtínost	5	1
-endless_hardcore_played_diff5	Na nejtìší obtínost	5	1
+endless_hardcore_played_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	5	1
+endless_hardcore_played_diff2	Na jednoduchou obtÃ­Å¾nost	5	1
+endless_hardcore_played_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	5	1
+endless_hardcore_played_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	5	1
+endless_hardcore_played_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	5	1
 endless_hardcore_lost_total	Dohromady	5	2
-endless_hardcore_lost_diff1	Na nejjednodušší obtínost	5	2
-endless_hardcore_lost_diff2	Na jednoduchou obtínost	5	2
-endless_hardcore_lost_diff3	Na støední obtínost	5	2
-endless_hardcore_lost_diff4	Na tìkou obtínost	5	2
-endless_hardcore_lost_diff5	Na nejtìší obtínost	5	2
-endless_hardcore_died_fled	Odchodem zákazníka	5	2
-endless_hardcore_died_stunned	Omráèením zákazníka	5	2
-endless_hardcore_died_mug	Rozbitím pùllitru	5	2
-endless_hardcore_died_barrel	Rozbitím sudu	5	2
-endless_hardcore_died_trip	Zakopnutím	5	2
-endless_hardcore_died_fall	Pádem ze schodù	5	2
-endless_hardcore_died_mistake	Chybou pøi obsluze	5	2
-endless_hardcore_died_punch	Praštìním hráèe	5	2
-endless_hardcore_died_messy	odchodem všech zákazníkù kvùli nepoøádku	5	2
+endless_hardcore_lost_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	5	2
+endless_hardcore_lost_diff2	Na jednoduchou obtÃ­Å¾nost	5	2
+endless_hardcore_lost_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	5	2
+endless_hardcore_lost_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	5	2
+endless_hardcore_lost_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	5	2
+endless_hardcore_died_fled	Odchodem zÃ¡kaznÃ­ka	5	2
+endless_hardcore_died_stunned	OmrÃ¡ÄenÃ­m zÃ¡kaznÃ­ka	5	2
+endless_hardcore_died_mug	RozbitÃ­m pÅ¯llitru	5	2
+endless_hardcore_died_barrel	RozbitÃ­m sudu	5	2
+endless_hardcore_died_trip	ZakopnutÃ­m	5	2
+endless_hardcore_died_fall	PÃ¡dem ze schodÅ¯	5	2
+endless_hardcore_died_mistake	Chybou pÅ™i obsluze	5	2
+endless_hardcore_died_punch	PraÅ¡tÄ›nÃ­m hrÃ¡Äe	5	2
+endless_hardcore_died_messy	odchodem vÅ¡ech zÃ¡kaznÃ­kÅ¯ kvÅ¯li nepoÅ™Ã¡dku	5	2
 endless_hardcore_quit_total	Dohromady	5	3
-endless_hardcore_quit_diff1	Na nejjednodušší obtínost	5	3
-endless_hardcore_quit_diff2	Na jednoduchou obtínost	5	3
-endless_hardcore_quit_diff3	Na støední obtínost	5	3
-endless_hardcore_quit_diff4	Na tìkou obtínost	5	3
-endless_hardcore_quit_diff5	Na nejtìší obtínost	5	3
+endless_hardcore_quit_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	5	3
+endless_hardcore_quit_diff2	Na jednoduchou obtÃ­Å¾nost	5	3
+endless_hardcore_quit_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	5	3
+endless_hardcore_quit_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	5	3
+endless_hardcore_quit_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	5	3
 endless_hardcore_duration_total	Dohromady	5	4
-endless_hardcore_duration_diff1	Na nejjednodušší obtínost	5	4
-endless_hardcore_duration_diff2	Na jednoduchou obtínost	5	4
-endless_hardcore_duration_diff3	Na støední obtínost	5	4
-endless_hardcore_duration_diff4	Na tìkou obtínost	5	4
-endless_hardcore_duration_diff5	Na nejtìší obtínost	5	4
-endless_hardcore_lost_duration	V prohranıch hrách	5	4
-endless_hardcore_quit_duration	V pøerušenıch hrách	5	4
-endless_hardcore_longest_total	Celkovì	5	5
-endless_hardcore_longest_diff1	Na nejjednodušší obtínost	5	5
-endless_hardcore_longest_diff2	Na jednoduchou obtínost	5	5
-endless_hardcore_longest_diff3	Na støední obtínost	5	5
-endless_hardcore_longest_diff4	Na tìkou obtínost	5	5
-endless_hardcore_longest_diff5	Na nejtìší obtínost	5	5
-endless_hardcore_lost_longest	Prohraná hra	5	5
-endless_hardcore_quit_longest	Pøerušená hra	5	5
+endless_hardcore_duration_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	5	4
+endless_hardcore_duration_diff2	Na jednoduchou obtÃ­Å¾nost	5	4
+endless_hardcore_duration_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	5	4
+endless_hardcore_duration_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	5	4
+endless_hardcore_duration_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	5	4
+endless_hardcore_lost_duration	V prohranÃ½ch hrÃ¡ch	5	4
+endless_hardcore_quit_duration	V pÅ™eruÅ¡enÃ½ch hrÃ¡ch	5	4
+endless_hardcore_longest_total	CelkovÄ›	5	5
+endless_hardcore_longest_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	5	5
+endless_hardcore_longest_diff2	Na jednoduchou obtÃ­Å¾nost	5	5
+endless_hardcore_longest_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	5	5
+endless_hardcore_longest_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	5	5
+endless_hardcore_longest_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	5	5
+endless_hardcore_lost_longest	ProhranÃ¡ hra	5	5
+endless_hardcore_quit_longest	PÅ™eruÅ¡enÃ¡ hra	5	5
 free_played_total	Dohromady	6	1
-free_played_diff1	Na nejjednodušší obtínost	6	1
-free_played_diff2	Na jednoduchou obtínost	6	1
-free_played_diff3	Na støední obtínost	6	1
-free_played_diff4	Na tìkou obtínost	6	1
-free_played_diff5	Na nejtìší obtínost	6	1
+free_played_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	6	1
+free_played_diff2	Na jednoduchou obtÃ­Å¾nost	6	1
+free_played_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	6	1
+free_played_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	6	1
+free_played_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	6	1
 free_lost_total	Dohromady	6	2
-free_lost_diff1	Na nejjednodušší obtínost	6	2
-free_lost_diff2	Na jednoduchou obtínost	6	2
-free_lost_diff3	Na støední obtínost	6	2
-free_lost_diff4	Na tìkou obtínost	6	2
-free_lost_diff5	Na nejtìší obtínost	6	2
-free_died_falls	Padáním ze schodù		6	2
-free_died_punched	Umlácením hráèe	6	2
-free_died_trips	Zakopáváním	6	2
+free_lost_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	6	2
+free_lost_diff2	Na jednoduchou obtÃ­Å¾nost	6	2
+free_lost_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	6	2
+free_lost_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	6	2
+free_lost_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	6	2
+free_died_falls	PadÃ¡nÃ­m ze schodÅ¯		6	2
+free_died_punched	UmlÃ¡cenÃ­m hrÃ¡Äe	6	2
+free_died_trips	ZakopÃ¡vÃ¡nÃ­m	6	2
 free_died_player_fled	Odchodem	6	2
-free_died_customer	Umlácením zákazníka	6	2
-free_died_mugs	Rozbitím všech pùllitrù	6	2
+free_died_customer	UmlÃ¡cenÃ­m zÃ¡kaznÃ­ka	6	2
+free_died_mugs	RozbitÃ­m vÅ¡ech pÅ¯llitrÅ¯	6	2
 free_quit_total	Dohromady	6	3
-free_quit_diff1	Na nejjednodušší obtínost	6	3
-free_quit_diff2	Na jednoduchou obtínost	6	3
-free_quit_diff3	Na støední obtínost	6	3
-free_quit_diff4	Na tìkou obtínost	6	3
-free_quit_diff5	Na nejtìší obtínost	6	3
+free_quit_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	6	3
+free_quit_diff2	Na jednoduchou obtÃ­Å¾nost	6	3
+free_quit_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	6	3
+free_quit_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	6	3
+free_quit_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	6	3
 free_duration_total	Dohromady	6	4
-free_duration_diff1	Na nejjednodušší obtínost	6	4
-free_duration_diff2	Na jednoduchou obtínost	6	4
-free_duration_diff3	Na støední obtínost	6	4
-free_duration_diff4	Na tìkou obtínost	6	4
-free_duration_diff5	Na nejtìší obtínost	6	4
-free_lost_duration	V prohranıch hrách	6	4
-free_quit_duration	V pøerušenıch hrách	6	4
-free_longest_total	Celkovì	6	5
-free_longest_diff1	Na nejjednodušší obtínost	6	5
-free_longest_diff2	Na jednoduchou obtínost	6	5
-free_longest_diff3	Na støední obtínost	6	5
-free_longest_diff4	Na tìkou obtínost	6	5
-free_longest_diff5	Na nejtìší obtínost	6	5
-free_lost_longest	Prohraná hra	6	5
-free_quit_longest	Pøerušená hra	6	5
-steps_total	Krokù	7	1
-trips_total	Zakopnutí	7	1
-falls_total	Pádù ze schodù	7	1
+free_duration_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	6	4
+free_duration_diff2	Na jednoduchou obtÃ­Å¾nost	6	4
+free_duration_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	6	4
+free_duration_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	6	4
+free_duration_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	6	4
+free_lost_duration	V prohranÃ½ch hrÃ¡ch	6	4
+free_quit_duration	V pÅ™eruÅ¡enÃ½ch hrÃ¡ch	6	4
+free_longest_total	CelkovÄ›	6	5
+free_longest_diff1	Na nejjednoduÅ¡Å¡Ã­ obtÃ­Å¾nost	6	5
+free_longest_diff2	Na jednoduchou obtÃ­Å¾nost	6	5
+free_longest_diff3	Na stÅ™ednÃ­ obtÃ­Å¾nost	6	5
+free_longest_diff4	Na tÄ›Å¾kou obtÃ­Å¾nost	6	5
+free_longest_diff5	Na nejtÄ›Å¾Å¡Ã­ obtÃ­Å¾nost	6	5
+free_lost_longest	ProhranÃ¡ hra	6	5
+free_quit_longest	PÅ™eruÅ¡enÃ¡ hra	6	5
+steps_total	KrokÅ¯	7	1
+trips_total	ZakopnutÃ­	7	1
+falls_total	PÃ¡dÅ¯ ze schodÅ¯	7	1
 player_hits	Dohromady	7	2
-most_player_hits	Nejvíc za jednu hru	7	2
-customers_total	Pøišlo	8	1
-customers_most	Nejvíc za jednu hru	8	1
-fled_total	Odešlo	8	1
-happy_total	Spokojenıch	8	1
-thrown_total	Vyhozenıch	8	1
-hurt_total	Pøíliš zranìnıch	8	1
-stunned_total	Omráèenıch	8	1
+most_player_hits	NejvÃ­c za jednu hru	7	2
+customers_total	PÅ™iÅ¡lo	8	1
+customers_most	NejvÃ­c za jednu hru	8	1
+fled_total	OdeÅ¡lo	8	1
+happy_total	SpokojenÃ½ch	8	1
+thrown_total	VyhozenÃ½ch	8	1
+hurt_total	PÅ™Ã­liÅ¡ zranÄ›nÃ½ch	8	1
+stunned_total	OmrÃ¡ÄenÃ½ch	8	1
 helpers_total	Dohromady	8	2
-pourers_total	Toèilo	8	2
-givers_total	Roznášelo pití	8	2
-cleaners_total	Odnášelo špinavé pùllitry	8	2
-barrelers_total	Nosilo nové sudy	8	2
-emptiers_total	Odnášelo prázdné sudy	8	2
-throwers_total	Vyhazovalo oraly	8	2
-calmers_total	Pacifikovalo agresivní zákazníky	8	2
-roamers_total	Oralù	8	3
-chasers_total	Agresivních	8	3
+pourers_total	ToÄilo	8	2
+givers_total	RoznÃ¡Å¡elo pitÃ­	8	2
+cleaners_total	OdnÃ¡Å¡elo Å¡pinavÃ© pÅ¯llitry	8	2
+barrelers_total	Nosilo novÃ© sudy	8	2
+emptiers_total	OdnÃ¡Å¡elo prÃ¡zdnÃ© sudy	8	2
+throwers_total	Vyhazovalo oÅ¾raly	8	2
+calmers_total	Pacifikovalo agresivnÃ­ zÃ¡kaznÃ­ky	8	2
+roamers_total	OÅ¾ralÅ¯	8	3
+chasers_total	AgresivnÃ­ch	8	3
 slept_total	Usnulo	8	3
-patient_total	Nejtrpìlivìjší zákazník èekal	8	3
-most_beers_total	Nejvíc vypitıch pùllitrù na zákazníka	8	3
-longest_total	Nejdéle pøítomnı zákazník	8	3
-most_queued	Nejvíc zákazníkù ve frontì najednou	8	3
+patient_total	NejtrpÄ›livÄ›jÅ¡Ã­ zÃ¡kaznÃ­k Äekal	8	3
+most_beers_total	NejvÃ­c vypitÃ½ch pÅ¯llitrÅ¯ na zÃ¡kaznÃ­ka	8	3
+longest_total	NejdÃ©le pÅ™Ã­tomnÃ½ zÃ¡kaznÃ­k	8	3
+most_queued	NejvÃ­c zÃ¡kaznÃ­kÅ¯ ve frontÄ› najednou	8	3
 puked_total	Dohromady se poblilo	8	3
-puked_most	Nejvíc za jednu hru	8	3
-most_hits	Nejvíckrát praštìnı zákazník	8	3
+puked_most	NejvÃ­c za jednu hru	8	3
+most_hits	NejvÃ­ckrÃ¡t praÅ¡tÄ›nÃ½ zÃ¡kaznÃ­k	8	3
 player_stunned_total	Dohromady	8	4
-player_stunned_roaming	Oralıch	8	4
-player_stunned_chasing	Naštvanıch	8	4
-player_stunned_fleeing	Odcházejících	8	4
-player_stunned_hurting	Utíkajících	8	4
-player_stunned_waiting	Èekajících	8	4
+player_stunned_roaming	OÅ¾ralÃ½ch	8	4
+player_stunned_chasing	NaÅ¡tvanÃ½ch	8	4
+player_stunned_fleeing	OdchÃ¡zejÃ­cÃ­ch	8	4
+player_stunned_hurting	UtÃ­kajÃ­cÃ­ch	8	4
+player_stunned_waiting	ÄŒekajÃ­cÃ­ch	8	4
 customer_stunned_total	Dohromady	8	5
-customer_stunned_roaming	Oralıch	8	5
-customer_stunned_chasing	Naštvanıch	8	5
-customer_stunned_fleeing	Odcházejících	8	5
-customer_stunned_hurting	Utíkajících	8	5
-customer_stunned_waiting	Èekajících	8	5
-customer_stunned_drinking	Pijících	8	5
-money	Aktuálnì k dispozici	9	1
-money_total	Celkem vydìláno	9	1
-earned_most	Nejvíc za jednu hru	9	1
-most_paid	Nejvíc od jednoho zákazníka	9	1
+customer_stunned_roaming	OÅ¾ralÃ½ch	8	5
+customer_stunned_chasing	NaÅ¡tvanÃ½ch	8	5
+customer_stunned_fleeing	OdchÃ¡zejÃ­cÃ­ch	8	5
+customer_stunned_hurting	UtÃ­kajÃ­cÃ­ch	8	5
+customer_stunned_waiting	ÄŒekajÃ­cÃ­ch	8	5
+customer_stunned_drinking	PijÃ­cÃ­ch	8	5
+money	AktuÃ¡lnÄ› k dispozici	9	1
+money_total	Celkem vydÄ›lÃ¡no	9	1
+earned_most	NejvÃ­c za jednu hru	9	1
+most_paid	NejvÃ­c od jednoho zÃ¡kaznÃ­ka	9	1
 gratuity	Dohromady	9	2
-most_gratuity_once	Nejvìtší jednorázové dıško od jednoho zákazníka	9	2
-most_gratuity_total	Nejvíc na dıškách od jednoho zákazníka za celou hru	9	2
+most_gratuity_once	NejvÄ›tÅ¡Ã­ jednorÃ¡zovÃ© dÃ½Å¡ko od jednoho zÃ¡kaznÃ­ka	9	2
+most_gratuity_total	NejvÃ­c na dÃ½Å¡kÃ¡ch od jednoho zÃ¡kaznÃ­ka za celou hru	9	2
 jukebox_earned_total	Dohromady	9	3
-jukebox_earned_once	Nejvíc za jednu hru	9	3
-jukebox_earned_most	Nejvíc od jednoho zákazníka	9	3
-jukebox_played_total	Zaznìlo skladeb	10
-jukebox_played_player	Puštìno hráèem	10
-jukebox_played_customers	Puštìno zákazníky	10
-jukebox_played_duration	Celková délka všech skladeb	10
-washed_total	Umyté	11
-dirty_left_total	Zbylé odloené	11
-broken_total	Rozbité	11
-broken_nonempty	Z toho natoèené	11
-fallen_total	Rozbité	12
-fallen_nonempty	Z toho plné	12
-replaced_total	Vymìnìné	12
-mess1	Z rozbitého nádobí	13
-mess2	Z rozlitého pití	13
-mess3	Ze zvratkù	13
+jukebox_earned_once	NejvÃ­c za jednu hru	9	3
+jukebox_earned_most	NejvÃ­c od jednoho zÃ¡kaznÃ­ka	9	3
+jukebox_played_total	ZaznÄ›lo skladeb	10
+jukebox_played_player	PuÅ¡tÄ›no hrÃ¡Äem	10
+jukebox_played_customers	PuÅ¡tÄ›no zÃ¡kaznÃ­ky	10
+jukebox_played_duration	CelkovÃ¡ dÃ©lka vÅ¡ech skladeb	10
+washed_total	UmytÃ©	11
+dirty_left_total	ZbylÃ© odloÅ¾enÃ©	11
+broken_total	RozbitÃ©	11
+broken_nonempty	Z toho natoÄenÃ©	11
+fallen_total	RozbitÃ©	12
+fallen_nonempty	Z toho plnÃ©	12
+replaced_total	VymÄ›nÄ›nÃ©	12
+mess1	Z rozbitÃ©ho nÃ¡dobÃ­	13
+mess2	Z rozlitÃ©ho pitÃ­	13
+mess3	Ze zvratkÅ¯	13
 dried	Zaschlo	13
 served_total	Dohromady	14	1
-served_most	Nejvíc za jednu hru	14	1
-served_correct	Správnıch	14	1
-single_drinks	Jednodruhovıch	14	1
-mixed_drinks	Míchanıch	14	1
-mistakes_total	Špatnıch	14	1
-dirty_drinks	Ve špinavém pùllitru	14	1
-undermeasures	Podmírákù	14	1
+served_most	NejvÃ­c za jednu hru	14	1
+served_correct	SprÃ¡vnÃ½ch	14	1
+single_drinks	JednodruhovÃ½ch	14	1
+mixed_drinks	MÃ­chanÃ½ch	14	1
+mistakes_total	Å patnÃ½ch	14	1
+dirty_drinks	Ve Å¡pinavÃ©m pÅ¯llitru	14	1
+undermeasures	PodmÃ­rÃ¡kÅ¯	14	1
