@@ -1,0 +1,4 @@
+class named_mutex_lock {
+	named_mutex_lock(named_mutex@);
+	void unlock();
+}

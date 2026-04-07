@@ -1,0 +1,3 @@
+class rw_write_lock {
+	rw_write_lock(rw_lock@);
+}

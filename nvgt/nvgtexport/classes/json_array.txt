@@ -1,0 +1,24 @@
+class json_array {
+	json_array();
+	json_array(json_array@ other);
+	json_array& opAssign(json_array@ other);
+	var@ get_opIndex(uint index) property;
+	void set_opIndex(uint index, const var&in value) property;
+	void add(const var&in value);
+	var@ opCall(const string&in path) const;
+	json_array& extend(const json_array@ array);
+	json_array@ get_array(uint index) const;
+	json_object@ get_object(uint index) const;
+	string stringify(uint indent = 0, int step = -1);
+	void stringify(datastream@ stream, uint indent = 0, int step = -1);
+	uint length();
+	uint size();
+	bool get_escape_unicode() property;
+	void set_escape_unicode(bool value) property;
+	bool get_empty() property;
+	void clear();
+	void remove(uint index);
+	bool is_array(uint index);
+	bool is_null(uint index);
+	bool is_object(uint index);
+}

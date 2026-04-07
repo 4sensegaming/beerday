@@ -1,0 +1,8 @@
+class thread_event {
+	thread_event(thread_event_type type = THREAD_EVENT_AUTO_RESET);
+	void set();
+	void wait();
+	void wait(uint ms);
+	bool try_wait(uint ms);
+	void reset();
+}

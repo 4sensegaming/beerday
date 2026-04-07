@@ -1,0 +1,4 @@
+class physics_overlap_callback_data {
+	uint get_nb_overlap_pairs() const property;
+	physics_overlap_pair get_overlapping_pair(uint index) const;
+}

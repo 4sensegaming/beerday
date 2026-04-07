@@ -1,0 +1,20 @@
+/**
+	Completely shut down your application, returning a particular exit code to your operating system in the process.
+	void exit(int exit_code = 0);
+	## Arguments:
+		* int exit_code = 0: the exit code to return to your operating system.
+*/
+
+// Example:
+void main() {
+	show_window("Example");
+	screen_reader_output("Press escape to exit.", true);
+	while (true) {
+		wait(5);
+		if (key_pressed(KEY_ESCAPE)) {
+			screen_reader_output("Goodbye.", true);
+			wait(500);
+			exit();
+		}
+	}
+}

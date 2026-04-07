@@ -1,0 +1,18 @@
+class physics_transform {
+	physics_transform();
+	physics_transform(const vector&in position, const matrix3x3&in orientation);
+	physics_transform(const vector&in position, const quaternion&in orientation);
+	const vector& get_position() const property;
+	const quaternion& get_orientation() const property;
+	void set_position(const vector&in position) property;
+	void set_orientation(const quaternion&in orientation) property;
+	void set_to_identity();
+	physics_transform get_inverse() const property;
+	bool get_is_valid() const property;
+	void set_from_opengl_matrix(array<float>@ matrix);
+	array<float>@ get_opengl_matrix() const;
+	bool opEquals(const physics_transform&in) const;
+	physics_transform opMul(const physics_transform&in) const;
+	vector opMul(const vector&in) const;
+	string opImplConv();
+}

@@ -1,0 +1,31 @@
+class atomic_uint8 {
+	atomic_uint8();
+	bool is_lock_free();
+	void store(uint8 val, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint8 opAssign(uint8 val);
+	uint8 load(memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint8 opImplConv();
+	uint8 exchange(uint8 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_weak(uint8&inout expected, uint8 desired, memory_order success, memory_order failure);
+	bool compare_exchange_weak(uint8&inout expected, uint8 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_strong(uint8&inout expected, uint8 desired, memory_order success, memory_order failure);
+	bool compare_exchange_strong(uint8&inout expected, uint8 desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void wait(uint8 old, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void notify_one();
+	void notify_all();
+	uint8 fetch_add(uint8 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint8 fetch_sub(uint8 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint8 opAddAssign(uint8 arg);
+	uint8 opSubAssign(uint8 arg);
+	uint8 opPreInc();
+	uint8 opPostInc(uint8 arg);
+	uint8 opPreDec();
+	uint8 opPostDec(uint8 arg);
+	uint8 fetch_and(uint8 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint8 fetch_or(uint8 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint8 fetch_xor(uint8 arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	uint8 opAndAssign(uint8 arg);
+	uint8 opOrAssign(uint8 arg);
+	uint8 opXorAssign(uint8 arg);
+	bool get_is_always_lock_free() property;
+}

@@ -1,0 +1,5 @@
+class physics_message {
+	string text;
+	physics_message_type type;
+	physics_message(string text, physics_message_type type = PHYSICS_MESSAGE_ERROR);
+}

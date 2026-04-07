@@ -1,0 +1,21 @@
+class engine_character_event {
+	int find(engine_character_event_listener@ listener) const;
+	bool insert(engine_character_event_listener@ listener, int index = -1);
+	bool opAddAssign(engine_character_event_listener@ listener);
+	bool remove(engine_character_event_listener@ listener);
+	bool opSubAssign(engine_character_event_listener@ listener);
+	int find(engine_character_event_callback@ listener) const;
+	bool insert(engine_character_event_callback@ listener, int index = -1);
+	bool opAddAssign(engine_character_event_callback@ listener);
+	bool remove(engine_character_event_callback@ listener);
+	bool opSubAssign(engine_character_event_callback@ listener);
+	int find(engine_character_event_passthrough_callback@ listener) const;
+	bool insert(engine_character_event_passthrough_callback@ listener, int index = -1);
+	bool opAddAssign(engine_character_event_passthrough_callback@ listener);
+	bool remove(engine_character_event_passthrough_callback@ listener);
+	bool opSubAssign(engine_character_event_passthrough_callback@ listener);
+	bool remove(uint index);
+	void opCall(string character);
+	void clear();
+	uint get_count() const property;
+}

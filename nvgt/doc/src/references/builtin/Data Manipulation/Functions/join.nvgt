@@ -1,0 +1,19 @@
+/**
+	turn an array into a string, with each element being separated by the given delimiter.
+	string join(const string[]@ elements, const string&in delimiter);
+	## Arguments:
+		* const string[]@ elements: a handle to the array to join.
+		* const string&in delimiter: the delimiter used to separate each element in the array (can be empty).
+	## Returns:
+		string: the given array as a string.
+	## Remarks:
+		If an empty array is passed, a blank string is returned.
+		The delimiter is not appended to the end of the last item in the returned string. For example if an array contains [1, 2, 3] and you join it with a delimiter of . (period), the result would be "1.2.3" without an extra delimiter appended.
+*/
+
+// Example:
+void main() {
+	string[] names = {"Sam", "Quin", "Patrick"};
+	string people = join(names, ", ");
+	alert("Info", people);
+}

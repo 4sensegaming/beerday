@@ -1,0 +1,10 @@
+class ref {
+	ref();
+	ref(const ref&in);
+	ref(const ?&in);
+	void opCast(?&out);
+	ref& opHndlAssign(const ref&in);
+	ref& opHndlAssign(const ?&in);
+	bool opEquals(const ref&in) const;
+	bool opEquals(const ?&in) const;
+}

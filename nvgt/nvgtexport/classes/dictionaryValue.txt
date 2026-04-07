@@ -1,0 +1,13 @@
+class dictionaryValue {
+	dictionaryValue();
+	dictionaryValue& opAssign(const dictionaryValue&in);
+	dictionaryValue& opHndlAssign(const ?&in);
+	dictionaryValue& opHndlAssign(const dictionaryValue&in);
+	dictionaryValue& opAssign(const ?&in);
+	dictionaryValue& opAssign(double);
+	dictionaryValue& opAssign(int64);
+	void opCast(?&out);
+	void opConv(?&out);
+	int64 opConv();
+	double opConv();
+}

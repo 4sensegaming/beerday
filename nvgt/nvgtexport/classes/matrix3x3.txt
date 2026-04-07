@@ -1,0 +1,30 @@
+class matrix3x3 {
+	matrix3x3();
+	matrix3x3(float value);
+	matrix3x3(float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3);
+	void set(float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3);
+	void set_to_zero();
+	void set_to_identity();
+	vector get_column(int i) const;
+	vector get_row(int i) const;
+	matrix3x3 get_transpose() const property;
+	float get_determinant() const property;
+	float get_trace() const property;
+	matrix3x3 get_inverse() const property;
+	matrix3x3 get_inverse(float determinant) const;
+	matrix3x3 get_absolute() const property;
+	matrix3x3 opAdd(const matrix3x3&in matrix) const;
+	matrix3x3& opAddAssign(const matrix3x3&in matrix);
+	matrix3x3 opSub(const matrix3x3&in matrix) const;
+	matrix3x3& opSubAssign(const matrix3x3&in matrix);
+	matrix3x3 opNeg() const;
+	matrix3x3 opMul(const matrix3x3&in matrix) const;
+	matrix3x3 opMul(float value) const;
+	matrix3x3 opMulR(float value) const;
+	matrix3x3& opMulAssign(float value);
+	vector opMul(const vector&in value) const;
+	bool opEquals(const matrix3x3&in);
+	vector& opIndex(int row);
+	const vector& opIndex(int row) const;
+	string opImplConv();
+}

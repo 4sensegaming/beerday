@@ -1,0 +1,37 @@
+class reverb3d {
+	reverb3d(audio_node@ reverb, mixer@ destination = mixer(), audio_engine@ engine = sound_default_engine);
+	uint get_input_bus_count() const property;
+	uint get_output_bus_count() const property;
+	uint get_input_channels(uint bus) const;
+	uint get_output_channels(uint bus) const;
+	bool attach_output_bus(uint output_bus, audio_node@ destination, uint destination_input_bus);
+	bool detach_output_bus(uint bus);
+	bool detach_all_output_buses();
+	bool set_output_bus_volume(uint bus, float volume);
+	float get_output_bus_volume(uint bus);
+	bool set_state(audio_node_state state);
+	audio_node_state get_state();
+	bool set_state_time(audio_node_state state, uint64 time);
+	uint64 get_state_time(uint64 global_time);
+	audio_node_state get_state_by_time(uint64 global_time);
+	audio_node_state get_state_by_time_range(uint64 global_time_begin, uint64 global_time_end);
+	uint64 get_time() const;
+	bool set_time(uint64 local_time);
+	audio_node@ opImplCast();
+	void set_reverb(audio_node@ reverb) property;
+	audio_node@ get_reverb() const property;
+	void set_mixer(mixer@ mix) property;
+	mixer@ get_mixer() const property;
+	void set_min_volume(float min_volume) property;
+	float get_min_volume() const property;
+	void set_max_volume(float max_volume) property;
+	float get_max_volume() const property;
+	void set_max_volume_distance(float distance) property;
+	float get_max_volume_distance() const property;
+	void set_max_audible_distance(float distance) property;
+	float get_max_audible_distance() const property;
+	void set_volume_curve(float volume_curve) property;
+	float get_volume_curve() const property;
+	float get_volume_at(float distance) const;
+	audio_splitter_node@ create_attachment(audio_node@ dry_input = null, audio_node@ dry_output = null);
+}

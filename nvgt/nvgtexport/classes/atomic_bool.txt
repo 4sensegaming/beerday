@@ -1,0 +1,17 @@
+class atomic_bool {
+	atomic_bool();
+	bool is_lock_free();
+	void store(bool val, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool opAssign(bool val);
+	bool load(memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool opImplConv();
+	bool exchange(bool desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_weak(bool&inout expected, bool desired, memory_order success, memory_order failure);
+	bool compare_exchange_weak(bool&inout expected, bool desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_strong(bool&inout expected, bool desired, memory_order success, memory_order failure);
+	bool compare_exchange_strong(bool&inout expected, bool desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void wait(bool old, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void notify_one();
+	void notify_all();
+	bool get_is_always_lock_free() property;
+}

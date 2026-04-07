@@ -1,0 +1,4 @@
+class pack_interface {
+	pack_file@ opCast();
+	sqlite_pack@ opCast();
+}

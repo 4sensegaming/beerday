@@ -1,0 +1,5 @@
+class library_function {
+	var@ opCall(?&in...);
+	bool get_valid() const property;
+	string get_error() const property;
+}

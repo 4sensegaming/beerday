@@ -1,0 +1,7 @@
+class system_tray {
+	system_tray(const string&in tooltip, graphic@ icon = null);
+	bool get_valid() const property;
+	void set_icon(graphic@ icon);
+	void set_tooltip(const string&in tooltip);
+	system_tray_menu@ get_menu() property;
+}

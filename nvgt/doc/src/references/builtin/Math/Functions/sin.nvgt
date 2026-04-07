@@ -1,0 +1,13 @@
+/**
+	Returns the sine of an angle given in radians.
+	double sin(double x);
+	## Arguments:
+		* double x: The angle (in radians) to get the sine of.
+	## Returns:
+		double: the sine of the angle.
+*/
+
+// Example:
+void main() {
+	alert("Example", "The sine of 45 is " + sin(45 * 3.14159 / 180) + " radians");
+}

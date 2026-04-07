@@ -1,0 +1,17 @@
+/**
+	Returns the number of items in the array.
+	1. uint array::length();
+	2. uint array::size();
+	## Returns:
+		uint: the number of items in the array.
+	## Remarks:
+		This method returns the absolute number of elements in the array, that is, without taking 0-based indexing into account. For example an array containing {1, 2, 3} will have a length of 3, but you must access the last element with the index 2 and the first element with index 0, rather than using 3 for the last item and 1 for the first.
+*/
+
+// Example:
+void main() {
+	int[] items;
+	for (uint i = 0; i < random(1, 10); i++)
+		items.insert_last(i);
+	alert("The array contains", items.length() + " " + (items.length() == 1 ? "item" : "items"));
+}

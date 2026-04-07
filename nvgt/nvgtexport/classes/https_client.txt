@@ -1,0 +1,24 @@
+class https_client {
+	https_client(const string&in, uint16 = 443);
+	void set_keep_alive(bool) property;
+	bool get_keep_alive() const property;
+	bool get_connected() const property;
+	void abort();
+	void set_keep_alive_timeout(const timespan&in timeout) property;
+	timespan get_keep_alive_timeout() const property;
+	void set_send_timeout(const timespan&in timeout) property;
+	timespan get_send_timeout() const property;
+	void set_receive_timeout(const timespan&in timeout) property;
+	timespan get_receive_timeout() const property;
+	void set_host(const string&in) property;
+	const string& get_host() const property;
+	void set_port(uint16) property;
+	uint16 get_port() const property;
+	datastream@ send_request(http_request&inout, const string&in encoding = \\, int byteorder = STREAM_BYTE_ORDER_NATIVE);
+	datastream@ receive_response(http_response&inout, const string&in encoding = \\, int byteorder = STREAM_BYTE_ORDER_NATIVE);
+	bool peek_response(http_response&inout);
+	void flush_request();
+	void reset();
+	bool get_secure() const property;
+	http_client@ opImplCast();
+}

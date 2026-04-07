@@ -1,0 +1,18 @@
+class timer_queue {
+	const string failures;
+	timer_queue();
+	void set(const string&in timer_id, timer_callback@ callback, const string&in callback_data, uint64 milliseconds, bool repeating = false);
+	void set(const string&in timer_id, timer_callback@ callback, uint64 milliseconds, bool repeating = false);
+	uint64 elapsed(const string&in timer_id) const;
+	uint64 timeout(const string&in timer_id) const;
+	bool exists(const string&in timer_id) const;
+	bool restart(const string&in timer_id);
+	bool is_repeating(const string&in timer_id) const;
+	bool set_timeout(const string&in timer_id, uint64 milliseconds, bool repeating = false);
+	bool delete(const string&in timer_id);
+	void flush();
+	void reset();
+	array<string>@ list_timers();
+	uint size() const;
+	bool loop(int max_timers = 0, int max_catchup_milliseconds = 100);
+}

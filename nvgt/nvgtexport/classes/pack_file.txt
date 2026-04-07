@@ -1,0 +1,18 @@
+class pack_file {
+	pack_file();
+	pack_interface@ opImplCast();
+	bool create(const string&in filename, const string&in key = \\);
+	bool open(const string&in filename, const string&in key = \\, uint64 pack_offset = 0, uint64 pack_size = 0);
+	bool close();
+	bool add_file(const string&in filename, const string&in internal_name);
+	bool add_stream(const string&in internal_name, datastream@ ds);
+	bool add_memory(const string&in internal_name, const string&in data);
+	bool file_exists(const string&in filename);
+	int64 get_file_size(const string&in filename);
+	datastream@ get_file(const string&in filename, const string&in encoding = \\, int byteorder = STREAM_BYTE_ORDER_NATIVE);
+	string get_pack_name() const property;
+	bool get_active() const property;
+	int64 get_file_count() const property;
+	array<string>@ list_files() const;
+	bool extract_file(const string&in internal_name, const string&in file_on_disk);
+}

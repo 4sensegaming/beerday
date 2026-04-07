@@ -1,0 +1,5 @@
+class physics_polygon_face {
+	uint nb_vertices;
+	uint index_base;
+	;
+}

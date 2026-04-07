@@ -1,0 +1,24 @@
+class physics_body {
+	physics_entity get_entity() const property;
+	bool get_is_active() const property;
+	void set_is_active(bool is_active) property;
+	const physics_transform& get_transform() const property;
+	void set_transform(const physics_transform&in transform) property;
+	physics_collider@ add_collider(physics_collision_shape@ shape, const physics_transform&in transform);
+	void remove_collider(physics_collider&in collider);
+	bool test_point_inside(const vector&in point) const;
+	bool raycast(const ray&inout point, raycast_info&inout raycast_info) const;
+	bool test_aabb_overlap(const aabb&in world_aabb) const;
+	aabb get_aabb() const property;
+	const physics_collider& get_collider(uint index) const;
+	physics_collider& get_collider(uint index);
+	uint get_nb_colliders() const property;
+	vector get_world_point(const vector&in local_point) const;
+	vector get_world_vector(const vector&in local_vector) const;
+	vector get_local_point(const vector&in world_point) const;
+	vector get_local_vector(const vector&in world_vector) const;
+	bool get_is_debug_enabled() const property;
+	void set_debug_enabled(bool enabled) property;
+	void set_user_data(any@ userData);
+	any@ get_user_data() const;
+}

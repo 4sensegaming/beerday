@@ -1,0 +1,33 @@
+class quaternion {
+	float x;
+	float y;
+	float z;
+	float w;
+	quaternion();
+	quaternion(float x, float y, float z, float w);
+	quaternion opAdd(const quaternion&in);
+	quaternion& opAddAssign(const quaternion&in);
+	quaternion opSub(const quaternion&in);
+	quaternion& opSubAssign(const quaternion&in);
+	quaternion opMul(const quaternion&in);
+	quaternion opMul(float) const;
+	bool opEquals(const quaternion&in) const;
+	void set(float x, float y, float z, float w);
+	void set_to_zero();
+	void set_to_identity();
+	float length() const;
+	float length_square() const;
+	bool get_is_unit() const property;
+	bool get_is_valid() const property;
+	bool get_is_finite() const property;
+	float dot(const quaternion&in) const;
+	void normalize();
+	void inverse();
+	vector get_v() const property;
+	quaternion get_unit() const property;
+	quaternion get_conjugate() const property;
+	quaternion get_inversed() const property;
+	void get_rotation_angle_axis(float&out angle, vector&out axis) const;
+	matrix3x3 get_matrix() const property;
+	string opImplConv() const;
+}

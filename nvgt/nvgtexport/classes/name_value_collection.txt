@@ -1,0 +1,19 @@
+class name_value_collection {
+	name_value_collection();
+	name_value_collection(const name_value_collection&in);
+	name_value_collection& opAssign(const name_value_collection&in);
+	const string& get_opIndex(const string&in) const property;
+	void set_opIndex(const string&in, const string&in) property;
+	void set(const string&in, const string&in);
+	void add(const string&in, const string&in);
+	const string& get(const string&in, const string&in = \\) const;
+	bool exists(const string&in) const;
+	bool empty() const;
+	uint64 size() const;
+	void erase(const string&in);
+	void secure_erase(const string&in);
+	void clear();
+	const string& name_at(uint) const;
+	const string& value_at(uint) const;
+	internet_message_header@ opCast();
+}

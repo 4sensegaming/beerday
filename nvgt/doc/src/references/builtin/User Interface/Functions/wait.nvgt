@@ -1,0 +1,18 @@
+/**
+	Waits for a specified number of milliseconds.
+	void wait(int milliseconds);
+	## Arguments:
+		* int milliseconds: the number of milliseconds to wait for.
+	## Remarks:
+		This function blocks the calling thread, meaning no other work can happen on that thread until the wait period is over.
+		On the main thread, it performs other essential tasks, such as incremental garbage collection, internal event processing, and refreshing the window.
+		It is strongly advised to always put `wait(5);` in your main loops. This prevents your game from hogging the CPU, and also makes sure that the window remains responsive and has been updated with the latest input events from the user.
+		Please note that, due to low-level operating system scheduling behaviors, the millisecond parameter is not an exact value, but rather a guaranteed minimum. This is even more important to remember when calling from the main thread given the additional tasks performed. It should therefore never be used as a time marker where accuracy is required.
+*/
+
+// Example:
+void main() {
+	alert("Info", "Once you press OK, I will wait for 2000 milliseconds (2 seconds).");
+	wait(2000);
+	alert("Info", "2000 milliseconds passed!");
+}

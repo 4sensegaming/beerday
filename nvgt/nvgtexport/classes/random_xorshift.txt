@@ -1,0 +1,16 @@
+class random_xorshift {
+	random_xorshift();
+	random_xorshift(uint seed);
+	random_xorshift(uint64 seed);
+	uint next();
+	float nextf();
+	int64 next64();
+	int range(int min, int max);
+	void seed(uint s);
+	void seed64(uint64 s);
+	string get_state() const;
+	bool set_state(const string&in state);
+	bool next_bool(int percent = 50);
+	string next_character(const string&in min, const string&in max);
+	random_interface@ opImplCast();
+}

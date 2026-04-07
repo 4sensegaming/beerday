@@ -1,0 +1,9 @@
+case/**
+!case/*.nvgt
+
+!data/*.bin
+
+quick/**
+!quick/*.nvgt
+
+tmp/**

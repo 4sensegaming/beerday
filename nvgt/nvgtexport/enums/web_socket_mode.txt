@@ -1,0 +1,2 @@
+WS_SERVER = 0;
+WS_CLIENT = 1;

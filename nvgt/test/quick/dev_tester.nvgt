@@ -1,0 +1,37 @@
+// NonVisual Gaming Toolkit (NVGT)
+// Copyright (C) 2022-2025 Sam Tupy
+// License: zlib (see license.md in the root of the NVGT distribution)
+
+void main() {
+	show_window("NVGTDevTester");
+	wait(30);
+	screen_reader_speak("Press up and down arrow keys to enumerate devices, press enter to play a sound through the selected device and escape to exit.", true);
+	string[] devs = sound_output_devices;
+	uint c = 0;
+	sound ding;
+	ding.load("C:\\windows\\media\\ding.wav");
+	ding.pitch = 200;
+	alert("test", ding.pitch);
+	alert("test", ding.pinned_listener);
+	if (SOUNDSYSTEM_LAST_ERROR == AUDIO_ERROR_STATE_SUCCESS) alert("yay", SOUNDSYSTEM_LAST_ERROR);
+	ding.pan=-100;
+	ding.volume = 24;
+	while (!key_pressed(KEY_ESCAPE)) {
+		wait(5);
+		if (key_pressed(KEY_UP)) {
+			c--;
+			if (c<0 or c>devs.length()) c = 0;
+			else screen_reader_speak(devs[c], true);
+		}
+		if (key_pressed(KEY_DOWN)) {
+			c++;
+			if (c >= devs.length()) c = devs.length() - 1;
+			else screen_reader_speak(devs[c], true);
+		}
+		if (key_pressed(KEY_RETURN)) {
+			ding.seek(0);
+			sound_output_device = c;
+			screen_reader_speak(ding.play());
+		}
+	}
+}

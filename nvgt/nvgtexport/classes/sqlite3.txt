@@ -1,0 +1,17 @@
+class sqlite3 {
+	sqlite3();
+	sqlite3(const string&in, int = 6);
+	int close();
+	int open(const string&in, int = 6);
+	sqlite3statement@ prepare(const string&in, int&out = void);
+	int execute(const string&in, array<array<string>>@ = null);
+	int64 get_rows_changed() property;
+	int64 get_total_rows_changed() property;
+	int limit(int id, int val);
+	int set_authorizer(sqlite3authorizer@, const string&in = \\);
+	int64 get_last_insert_rowid() property;
+	void set_last_insert_rowid(int64) property;
+	int get_last_error();
+	string get_last_error_text();
+	bool get_active() property;
+}

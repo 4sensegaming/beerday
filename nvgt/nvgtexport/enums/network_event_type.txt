@@ -1,0 +1,5 @@
+event_none = 0;
+event_connect = 1;
+event_disconnect = 2;
+event_disconnect_timeout = 4;
+event_receive = 3;

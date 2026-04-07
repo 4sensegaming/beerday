@@ -1,0 +1,10 @@
+class physics_joint {
+	physics_rigid_body@ get_body1() const property;
+	physics_rigid_body@ get_body2() const property;
+	physics_joint_type get_type() const property;
+	vector get_reaction_force(float time_step) const;
+	vector get_reaction_torque(float time_step) const;
+	bool get_is_collision_enabled() const property;
+	physics_entity get_entity() const property;
+	string opImplConv();
+}

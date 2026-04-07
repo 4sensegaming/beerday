@@ -1,0 +1,8 @@
+class physics_joint_info {
+	physics_rigid_body@ body1;
+	physics_rigid_body@ body2;
+	physics_joint_type type;
+	physics_joints_position_correction_technique position_correction_technique;
+	bool isCollisionEnabled;
+	physics_joint_info(physics_rigid_body@ body1, physics_rigid_body@ body2, physics_joint_type constraint_type);
+}

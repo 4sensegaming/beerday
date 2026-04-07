@@ -1,0 +1,21 @@
+class audio_splitter_node {
+	audio_splitter_node(audio_engine@ engine, int channels);
+	uint get_input_bus_count() const property;
+	uint get_output_bus_count() const property;
+	uint get_input_channels(uint bus) const;
+	uint get_output_channels(uint bus) const;
+	bool attach_output_bus(uint output_bus, audio_node@ destination, uint destination_input_bus);
+	bool detach_output_bus(uint bus);
+	bool detach_all_output_buses();
+	bool set_output_bus_volume(uint bus, float volume);
+	float get_output_bus_volume(uint bus);
+	bool set_state(audio_node_state state);
+	audio_node_state get_state();
+	bool set_state_time(audio_node_state state, uint64 time);
+	uint64 get_state_time(uint64 global_time);
+	audio_node_state get_state_by_time(uint64 global_time);
+	audio_node_state get_state_by_time_range(uint64 global_time_begin, uint64 global_time_end);
+	uint64 get_time() const;
+	bool set_time(uint64 local_time);
+	audio_node@ opImplCast();
+}

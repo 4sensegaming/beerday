@@ -1,0 +1,33 @@
+class internet_message_header {
+	internet_message_header();
+	internet_message_header(const internet_message_header&in);
+	internet_message_header& opAssign(const internet_message_header&in);
+	const string& get_opIndex(const string&in) const property;
+	void set_opIndex(const string&in, const string&in) property;
+	void set(const string&in, const string&in);
+	void add(const string&in, const string&in);
+	const string& get(const string&in, const string&in = \\) const;
+	bool exists(const string&in) const;
+	bool empty() const;
+	uint64 size() const;
+	void erase(const string&in);
+	void secure_erase(const string&in);
+	void clear();
+	const string& name_at(uint) const;
+	const string& value_at(uint) const;
+	name_value_collection@ opImplCast();
+	bool write(datastream@) const;
+	bool read(datastream@);
+	bool get_auto_decode() const property;
+	void set_auto_decode(bool) property;
+	string get_decoded(const string&in, const string&in = \\);
+	int get_field_limit() const property;
+	void set_field_limit(int) property;
+	int get_name_length_limit() const property;
+	void set_name_length_limit(int) property;
+	int get_value_length_limit() const property;
+	void set_value_length_limit(int) property;
+	bool has_token(const string&in, const string&in);
+	http_request@ opCast();
+	http_response@ opCast();
+}

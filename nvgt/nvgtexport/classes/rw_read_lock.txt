@@ -1,0 +1,3 @@
+class rw_read_lock {
+	rw_read_lock(rw_lock@);
+}

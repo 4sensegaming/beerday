@@ -1,0 +1,4 @@
+class physics_collision_callback_data {
+	uint get_nb_contact_pairs() const property;
+	physics_contact_pair get_contact_pair(uint64 index) const;
+}

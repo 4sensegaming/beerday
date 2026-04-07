@@ -1,0 +1,18 @@
+class thread_pool {
+	thread_pool(int min_capacity = 2, int max_capacity = 16, int idle_time = 60, int stack_size = 0);
+	void add_capacity(int modifier);
+	int get_capacity() const property;
+	void set_stack_size(int size) property;
+	int get_stack_size() const property;
+	int get_used() const property;
+	int get_allocated() const property;
+	int get_available() const property;
+	void start(thread_callback@ routine, dictionary@ args = null);
+	void start(thread_callback@ routine, dictionary@ args, thread_priority priority);
+	void start(thread_callback@ routine, dictionary@ args, const string&in name);
+	void start(thread_callback@ routine, dictionary@ args, const string&in name, thread_priority priority);
+	void stop_all();
+	void join_all();
+	void collect();
+	const string& get_name() const property;
+}

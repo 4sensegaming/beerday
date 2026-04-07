@@ -1,0 +1,7 @@
+class mail_recipient {
+	mail_recipient_type type;
+	string address;
+	string real_name;
+	mail_recipient();
+	mail_recipient(mail_recipient_type, const string&in, const string&in = \\);
+}

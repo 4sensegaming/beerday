@@ -1,0 +1,21 @@
+class engine_touch_event {
+	int find(engine_touch_event_listener@ listener) const;
+	bool insert(engine_touch_event_listener@ listener, int index = -1);
+	bool opAddAssign(engine_touch_event_listener@ listener);
+	bool remove(engine_touch_event_listener@ listener);
+	bool opSubAssign(engine_touch_event_listener@ listener);
+	int find(engine_touch_event_callback@ listener) const;
+	bool insert(engine_touch_event_callback@ listener, int index = -1);
+	bool opAddAssign(engine_touch_event_callback@ listener);
+	bool remove(engine_touch_event_callback@ listener);
+	bool opSubAssign(engine_touch_event_callback@ listener);
+	int find(engine_touch_event_passthrough_callback@ listener) const;
+	bool insert(engine_touch_event_passthrough_callback@ listener, int index = -1);
+	bool opAddAssign(engine_touch_event_passthrough_callback@ listener);
+	bool remove(engine_touch_event_passthrough_callback@ listener);
+	bool opSubAssign(engine_touch_event_passthrough_callback@ listener);
+	bool remove(uint index);
+	void opCall(uint64 device, const touch_finger&inout finger);
+	void clear();
+	uint get_count() const property;
+}

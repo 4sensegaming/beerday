@@ -1,0 +1,13 @@
+/**
+	Query whether or not a directory exists.
+	bool directory_exists(const string&in directory);
+	## Arguments:
+		* const string&in directory: the directory whose existence will be checked (can be a relative or absolute path).
+	## Returns:
+		bool: true if the directory exists, false otherwise.
+*/
+
+// Example:
+void main() {
+	alert("Directory exists", directory_exists("test") ? "There is a test folder in the current directory" : "There is not a test folder in the current directory");
+}

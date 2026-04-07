@@ -1,0 +1,11 @@
+class process {
+	bool get_valid() const property;
+	int64 get_pid() const property;
+	bool get_running() const property;
+	bool kill(bool force = true);
+	int wait();
+	string read();
+	datastream@ get_stdin() property;
+	datastream@ get_stdout() property;
+	datastream@ get_stderr() property;
+}

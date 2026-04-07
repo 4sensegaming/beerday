@@ -1,0 +1,23 @@
+class coordinate_map_area {
+	const coordinate_map@ map;
+	const float minx;
+	const float maxx;
+	const float miny;
+	const float maxy;
+	const float minz;
+	const float maxz;
+	const float rotation;
+	any@ primary_data;
+	const string data1;
+	const string data2;
+	const string data3;
+	const int priority;
+	const bool framed;
+	int64 flags;
+	void unframe();
+	void reframe();
+	void set(float minx, float maxx, float miny, float maxy, float minz, float maxz, float theta);
+	void set_area(float minx, float maxx, float miny, float maxy, float minz, float maxz);
+	void set_rotation(float theta);
+	bool is_in_area(float x, float y, float z, float d = 0.0, coordinate_map_filter_callback@ = null, int64 required_flags = 0, int64 excluded_flags = 0) const;
+}

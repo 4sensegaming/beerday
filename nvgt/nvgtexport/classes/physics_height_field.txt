@@ -1,0 +1,12 @@
+class physics_height_field {
+	uint get_nb_rows() const property;
+	uint get_nb_columns() const property;
+	float get_min_height() const property;
+	float get_max_height() const property;
+	float get_integer_height_scale() const property;
+	vector get_vertex_at(uint x, uint y) const;
+	float get_height_at(uint x, uint y) const;
+	physics_height_data_type get_height_data_type() const property;
+	aabb& get_bounds() const property;
+	string opImplConv() const;
+}

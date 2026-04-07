@@ -1,0 +1,28 @@
+class dictionary {
+	dictionary();
+	dictionary& opAssign(const dictionary&in);
+	void set(const string&in, const ?&in);
+	bool get(const string&in, ?&out) const;
+	void set(const string&in, const int64&in);
+	bool get(const string&in, int64&out) const;
+	void set(const string&in, const double&in);
+	bool get(const string&in, double&out) const;
+	bool exists(const string&in) const;
+	bool is_empty() const;
+	uint get_size() const;
+	bool delete(const string&in);
+	void delete_all();
+	array<string>@ get_keys() const;
+	dictionaryValue& opIndex(const string&in);
+	const dictionaryValue& opIndex(const string&in) const;
+	dictionaryIter@ opForBegin() const;
+	bool opForEnd(dictionaryIter@) const;
+	dictionaryIter@ opForNext(dictionaryIter@) const;
+	const dictionaryValue& opForValue0(dictionaryIter@) const;
+	const string& opForValue1(dictionaryIter@) const;
+	bool empty() const;
+	uint size() const;
+	void erase(const string&in);
+	void clear();
+	string serialize();
+}

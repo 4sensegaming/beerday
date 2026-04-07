@@ -1,0 +1,12 @@
+/**
+	Print a message to the C debugger.
+	void c_debug_message(const string&in message);
+	## Arguments:
+		* const string&in message: The message to print to the C debugger's console.
+*/
+
+// Example:
+void main() {
+	c_debug_message("I am a debug message");
+	c_debug_break();
+}

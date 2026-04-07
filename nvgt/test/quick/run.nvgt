@@ -1,0 +1,10 @@
+// NonVisual Gaming Toolkit (NVGT)
+// Copyright (C) 2022-2026 Sam Tupy
+// License: zlib (see license.md in the root of the NVGT distribution)
+
+void main() {
+	show_window("CalcRunner");
+	bool p = run("C:\\windows\\system32\\calc.exe", "", true, false);
+	if (!p) alert("test", "run fail");
+	alert("test", "calc exit");
+}

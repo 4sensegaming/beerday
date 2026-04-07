@@ -1,0 +1,11 @@
+class memory_buffer<T> {
+	uint64 address;
+	uint64 size;
+	memory_buffer(int&in subtype, uint64 ptr, uint64 size);
+	memory_buffer(int&in subtype, const memory_buffer<T>&in other);
+	T& opIndex(uint64 index);
+	const T& opIndex(uint64 index) const;
+	array<T>@ opImplConv() const;
+	memory_buffer<T>& opAssign(array<T>@ array);
+	int get_element_size() const property;
+}

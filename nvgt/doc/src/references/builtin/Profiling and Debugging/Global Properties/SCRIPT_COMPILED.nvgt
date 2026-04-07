@@ -1,0 +1,9 @@
+/**
+	Determine if the script is compiled or not. I.e., are you running from source?
+	bool SCRIPT_COMPILED;
+*/
+
+// Example:
+void main() {
+	alert("Example", SCRIPT_COMPILED ? "The script is currently compiled" : "The script is not currently compiled");
+}

@@ -1,0 +1,22 @@
+class smtp_client {
+	smtp_client();
+	void set_host(const string&in) property;
+	string get_host() const property;
+	void set_port(int) property;
+	int get_port() const property;
+	void set_use_ssl(bool) property;
+	bool get_use_ssl() const property;
+	bool connect();
+	bool login(const string&in, const string&in, smtp_auth_method = SMTP_AUTH_LOGIN);
+	bool login_oauth2(const string&in, const string&in);
+	bool send_message(mail_message@);
+	void close();
+	bool get_is_connected() const property;
+	bool get_is_authenticated() const property;
+	string get_last_error() const property;
+	void set_timeout(int) property;
+	int get_timeout() const property;
+	string query_server_capabilities();
+	string get_server_capabilities() const property;
+	bool send_messages(array<mail_message@>@);
+}

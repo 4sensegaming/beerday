@@ -1,0 +1,31 @@
+class atomic_int {
+	atomic_int();
+	bool is_lock_free();
+	void store(int val, memory_order order = MEMORY_ORDER_SEQ_CST);
+	int opAssign(int val);
+	int load(memory_order order = MEMORY_ORDER_SEQ_CST);
+	int opImplConv();
+	int exchange(int desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_weak(int&inout expected, int desired, memory_order success, memory_order failure);
+	bool compare_exchange_weak(int&inout expected, int desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	bool compare_exchange_strong(int&inout expected, int desired, memory_order success, memory_order failure);
+	bool compare_exchange_strong(int&inout expected, int desired, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void wait(int old, memory_order order = MEMORY_ORDER_SEQ_CST);
+	void notify_one();
+	void notify_all();
+	int fetch_add(int arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	int fetch_sub(int arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	int opAddAssign(int arg);
+	int opSubAssign(int arg);
+	int opPreInc();
+	int opPostInc(int arg);
+	int opPreDec();
+	int opPostDec(int arg);
+	int fetch_and(int arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	int fetch_or(int arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	int fetch_xor(int arg, memory_order order = MEMORY_ORDER_SEQ_CST);
+	int opAndAssign(int arg);
+	int opOrAssign(int arg);
+	int opXorAssign(int arg);
+	bool get_is_always_lock_free() property;
+}

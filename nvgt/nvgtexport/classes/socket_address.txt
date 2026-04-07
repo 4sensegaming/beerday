@@ -1,0 +1,19 @@
+class socket_address {
+	socket_address();
+	socket_address(spec::ip_address_family);
+	socket_address(uint16 port);
+	socket_address(const spec::ip_address&in addr, uint16 port);
+	socket_address(const string&in host_and_port);
+	socket_address(const string&in host, uint16 port);
+	socket_address(spec::ip_address_family, uint16 port);
+	socket_address(spec::ip_address_family, const string&in addr);
+	socket_address(spec::ip_address_family, const string&in host, uint16 port);
+	socket_address(spec::ip_address_family, const string&in host, const string&in port);
+	socket_address(const socket_address&in);
+	socket_address& opAssign(const socket_address&in addr);
+	spec::ip_address get_host() const property;
+	uint16 get_port() const property;
+	string opImplConv() const;
+	spec::ip_address_family get_family() const property;
+	int opCmp(const socket_address&in);
+}

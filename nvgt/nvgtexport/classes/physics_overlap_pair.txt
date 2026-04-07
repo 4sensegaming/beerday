@@ -1,0 +1,8 @@
+class physics_overlap_pair {
+	physics_overlap_pair(const physics_overlap_pair&in pair);
+	physics_body& get_body1() const property;
+	physics_body& get_body2() const property;
+	physics_collider& get_collider1() const property;
+	physics_collider& get_collider2() const property;
+	physics_overlap_event_type get_event_type() const property;
+}

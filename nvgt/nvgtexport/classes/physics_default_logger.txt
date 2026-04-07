@@ -1,0 +1,6 @@
+class physics_default_logger {
+	void add_file_destination(const string&in filePath, uint logLevelFlag, physics_logger_format format);
+	void remove_all_destinations();
+	physics_logger@ opImplCast();
+	const physics_logger@ opImplCast() const;
+}

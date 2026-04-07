@@ -1,0 +1,10 @@
+class physics_material {
+	float get_bounciness() const property;
+	void set_bounciness(float bounciness) property;
+	float get_friction_coefficient() const property;
+	void set_friction_coefficient(float friction_coefficient) property;
+	float get_friction_coefficient_sqrt() const property;
+	float get_mass_density() const property;
+	void set_mass_density(float mass_density) property;
+	string opImplConv();
+}

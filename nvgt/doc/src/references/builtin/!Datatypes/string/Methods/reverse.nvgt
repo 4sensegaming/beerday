@@ -1,0 +1,21 @@
+/**
+	Reverse a string.
+	string string::reverse(string encoding = "UTF8");
+	## Arguments:
+		* string encoding = "UTF8": The string's encoding, with UTF8 cached for speed.
+	## Returns:
+		string: The specified string in reverse.
+	## Remarks:
+		This function reverses the characters of a string based on a given encoding. To reverse the raw bytes of a string, for example if you are operating on binary data, see the reverse_bytes function instead.
+*/
+
+// Example:
+void main() {
+	string text = input_box("Text", "Enter some text to reverse.");
+	if (text.is_empty()) {
+		alert("Info", "nothing was entered.");
+		exit();
+	}
+	string result = text.reverse();
+	alert("Reversed string", result);
+}

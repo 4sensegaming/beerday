@@ -1,0 +1,11 @@
+class weakref<T> {
+	weakref(int&in);
+	weakref(int&in, T@);
+	T@ opImplCast();
+	T@ get() const;
+	weakref<T>& opHndlAssign(const weakref<T>&in);
+	weakref<T>& opAssign(const weakref<T>&in);
+	bool opEquals(const weakref<T>&in) const;
+	weakref<T>& opHndlAssign(T@);
+	bool opEquals(const T@) const;
+}

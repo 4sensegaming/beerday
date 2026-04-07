@@ -1,0 +1,37 @@
+class graphics_renderer {
+	graphics_renderer();
+	bool get_is_valid() const property;
+	string get_name() const property;
+	bool clear();
+	bool present();
+	bool draw_point(float x, float y);
+	bool draw_line(float x1, float y1, float x2, float y2);
+	bool draw_rect(float x, float y, float w, float h);
+	bool fill_rect(float x, float y, float w, float h);
+	bool set_draw_color(uint r, uint g, uint b, uint a);
+	bool get_draw_color(uint&out r, uint&out g, uint&out b, uint&out a) const;
+	bool set_scale(float sx, float sy);
+	bool get_scale(float&out sx, float&out sy) const;
+	bool set_vsync(int vsync);
+	bool get_vsync(int&out vsync) const;
+	bool flush();
+	bool set_color_scale(float scale);
+	float get_color_scale() const property;
+	bool set_draw_blend_mode(blend_mode mode);
+	blend_mode get_draw_blend_mode() const property;
+	bool get_viewport_set() const property;
+	bool get_clip_enabled() const property;
+	bool get_output_size(int&out w, int&out h) const;
+	bool get_current_output_size(int&out w, int&out h) const;
+	bool render_graphic(graphic@ gfx, float dst_x, float dst_y);
+	bool render_graphic(graphic@ gfx, float src_x, float src_y, float src_w, float src_h, float dst_x, float dst_y, float dst_w, float dst_h);
+	graphics_texture@ create_texture(graphic@ gfx);
+	bool render_texture(graphics_texture@ tex, float dst_x, float dst_y);
+	bool render_texture(graphics_texture@ tex, float src_x, float src_y, float src_w, float src_h, float dst_x, float dst_y, float dst_w, float dst_h);
+	bool set_logical_presentation(int w, int h, renderer_logical_presentation mode);
+	bool get_logical_presentation(int&out w, int&out h, renderer_logical_presentation&out mode) const;
+	bool set_viewport(int x, int y, int w, int h);
+	bool get_viewport(int&out x, int&out y, int&out w, int&out h) const;
+	bool set_clip_rect(int x, int y, int w, int h);
+	bool get_clip_rect(int&out x, int&out y, int&out w, int&out h) const;
+}

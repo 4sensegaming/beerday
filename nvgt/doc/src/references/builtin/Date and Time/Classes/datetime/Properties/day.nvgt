@@ -1,0 +1,11 @@
+/**
+	Represents the current day of the datetime object.
+	const uint day;
+*/
+
+// Example:
+void main() {
+	datetime d;
+	d.set(2024, 5, 8);
+	alert("The datetime's set day is", d.day);
+}

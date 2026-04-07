@@ -1,0 +1,21 @@
+class physics_height_field_shape {
+	physics_height_field_shape(physics_height_field@ height_field, const vector&in scaling = vector(1,1,1));
+	physics_shape_name get_name() const property;
+	physics_shape_type get_type() const property;
+	bool get_is_convex() const property;
+	bool get_is_polyhedron() const property;
+	aabb get_local_bounds() const;
+	int get_id() const property;
+	vector get_local_inertia_tensor(float mass) const;
+	float get_volume() const property;
+	aabb compute_transformed_aabb(const physics_transform&in transform) const;
+	string opImplConv() const;
+	physics_triangle_raycast_side get_raycast_test_type() const property;
+	void set_raycast_test_type(physics_triangle_raycast_side side) property;
+	vector get_scale() const property;
+	void set_scale(const vector&in scale) property;
+	physics_height_field@ get_height_field() const property;
+	vector get_vertex_at(uint x, uint y) const;
+	physics_collision_shape@ opImplCast();
+	const physics_collision_shape@ opImplCast() const;
+}

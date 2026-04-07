@@ -1,0 +1,34 @@
+class timespan {
+	timespan();
+	timespan(int64 microseconds);
+	timespan(int seconds, int microseconds);
+	timespan(int days, int hours, int minutes, int seconds, int microseconds);
+	timespan(const timespan&in);
+	timespan& opAssign(const timespan&in);
+	timespan& opAssign(int64 microseconds);
+	bool opEquals(const timespan&in) const;
+	bool opEquals(int64 microseconds) const;
+	int opCmp(const timespan&in) const;
+	int opCmp(int64 microseconds) const;
+	timespan opAdd(int64 microseconds) const;
+	timespan opAdd(const timespan&in) const;
+	timespan opSub(int64 microseconds) const;
+	timespan opSub(const timespan&in) const;
+	timespan& opAddAssign(int64 milliseconds);
+	timespan& opAddAssign(const timespan&in);
+	timespan& opSubAssign(int64 milliseconds);
+	timespan& opSubAssign(const timespan&in);
+	int get_days() const property;
+	int get_hours() const property;
+	int get_total_hours() const property;
+	int get_minutes() const property;
+	int get_total_minutes() const property;
+	int get_seconds() const property;
+	int get_total_seconds() const property;
+	int get_milliseconds() const property;
+	int get_total_milliseconds() const property;
+	int get_microseconds() const property;
+	int get_useconds() const property;
+	int get_total_microseconds() const property;
+	string format(const string&in fmt = \%dd;
+}

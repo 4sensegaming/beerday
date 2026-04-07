@@ -1,0 +1,8 @@
+class fast_mutex {
+	fast_mutex();
+	void lock(uint);
+	bool try_lock(uint);
+	void lock();
+	bool try_lock();
+	void unlock();
+}

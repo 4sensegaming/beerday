@@ -1,0 +1,22 @@
+class complex {
+	float r;
+	float i;
+	complex();
+	complex(const complex&in);
+	complex(float);
+	complex(float, float);
+	complex& opAddAssign(const complex&in);
+	complex& opSubAssign(const complex&in);
+	complex& opMulAssign(const complex&in);
+	complex& opDivAssign(const complex&in);
+	bool opEquals(const complex&in) const;
+	complex opAdd(const complex&in) const;
+	complex opSub(const complex&in) const;
+	complex opMul(const complex&in) const;
+	complex opDiv(const complex&in) const;
+	float abs() const;
+	complex get_ri() const property;
+	complex get_ir() const property;
+	void set_ri(const complex&in) property;
+	void set_ir(const complex&in) property;
+}

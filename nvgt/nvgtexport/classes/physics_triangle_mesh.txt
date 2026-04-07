@@ -1,0 +1,10 @@
+class physics_triangle_mesh {
+	uint get_nb_vertices() const property;
+	uint get_nb_triangles() const property;
+	const aabb& get_bounds() const property;
+	void get_triangle_vertices_indices(uint triangle_index, uint&out v1_index, uint&out v2_index, uint&out v3_index) const;
+	void get_triangle_vertices(uint triangle_index, vector&out v1, vector&out v2, vector&out v3) const;
+	void get_triangle_vertices_normals(uint triangle_index, vector&out n1, vector&out n2, vector&out n3) const;
+	const vector& get_vertex(uint vertex_index) const;
+	const vector& get_vertex_normal(uint vertex_index) const;
+}

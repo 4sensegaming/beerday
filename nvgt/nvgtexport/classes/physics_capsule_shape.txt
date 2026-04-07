@@ -1,0 +1,21 @@
+class physics_capsule_shape {
+	physics_capsule_shape(float radius, float height);
+	physics_shape_name get_name() const property;
+	physics_shape_type get_type() const property;
+	bool get_is_convex() const property;
+	bool get_is_polyhedron() const property;
+	aabb get_local_bounds() const;
+	int get_id() const property;
+	vector get_local_inertia_tensor(float mass) const;
+	float get_volume() const property;
+	aabb compute_transformed_aabb(const physics_transform&in transform) const;
+	string opImplConv() const;
+	float get_margin() const property;
+	float get_radius() const property;
+	void set_radius(float radius) property;
+	float get_height() const property;
+	void set_height(float height) property;
+	string opImplConv();
+	physics_collision_shape@ opImplCast();
+	const physics_collision_shape@ opImplCast() const;
+}

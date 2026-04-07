@@ -1,0 +1,27 @@
+class physics_triangle_shape {
+	physics_shape_name get_name() const property;
+	physics_shape_type get_type() const property;
+	bool get_is_convex() const property;
+	bool get_is_polyhedron() const property;
+	aabb get_local_bounds() const;
+	int get_id() const property;
+	vector get_local_inertia_tensor(float mass) const;
+	float get_volume() const property;
+	aabb compute_transformed_aabb(const physics_transform&in transform) const;
+	string opImplConv() const;
+	float get_margin() const property;
+	uint get_nb_faces() const property;
+	const physics_half_edge_structure_face& get_face(uint face_index);
+	uint get_nb_vertices() const property;
+	const physics_half_edge_structure_vertex& get_vertex(uint vertex_index);
+	const vector get_vertex_position(uint vertex_index);
+	const vector get_face_normal(uint vertex_index);
+	uint get_nb_half_edges() const property;
+	const physics_half_edge_structure_edge& get_half_edge(uint edge_index) const;
+	vector get_centroid() const property;
+	uint find_most_anti_parallel_face(const vector&in direction) const;
+	physics_triangle_raycast_side get_raycast_test_type() const property;
+	void set_raycast_test_type(physics_triangle_raycast_side test_type) property;
+	physics_collision_shape@ opImplCast();
+	const physics_collision_shape@ opImplCast() const;
+}

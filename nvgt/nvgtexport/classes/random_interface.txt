@@ -1,0 +1,11 @@
+class random_interface {
+	uint next();
+	float nextf();
+	int range(int min, int max);
+	void seed(uint s);
+	void seed64(uint64 s);
+	string get_state() const;
+	bool set_state(const string&in state);
+	bool next_bool(int percent = 50);
+	string next_character(const string&in min, const string&in max);
+}

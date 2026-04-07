@@ -1,0 +1,22 @@
+class timer {
+	uint64 accuracy;
+	timer();
+	timer(bool speedhack_protection);
+	timer(int64 initial_elapsed, bool speedhack_protection = speedhack_protection);
+	timer(int64 initial_elapsed, uint64 accuracy, bool speedhack_protection = speedhack_protection);
+	int64 get_elapsed() const property;
+	void set_elapsed(int64 time_units) property;
+	bool has_elapsed(int64 time_units) const;
+	bool tick(int64 time_units);
+	void force(int64 elapsed);
+	void adjust(int64 mod_elapsed);
+	void restart();
+	bool get_secure() const property;
+	void set_secure(bool secure) property;
+	bool get_paused() const property;
+	bool get_running() const property;
+	void toggle_pause();
+	bool pause();
+	bool resume();
+	bool set_paused(bool paused);
+}

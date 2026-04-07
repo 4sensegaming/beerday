@@ -1,0 +1,3 @@
+class rw_scoped_lock {
+	rw_scoped_lock(rw_lock@ lock, bool write);
+}

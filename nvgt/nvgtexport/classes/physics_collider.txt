@@ -1,0 +1,26 @@
+class physics_collider {
+	physics_entity get_entity() const property;
+	physics_collision_shape@ get_collision_shape() property;
+	const physics_collision_shape@ get_collision_shape() const property;
+	physics_body@ get_body() const property;
+	const physics_transform& get_local_to_body_transform() const property;
+	void set_local_to_body_transform(const physics_transform&in transform) property;
+	const physics_transform get_local_to_world_transform() const;
+	const aabb get_world_aabb() const property;
+	bool test_aabb_overlap(const aabb&in world_aabb) const;
+	bool test_point_inside(const vector&in world_point);
+	bool raycast(const ray&in ray, raycast_info&inout raycast_info);
+	uint16 get_collide_with_mask() const property;
+	void set_collide_with_mask(uint16 bits) property;
+	uint16 get_collision_category() const property;
+	void set_collision_category(uint16 bits) property;
+	uint16 get_broad_phase_id() const property;
+	physics_material& get_material() property;
+	void set_material(const physics_material&in material) property;
+	bool get_is_trigger() const property;
+	void set_is_trigger(bool is_trigger) property;
+	bool get_is_simulation_collider() const property;
+	void set_is_simulation_collider(bool is_simulation_collider) property;
+	bool get_is_world_query_collider() const property;
+	void set_is_world_query_collider(bool is_world_query_collider) property;
+}

@@ -1,0 +1,38 @@
+class physics_world {
+	physics_world(const physics_world_settings&in world_settings);
+	bool test_overlap(physics_body@ body1, physics_body@ body2);
+	void raycast(const ray&in ray, physics_raycast_callback@ callback, uint16 category_mask = 0xffff);
+	void test_overlap(physics_body@ body, physics_overlap_callback@ callback);
+	void test_overlap(physics_overlap_callback@ callback);
+	void test_collision(physics_body@ body1, physics_body@ body2, physics_collision_callback@ callback);
+	void test_collision(physics_body@ body, physics_collision_callback@ callback);
+	void test_collision(physics_collision_callback@ callback);
+	aabb get_world_aabb(const physics_collider@ collider) const;
+	const string& get_name() const property;
+	void update(float time_step);
+	uint16 get_nb_iterations_velocity_solver() const property;
+	void set_nb_iterations_velocity_solver(uint16 iterations) property;
+	uint16 get_nb_iterations_position_solver() const property;
+	void set_nb_iterations_position_solver(uint16 iterations) property;
+	void set_contacts_position_correction_technique(physics_contact_position_correction_technique technique) property;
+	physics_rigid_body@ create_rigid_body(const physics_transform&in transform);
+	void destroy_rigid_body(physics_rigid_body&inout body);
+	physics_joint@ create_joint(const physics_joint_info&in joint_info);
+	void destroy_joint(physics_joint&inout joint);
+	vector get_gravity() const property;
+	void set_gravity(const vector&in gravity) property;
+	bool get_is_gravity_enabled() const property;
+	void set_is_gravity_enabled(bool enabled) property;
+	bool get_is_sleeping_enabled() const property;
+	void set_is_sleeping_enabled(bool enabled) property;
+	float get_sleep_linear_velocity() const property;
+	void set_sleep_linear_velocity(float sleep_linear_velocity) property;
+	float get_sleep_angular_velocity() const property;
+	void set_sleep_angular_velocity(float sleep_angular_velocity) property;
+	float get_time_before_sleep() const property;
+	void set_time_before_sleep(float time_before_sleep) property;
+	void set_callbacks(physics_collision_callback@ collision_callback, physics_overlap_callback@ trigger_callback);
+	uint get_nb_rigid_bodies() const property;
+	const physics_rigid_body& get_rigid_body(uint index) const;
+	physics_rigid_body& get_rigid_body(uint index);
+}

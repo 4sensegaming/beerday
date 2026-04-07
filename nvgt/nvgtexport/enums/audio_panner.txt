@@ -1,0 +1,2 @@
+audio_panner_basic = 0;
+audio_panner_phonon_hrtf = 1;

@@ -1,0 +1,20 @@
+class script_function {
+	dictionary@ call(dictionary@ args, array<string>@ errors = null, int max_statement_count = 0);
+	dictionary@ opCall(dictionary@ args, array<string>@ errors = null, int max_statement_count = 0);
+	bool retrieve(?&out);
+	string get_declared_at(int&inout row, int&inout column);
+	string get_decl(bool include_object_name, bool include_namespace = true, bool include_param_names = true);
+	string get_decl() property;
+	string get_name() property;
+	string get_namespace() property;
+	string get_script() property;
+	int get_line() property;
+	bool get_is_explicit() property;
+	bool get_is_final() property;
+	bool get_is_override() property;
+	bool get_is_private() property;
+	bool get_is_property() property;
+	bool get_is_protected() property;
+	bool get_is_read_only() property;
+	bool get_is_shared() property;
+}

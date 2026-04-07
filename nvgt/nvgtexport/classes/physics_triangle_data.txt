@@ -1,0 +1,4 @@
+class physics_triangle_data {
+	physics_triangle_data(array<float>@ vertices, array<uint>@ indices);
+	physics_triangle_data(array<float>@ vertices, array<float>@ normals, array<uint>@ indices);
+}

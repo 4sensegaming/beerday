@@ -1,0 +1,29 @@
+class tts_voice {
+	tts_voice(const string&in engines = \\);
+	bool speak(const string&in text, bool interrupt = false);
+	bool speak_interrupt(const string&in text);
+	bool speak_to_file(const string&in filename, const string&in text);
+	bool speak_wait(const string&in text, bool interrupt = false);
+	string speak_to_memory(const string&in text);
+	sound@ speak_to_sound(const string&in text);
+	bool speak_interrupt_wait(const string&in text);
+	bool refresh();
+	bool stop();
+	array<string>@ list_voices() const;
+	array<string>@ get_voice_names() const;
+	bool set_voice(int index);
+	bool set_current_voice(int index);
+	float get_rate() const property;
+	void set_rate(float rate) property;
+	float get_pitch() const property;
+	void set_pitch(float pitch) property;
+	float get_volume() const property;
+	void set_volume(float volume) property;
+	int get_voice_count() const property;
+	string get_voice_name(int index) const;
+	string get_voice_language(int index) const;
+	bool set_language(const string&in language);
+	string get_language() const property;
+	bool get_speaking() const property;
+	int get_voice() const property;
+}

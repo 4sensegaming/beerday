@@ -1,0 +1,11 @@
+class combination {
+	combination();
+	void reset();
+	bool generate_all_combinations(int items, int size);
+	bool generate_all_combinations(int items, int min_size, int max_size);
+	bool generate_unique_combinations(int items, int size);
+	bool generate_unique_combinations(int items, int min_size, int max_size);
+	bool generate_permutations(int items);
+	bool next(array<int>@ list);
+	bool get_active() property;
+}
