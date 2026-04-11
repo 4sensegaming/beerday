@@ -1,7 +1,7 @@
+userdata/
 bin/*.zip
 bin/*.tar.gz
 bin/*.iso
 bin/lastver.dat
 _wip.txt
 *.dat
-userdata/
