@@ -593,7 +593,7 @@ return result;
 
 void say_text_edge()
 {
-play_stat("edge");
+play_edge();
 }
 
 void clear_echo()

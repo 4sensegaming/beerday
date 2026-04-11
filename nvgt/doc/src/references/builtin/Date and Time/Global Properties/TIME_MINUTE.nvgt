@@ -1,9 +1,0 @@
-/**
-	Returns the current minute.
-	const int TIME_MINUTE;
-*/
-
-// Example:
-void main() {
-	alert("Example", "It is currently " + TIME_HOUR + ":" + TIME_MINUTE);
-}

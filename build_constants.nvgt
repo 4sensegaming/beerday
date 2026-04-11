@@ -1,13 +1,2 @@
-const string version="0.9.4";
-const uint build_day=2, build_month=4, build_year=2026, build_hour=5, build_minute=13;
-
-string scramble_update()
-{
-const string key="Tak to by mě zajímalo, jestli se tohle někdy někomu povede rozlousknout! Chtěl bych takovýho čurdu vidět. Aspoň se mi nikdo nebude srát, kam nemá, a to konkrétně do aktualizací.";
-string temp=key.replace(" ", "  \r\n\r\n\t\t", true);
-for (uint8 i=0; i<20; i++) temp=temp.reverse_bytes();
-string temp2=string_base64_encode(temp);
-uint8 l=temp2.length();
-for (uint8 i=0; i<l; i++) temp2[i]=ascii_to_character(character_to_ascii(temp2[i]) - 1);
-return temp2;
-}
+const string version="0.9.5";
+const uint build_day=11, build_month=4, build_year=2026, build_hour=21, build_minute=0;

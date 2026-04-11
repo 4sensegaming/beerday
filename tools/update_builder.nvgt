@@ -1,122 +1,114 @@
-const string source="../beerday.nvgt", output_basename="beerday", bundle=output_basename+".zip", real="update.001", exec=read_environment_variable("windir")+"/explorer.exe", winscp_path="C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe";
+const string source="beerday.nvgt", exec=read_environment_variable("windir")+"/explorer.exe", winscp_path="C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe";
 #include "../build_constants.nvgt"
+#include "rootlib.nvgt"
+#include "motdlib.nvgt"
+#include "packerlib.nvgt"
+
+string get_nvgt_root()
+{
+string current=SCRIPT_EXECUTABLE;
+string lowered=current.lower();
+if (lowered.ends_with("nvgt.exe") and file_exists(current))
+{
+spec::path root(current);
+return root.parent.to_string();
+}
+if (file_exists("c:/nvgt/nvgt.exe")) return "c:/nvgt";
+return "";
+}
+
+string get_hidden_library_path(string nvgt_root, string name)
+{
+return nvgt_root+"/beerday_hidden/"+name;
+}
+
+void restore_hidden_phonon(string nvgt_root)
+{
+if (nvgt_root=="") return;
+string[] libraries={
+nvgt_root+"/lib/phonon.dll",
+nvgt_root+"/lib_linux/libphonon.so",
+nvgt_root+"/lib_mac/libphonon.dylib"
+};
+string[] hidden={
+get_hidden_library_path(nvgt_root, "phonon.dll"),
+get_hidden_library_path(nvgt_root, "libphonon.so"),
+get_hidden_library_path(nvgt_root, "libphonon.dylib")
+};
+for (uint i=0; i<libraries.length(); i++)
+{
+if (file_exists(hidden[i]))
+{
+if (file_exists(libraries[i])) file_delete(libraries[i]);
+file_move(hidden[i], libraries[i]);
+}
+}
+}
+
+bool disable_phonon(string nvgt_root)
+{
+if (nvgt_root=="") return false;
+restore_hidden_phonon(nvgt_root);
+string[] libraries={
+nvgt_root+"/lib/phonon.dll",
+nvgt_root+"/lib_linux/libphonon.so",
+nvgt_root+"/lib_mac/libphonon.dylib"
+};
+string[] hidden={
+get_hidden_library_path(nvgt_root, "phonon.dll"),
+get_hidden_library_path(nvgt_root, "libphonon.so"),
+get_hidden_library_path(nvgt_root, "libphonon.dylib")
+};
+directory_create(nvgt_root+"/beerday_hidden");
+for (uint i=0; i<libraries.length(); i++)
+{
+if (!file_exists(libraries[i])) continue;
+if (!file_move(libraries[i], hidden[i]))
+{
+restore_hidden_phonon(nvgt_root);
+return false;
+}
+}
+return true;
+}
+
+bool compile_target(string nvgt_path, string mode, string target, string output_file, string destination)
+{
+if (file_exists(output_file)) file_delete(output_file);
+if (file_exists(destination)) file_delete(destination);
+string args="-p"+target+" "+mode+" "+source;
+if (!run(nvgt_path, args, true, false) or !file_exists(output_file)) return false;
+if (!file_copy(output_file, destination, false)) return false;
+file_delete(output_file);
+return true;
+}
 
 void main()
 {
-chdir(SCRIPT_MAIN_PATH);
+chdir(get_project_root());
 show_window("Beerday Update Builder");
-if (question("Uvedená verze je "+version, "V pořádku?") == 2) return;
 if (question("Build", "Verze: "+version+"\r\nDatum: "+build_day+". "+build_month+". "+build_year+", "+build_hour+":"+build_minute+"\r\nPokračovat?") == 2) return;
 string nvgt_path=get_nvgt_path();
-if (question("Zadat zprávu dne?", "") == 1 and !run(nvgt_path, "motd.nvgt", true, false))
+if (question("Zadat zprávu dne?", "") == 1)
 {
-alert("Chyba!", "Nepodařilo se spustit motd.nvgt.");
-return;
+build_motd (true);
+show_window("Beerday Update Builder");
 }
-if (question("Zkontrolovat log?", "") == 1) run(exec, "bin\\changelog.html", true, false);
-if (question("Zkontrolovat roadmapu?", "") == 1) run(exec, "bin\\roadmap.html", true, false);
-if (!run(nvgt_path, "packer.nvgt", true, false))
-{
-alert("Chyba!", "Nepodařilo se spustit packer.nvgt.");
-return;
-}
-file f;
-string command="";
-if (question("Smazat profil?", "") == 1) command="c";
-if (!f.open("bin/lastver.dat", "wb"))
-{
-alert("Chyba!", "Nepoda�ilo se otevřít bin/lastver.dat pro zápis.");
-return;
-}
-string lastver=string_aes_encrypt(version+"\t"+build_day+"\t"+build_month+"\t"+build_year+"\t"+build_hour+"\t"+build_minute+"\t"+command, scramble_update());
-if (lastver.length() > 0 and f.write(lastver) == 0)
-{
-f.close();
-alert("Chyba!", "Nepodařilo se zapsat bin/lastver.dat.");
-return;
-}
-f.close();
-string compile=question("Zkompilovat jako release build?", "") == 1 ? "-c " : "-C ";
-if (file_exists(bundle)) file_delete(bundle);
-if (!run(nvgt_path, compile+source, true, false) or !file_exists(bundle))
-{
-alert("Chyba!", "Kompilace "+source+" selhala nebo nevytvořila "+bundle+". Zkontroluj, že beerday.properties obsahuje build.windows_bundle=2.");
-return;
-}
-if (!file_copy(bundle, "bin/"+bundle, true))
-{
-alert("Chyba!", "Nepodařilo se zkopírovat "+bundle+" do bin.");
-return;
-}
-string encrypted_update=create_encrypted_update(bundle, scramble_update());
-if (encrypted_update == "")
-{
-alert("Chyba!", "Nepodařilo se vytvořit zašifrovaný update.");
-return;
-}
-if (!write_file(real, encrypted_update))
-{
-alert("Chyba!", "Nepodařilo se zapsat "+real+".");
-return;
-}
-if (!file_copy(real, "bin\\"+real, true))
-{
-alert("Chyba!", "Nepodařilo se zkopírovat "+real+" do bin.");
-return;
-}
-string update_hash=string_aes_encrypt(string_hash_sha256(encrypted_update, false), scramble_update());
-if (!f.open("bin/update.002", "wb"))
-{
-alert("Chyba!", "Nepodařilo se otevřít bin/update.002 pro zápis.");
-return;
-}
-if (update_hash.length() > 0 and f.write(update_hash) == 0)
-{
-f.close();
-alert("Chyba!", "Nepodařilo se zapsat bin/update.002.");
-return;
-}
-f.close();
-file_delete(real);
-if (question("Uploadnout celý update?", "") == 1)
-{
-run(winscp_path, "", false, false);
-wait(1000);
-}
-}
-
-string create_encrypted_update(string path, string key)
-{
-file src;
-if (!src.open(path, "rb")) return "";
-string raw=src.read();
-src.close();
-datastream buffer;
-buffer.binary=true;
-asset_encryptor enc;
-enc.binary=true;
-string actual_key=key;
-if (!enc.open(buffer, actual_key)) return "";
-if (raw.length() > 0 and enc.write(raw) == 0)
-{
-enc.close();
-return "";
-}
-enc.close();
-return buffer.str();
-}
-
-bool write_file(string path, string data)
-{
-file f;
-if (!f.open(path, "wb")) return false;
-if (data.length() > 0 and f.write(data) == 0)
-{
-f.close();
-return false;
-}
-f.close();
-return true;
+if (question("Zkontrolovat log?", "") == 1) run(exec, "bin\\changelog.html", false, true);
+if (question("Zkontrolovat roadmapu?", "") == 1) run(exec, "bin\\roadmap.html", false, true);
+build_pack (true, get_project_root());
+file_put_contents ("bin/lastver.dat", version+"\t"+build_day+"\t"+build_month+"\t"+build_year+"\t"+build_hour+"\t"+build_minute);
+string compile=question("Release build?", "") == 1 ? "-c -q" : "-C -q";
+string[] targets={"windows", "linux", "mac"};
+string[] produced={"beerday.zip", "beerday.tar.gz", "beerday.iso"};
+string[] staged={"bin/beerday.zip", "bin/beerday.tar.gz", "bin/beerday.iso"};
+string nvgt_root=get_nvgt_root();
+bool phonon_disabled=disable_phonon(nvgt_root);
+for (uint i=0; i<targets.length(); i++) compile_target(nvgt_path, compile, targets[i], produced[i], staged[i]);
+if (phonon_disabled) restore_hidden_phonon(nvgt_root);
+directory_delete (nvgt_root+"/beerday_hidden");
+if (question("Uploadnout?", "") == 1) run(winscp_path, "", false, false);
+if (question ("Vytvořit GitHub release?", "")==1) urlopen ("https://github.com/4sensegaming/beerday/releases/new");
 }
 
 string get_nvgt_path()

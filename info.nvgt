@@ -55,24 +55,29 @@ if (p > 0)
 {
 string[]@ da;
 if ((@m.owner != null and m.owner.is_player) or @m.owner==null) @da=beers;
-else if (@m.owner!=null)
+else if (@m.owner!=null and !m.owner.is_player)
 {
 @da=beers7;
 rep+="půllitr s";
-string f=to_lower (da[m.kinds[0]][0]);
-if (f=="s" or f=="š" or f=="z" or f=="ž") rep+="e";
+if (is_s_or_z_sound(da[m.kinds[0]])) rep+="e";
 rep+=" ";
 }
 rep+=da[m.kinds[0]];
 if (m.kinds[1] > -1)
 {
 @da=beers7;
-rep+=" a "+da[m.kinds[1]];
+if (@m.owner!=null and m.owner.is_player) rep+=" a ";
+else if ((@m.owner!=null and !m.owner.is_player) or @m.owner==null)
+{
+if (is_s_or_z_sound(da[m.kinds[1]])) rep+=" se ";
+else rep+=" s ";
+rep+=da[m.kinds[1]];
+}
 }
 rep+=". ";
 }
 }
-if (dirty.find (m) > -1 or @m.drank != null) rep+="Špinavý.";
+if (dirty.find (m) > -1 or @m.drank != null) rep+="Špinavý. ";
 if (p >= poured_full) rep+="Plný.";
 else if (p >= poured_undermeasure) rep+="Podmírák.";
 else if (p >= poured_bigger_half) rep+="Větší půlka.";
@@ -113,7 +118,7 @@ if (!result.is_empty())
 if (result.length() > 1) rep+=" Nejbližší je ";
 else rep+=" Je ";
 mug@ nearest=get_nearest (result, player);
-rep+=to_lower (say_distance (nearest.x, nearest.y));
+rep+=say_distance (nearest.x, nearest.y).lower();
 rep+=" "+say_mug (false, true, nearest);
 }
 say (rep, true, false);
@@ -309,12 +314,12 @@ if (counts[i] > 0)
 {
 if (counts[i] > 1 and counts[i] < 5)
 {
-if (counts[i] != c) rep+=" "+counts[i]+" "+to_lower (statedesc_plural234[i])+".";
+if (counts[i] != c) rep+=" "+counts[i]+" "+statedesc_plural234[i].lower()+".";
 else rep+=" "+statedesc_plural234[i]+".";
 }
 else
 {
-if (counts[i] != c) rep+=" "+counts[i]+" "+to_lower (statedesc[i])+".";
+if (counts[i] != c) rep+=" "+counts[i]+" "+statedesc[i].lower()+".";
 else if (counts[i] == c and counts[i] > 1) rep+=" "+statedesc_plural234[i]+".";
 else rep+=" "+statedesc[i]+".";
 }
@@ -324,7 +329,7 @@ if (c > 0)
 if (c == 1) rep+=" Je ";
 else rep+=" Nejbližší je ";
 character@ nearest=get_nearest (customers, player);
-rep+=to_lower (say_distance (nearest.x, nearest.y));
+rep+=say_distance (nearest.x, nearest.y).lower();
 }
 if (speak) say (rep, true, false);
 return rep;
@@ -579,7 +584,7 @@ if (stuns > 0)
 if (stuns==l)
 {
 if (l==1) rep+="Je omráčený.";
-else rep+="Jsou oomráčení.";
+else rep+="Jsou omráčení.";
 }
 else
 {
@@ -593,7 +598,7 @@ if (aggro>0)
 if (aggro==l)
 {
 if (l==1) rep+="Byl agresivní.";
-else rep+="Byi agresivní.";
+else rep+="Byli agresivní.";
 rep+=" ";
 }
 else
@@ -669,8 +674,8 @@ rep+=rep_count (near_empty, rem, "Skoro prázdný", "skoro prázdné", "skoro pr
 rep+=".";
 if (@handle != null)
 {
-if (@handle == @player) rep="Máš "+to_lower (rep);
-else rep="Má "+to_lower (rep);
+if (@handle == @player) rep="Máš "+rep.lower();
+else rep="Má "+rep.lower();
 }
 return rep;
 }
@@ -757,8 +762,8 @@ customer_menu (get_customer (menu.get_item_name (custresult)));
 }
 silence();
 silence_custmenu();
-ss_end();
 is_custmenu=false;
+ss_end();
 }
 
 void customer_menu (character@ h)
@@ -806,7 +811,7 @@ h.name4="";
 
 void track()
 {
-if (tracking.state != opening and tracking.state != closing and tracking.state != falldown and player.frames > player.speed and tracker > fps and !sapi.speaking and (track_x != tracking.x or track_y != tracking.y or track_state != tracking.state))
+if (tracking.state != opening and tracking.state != closing and tracking.state != falldown and player.frames > player.speed and tracker > fps and !fallback_voice.speaking and (track_x != tracking.x or track_y != tracking.y or track_state != tracking.state))
 {
 track_x=tracking.x;
 track_y=tracking.y;
@@ -1154,7 +1159,7 @@ else rep=l+" upuštěných sudů.";
 if (l > 1) rep+=" Nejbližší je ";
 else rep+=" Je ";
 barrel@ nearest=get_nearest (all, player);
-rep+=to_lower (say_distance (nearest.x, nearest.y));
+rep+=say_distance (nearest.x, nearest.y).lower();
 if (speak) say (rep, true, false);
 return l;
 }
@@ -1196,7 +1201,7 @@ if (!result.is_empty())
 if (result.length() > 1) rep+=" Nejbližší je ";
 else rep+=" Je ";
 mug@ nearest=get_nearest (result, player);
-rep+=to_lower (say_distance (nearest.x, nearest.y));
+rep+=say_distance (nearest.x, nearest.y).lower();
 rep+=" "+say_mug (false, true, nearest);
 }
 say (rep, true, false);

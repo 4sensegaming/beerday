@@ -58,7 +58,7 @@ if ((new.case1.length()!=new.case3.length() or new.case1.length()!=new.case4.len
 warning("Jméno "+preview_name(entries[i])+" na řádku "+(i+1)+" nemá stejně pádů.");
 continue;
 }
-if (profile.exists("name"+i+"_used")) new.used=true;
+if (can_write and profile.exists("name"+i+"_used")) new.used=true;
 names.insert_last(new);
 }
 available_names=names.length();

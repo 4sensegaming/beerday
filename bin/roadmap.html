@@ -8,8 +8,8 @@
 <body>
 <header>
 <h1>Happy Beerday - orientační plán vývoje</h1>
-<p>Naposledy aktualizováno: 31. března 2026</p>
-<p>Použitá čísla verzí jsou orientační a výhledová. Myslím to tak, že i když už vyšla verze 0.9, tak další verze budou setinkové aktualizace (0.9.1 atd.), dokud nebudou hotové všechny věci uvedené pod nadpisem verze 0.9.</p>
+<p>Naposledy aktualizováno: 11. dubna 2026</p>
+<p>Použitá čísla verzí jsou orientační a výhledová. Myslím to tak, že i když už vyšla verze 0.9.5, tak další verze budou setinkové aktualizace (0.9.6 atd.), dokud nebudou hotové všechny věci uvedené pod nadpisem verze 0.9.</p>
 <nav>
 <ul style="list-style-type: none">
 <li><a href="changelog.html">Historie změn</a></li>
@@ -21,25 +21,22 @@
 <article labelledby="current">
 <h2 id="current">Aktuální rozpracovaná verze: 0.9</h2>
 <ul aria-labelledby="current">
-<li>Dokončit náhodné a kontextové hlášky zákazníků podle činnosti, kterou zrovna provádějí</li>
+<li>Dokončit náhodné a kontextové hlášky zákazníků podle činnosti, kterou zrovna provádějí, a zároveň předělat celý mechanismus jejich vytváření, aby byly přednamluvené a už se nevytvářely lokálně u hráče</li>
 <li>Opravit zbývající texty, pro které chybí gramatická varianta pro ženský rod, u hráče i zákazníků</li>
+<li>Opravit všechny <a href="https://github.com/4sensegaming/beerday/issues?q=state%3Aopen%20label%3Abug">nahlášené problémy</a>.</li>
 </ul>
 </article>
 <hr>
 <article aria-labelledby="next">
 <h2 id="next">Následující verze: 0.10</h2>
 <ul aria-labelledby="next">
-<li>Přepracovat celý tutoriál
-<ul>
-<li>Opravit stávající chyby, zejména v přehrávání zvuků během čtení některého tutoriálu</li>
 <li>Rozdělit tutoriál na jednotlivé levely, kterými bude hráč muset procházet postupně, aby se nemusel naučit všechno najednou a nebyl zahlcen</li>
-</ul>
-</li>
 <li>Přidat nová nastavení
 <ul>
 <li>Hlasitost pro zvuky dveří a pípy</li>
 <li>Možnost vyzkoušet si aktuální nastavení sterea a hlasitosti</li>
 <li>Změnit klávesovou zkratku pro zrušení sledování zákazníka a přidat nastavení, jestli pozici sledovaného zákazníka hlásit automaticky a případně jak často</li>
+<li>A pár dalších drobností</li>
 </ul>
 </li>
 </ul>
@@ -61,30 +58,22 @@
 <article aria-labelledby="future">
 <h2 id="future">Do budoucna</h2>
 <ul aria-labelledby="future">
-<li>Zákazníci budou moct chodit na záchod, tj. na chvíli nebudou pít ani čekat ve frontě</li>
+<li>Zákazníci budou moct chodit na záchod, tj. na chvíli nebudou pít ani čekat ve frontě, podobně jako když teď jdou k jukeboxu</li>
 <li>Obdobně budou moct chvíli hrát např. kulečník nebo stolní fotbal</li>
 <li>Přidat možnost nastavit si vlastní klávesové zkratky pro ovládání</li>
 <li>Přidat achievementy za všechny možné úspěchy i neúspěchy (první, desátý, stý nebo tisící obsloužený zákazník, chyba při obsluze, pád ze schodů atd.), za které bude hráč dostávat další peníze</li>
 <li>Přidat nějakou zvukovou animaci (cut scénu) na konci hry</li>
-<li>Vytvořit pro hru instalátor</li>
 <li>Vytvořit anglický překlad a potenciálně další jazyky</li>
-<li>Přepsat celou hru do nového enginu NVGT, což bude mimo jiné znamenat
-<ul>
-<li>Nativní podporu UTF-8 (správné zobrazování české diakritiky na všech platformách)</li>
-<li>Verze pro macOS, Linux a potenciálně i iOS a Android</li>
-<li>Modernější a bezpečnější technologii</li>
-<li>Méně technologických omezení a rychlejší vývoj</li>
-<li>Lepší možnosti pokročilejšího ladění</li>
-<li>Pokročilejší možnosti přehrávání zvuků, včetně nejrůznějších efektů (reverb, low pass, ekvalizér) počítaných v reálném čase</li>
-</ul>
-</li>
 </ul>
 </article>
 <hr>
 <article aria-labelledby="bugs">
 <h2 id="bugs">Známé chyby</h2>
 <ul aria-labelledby="bugs">
-<li>Pokud si v hudební síni slávy pustíte postupně plus minus 40 skladeb během jednoho spuštění programu, program spadne. Tuto chybu bude bohužel z technických důvodů možné opravit až v enginu NVGT.</li>
+<li>Točící pomocník někdy pořád nalévá zákazníkovi, kterého obsluhujete vy, anebo moc dlouho čeká, než začne točit dalšímu ve frontě, hlavně když mu mezitím došly čisté půllitry</li>
+<li>Pomocníci, kteří odnášejí špinavé půllitry, berou pití, které jste postavili před zákazníka do zásoby</li>
+<li>Zákazník si někdy nevezme druhé pití, které už měl přinesené dopředu, nebo si jde zbytečně nejdřív objednat a až pak si ho vezme</li>
+<li>Ožralové se někdy pořád naštvou na někoho jiného, dojdou k němu a nic</li>
 </ul>
 </article>
 </main>

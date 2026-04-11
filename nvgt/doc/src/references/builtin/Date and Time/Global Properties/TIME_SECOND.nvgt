@@ -1,9 +1,0 @@
-/**
-	Returns the current second.
-	const int TIME_SECOND;
-*/
-
-// Example:
-void main() {
-	alert("Example", "It is currently " + TIME_HOUR + ":" + TIME_MINUTE + ":" + TIME_SECOND);
-}

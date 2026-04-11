@@ -97,7 +97,7 @@ slot=-1;
 
 bool playing()
 {
-return slot>-1 and get_pool().sound_is_playing(slot);
+return slot>-1 and (get_pool().sound_is_playing(slot) or get_pool().sound_is_paused(slot));
 }
 
 void update()

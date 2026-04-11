@@ -3,15 +3,16 @@
 
 sound_pool pool(200), things(200);
 sound@[] preloads;
-tts_voice sapi("sapi5");
+tts_voice fallback_voice;
 uint output_check_frames=0;
 string[] history;
-int global=-1, ambience=-1, nearby=-1, history_index, history_old_index;
+int ambience=-1, nearby=-1, history_index, history_old_index;
 int8 output=0;
 bool hooked=false;
 string[] files;
-string last_text="";
-sound won, move, turn, enter, esc, inmenu, submenu, custbeep, doingsound;
+string last_text="", reader_name="";
+sound won, custbeep, doingsound;
+string[] menu_sounds={"enter", "esc", "move", "turn", "prompt", "sub", "edge", "error"};
 
 string randomize (string file)
 {
@@ -32,7 +33,7 @@ return file;
 void silence (bool full=false)
 {
 get_characters();
-if (output == 0 and sapi.speaking) sapi.stop();
+if (output == 0 and fallback_voice.speaking) fallback_voice.stop();
 else if (output > 0 and foreground) screen_reader_silence();
 if (full)
 {
@@ -42,15 +43,13 @@ silence_menu();
 }
 }
 
-bool say (string phrase, bool interrupt=true, bool remember=true, bool pause=false, bool correct=true)
+bool say (string phrase, bool interrupt=true, bool remember=true, bool pause=false)
 {
 if (pause) wait_keys();
-if (correct) phrase=sanitize (phrase);
-if (strip_diacritics) phrase=fuck_czech (phrase);
 if (output == 0)
 {
-if (interrupt) sapi.speak_interrupt (phrase);
-else sapi.speak (phrase);
+if (interrupt) fallback_voice.speak_interrupt (phrase);
+else fallback_voice.speak (phrase);
 }
 else screen_reader_speak (phrase, interrupt);
 if (phrase != last_text and !instr (phrase, "Pokračuj enterem")) last_text=phrase;
@@ -82,23 +81,23 @@ if (pool.sound_is_playing(i)) count++;
 l=things.items.length();
 for (uint i=0; i<l; i++)
 if (things.sound_is_playing(i)) count++;
-if (count==0 and !menuloop.playing and !won.playing and !is_gallery) return;
+if (count==0 and !menuloop.playing and !menustart.playing and !won.playing and !is_gallery) return;
 }
 frame.restart();
 while (get_sound_master_volume()>minvol)
 {
-if (frame.elapsed >= 1000/fps)
+if (frame.elapsed >= frame_ms)
 {
 frame.restart();
 wait (5);
 if (enable_close) closekey();
 double curvol=get_sound_master_volume();
-curvol-=volume_step;
+curvol-=volume_step*(60.0/fps);
 set_sound_master_volume (curvol);
 }
 }
 silence(true);
-if (menuloop.playing) stop_menu_music();
+if (menuloop.playing or menustart.playing) stop_menu_music();
 set_sound_master_volume (loudness);
 garbage_collect();
 }
@@ -111,65 +110,60 @@ set_sound_master_volume(minvol-10);
 frame.restart();
 while (get_sound_master_volume() < loudness)
 {
-if (frame.elapsed >= 1000/fps)
+if (frame.elapsed >= frame_ms)
 {
 frame.restart();
 wait (5);
 closekey();
 double curvol=get_sound_master_volume();
-curvol+=volume_step;
+curvol+=volume_step*(60.0/fps);
 set_sound_master_volume (curvol);
 }
 }
 }
 
-bool wait_sound (int which=global, bool fade=true)
+bool wait_sound (string snd, bool fade=true, bool enable_close=true, double pan=0)
 {
 wait_keys();
-bool old_music=play_menu_music;
-if (!is_game) play_menu_music=false;
-frame.restart();
-while (pool.sound_is_playing (which))
+sound oneshot;
+oneshot.stream (snd+ext);
+if (pan<stereo_left) pan=stereo_left;
+else if (pan>stereo_right) pan=stereo_right;
+if (stereo_center!=0)
 {
-if (frame.elapsed >= 1000/fps)
+if (stereo_center>pan) pan+=stereo_center;
+else pan-=stereo_center;
+}
+oneshot.pan=pan;
+oneshot.play();
+while (oneshot.playing)
 {
-frame.restart();
 wait(5);
-closekey();
+menu_music();
+if (enable_close) closekey();
 if (!onboarding and (singlekey (KEY_RETURN) or singlekey (KEY_NUMPAD_ENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE)))
 {
 if (fade) fadeout();
-else
-{
-pool.destroy_sound (which);
-which=-1;
-}
-if (play_menu_music!=old_music) play_menu_music=old_music;
+else oneshot.close();
 return false;
 }
 }
-}
-if (play_menu_music!=old_music) play_menu_music=old_music;
 return true;
 }
 
 bool wait_speech()
 {
 wait_keys();
-frame.restart();
-while (sapi.speaking)
+while (fallback_voice.speaking)
 {
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
 wait(5);
 closekey();
+menu_music();
 if (singlekey (KEY_RETURN) or singlekey (KEY_NUMPAD_ENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE))
 {
 silence();
 wait_keys();
 return false;
-}
 }
 }
 wait_keys();
@@ -180,18 +174,26 @@ void checkup()
 {
 output_check_frames=0;
 output=0;
+reader_name="";
+if (hooked and (!system_is_windows or forced_output or !foreground))
+{
+uninstall_keyhook();
+hooked=false;
+}
 if (!forced_output)
 {
-string reader=screen_reader_detect();
-if (reader=="JAWS") output=1;
-else if (reader=="SYSTEM_ACCESS") output=2;
-else if (reader=="WINDOW-EYES") output=3;
-else if (reader=="NVDA") output=4;
-if (!hooked and output == 1 and foreground)
+reader_name=screen_reader_detect();
+if (reader_name=="JAWS") output=1;
+else if (reader_name=="SYSTEM_ACCESS") output=2;
+else if (reader_name=="WINDOW-EYES") output=3;
+else if (reader_name=="NVDA") output=4;
+else if (reader_name=="ORCA") output=5;
+else if (reader_name=="VOICEOVER") output=6;
+if (!hooked and system_is_windows and reader_name == "JAWS" and foreground)
 {
 if (install_keyhook()) hooked=true;
 }
-else if (hooked and (output != 1 or !foreground))
+else if (hooked and (!system_is_windows or reader_name != "JAWS" or !foreground))
 {
 uninstall_keyhook();
 hooked=false;
@@ -201,148 +203,103 @@ hooked=false;
 
 void changed_output()
 {
-if (output == 0 and sapi.voice_count==0)
+if (output == 0 and fallback_voice.voice_count==0)
 {
-alert ("Chyba!", "Není spuštěn žádný kompatibilní odečítač obrazovky ani hlas Sapi. Program se ukončí.");
+alert ("Chyba!", "Není spuštěn žádný kompatibilní odečítač obrazovky ani systémový hlas. Program se ukončí.");
 quit (true);
 }
 }
 
 void preload_audio()
 {
-say ("Načítají se zvuky.", true, false);
-int l=files.length();
-loading.restart();
-custbeep.play_looped();
-for (uint x=0; x<l; x++)
+string[] skip={"turn", "move", "enter", "esc", "prompt", "sub", "beep", "error", "edge", "achievement", "bought", "nomoney", "start", "logo", "gameover", "lose", "win", "winsong", "menustart", "menuloop", "minleft", "timesup"};
+timer loader;
+uint l=files.length();
+preloads.reserve(l);
+for (uint i=0; i<l; i++)
 {
-closekey();
+if (skip.find(files[i])>-1) continue;
 sound new;
-if (!new.load (files[x]))
+preloads.insert_last (new);
+uint index=preloads.length()-1;
+if (instr (files[i], "music")) preloads[index].stream (files[i]);
+else preloads[index].load (files[i]);
+if (!preloads[index].active)
 {
-warning ("Nepodařilo se načíst zvuk "+files[x]+"\r\n"+SOUNDSYSTEM_LAST_ERROR_TEXT);
+warning ("Nepodařilo se načíst zvuk "+files[i]+".");
 exit();
 }
-closekey();
-preloads.insert_last (new);
-custbeep.pitch=custbeep.pitch+0.5;
-closekey();
-if (loading.elapsed>=10000)
-{
-read_tip (false);
-loading.restart();
 }
-closekey();
-}
-create_vocals();
-if (use_vocals)
-{
-string[] available_vocals=find_files (vocals_path+"*.wav");
-uint avl=available_vocals.length();
-if (available_vocals.is_empty())
-{
-use_vocals=false;
-loading.restart();
-loading.pause();
-all_vocals.delete_all();
-return;
-}
-say ("Načítají se hlášky zákazníků.", true, false);
-custbeep.pitch=100;
-for (uint i=0; i<avl; i++)
-{
-closekey();
-sound new;
-if (!new.load (vocals_path+available_vocals[i]) and enable_debugging)
-{
-warning ("Nepodařilo se načíst vokál "+vocals_path+available_vocals[i]+"\r\n"+SOUNDSYSTEM_LAST_ERROR_TEXT);
-exit();
-}
-closekey();
-preloads.insert_last (new);
-custbeep.pitch=custbeep.pitch+0.1;
-closekey();
-if (loading.elapsed>=10000)
-{
-read_tip (false);
-loading.restart();
-}
-closekey();
-}
-}
-else all_vocals.delete_all();
-custbeep.stop();
-custbeep.pitch=100;
-loading.restart();
-loading.pause();
 }
 
 void play_move()
 {
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-silence_menu();
-silence();
-move.play();
+silence (true);
+play_stat ("move", false, false, menu_sounds_vol);
 }
 
 void play_turn()
 {
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-silence_menu();
-silence();
-turn.play();
+silence (true);
+play_stat ("turn", false, false, menu_sounds_vol);
 }
 
 void play_enter()
 {
 silence_menu();
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-enter.play();
+play_stat ("enter", false, false, menu_sounds_vol);
 }
 
 void play_esc()
 {
 silence_menu();
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-esc.play();
+play_stat ("esc", false, false, menu_sounds_vol);
 }
 
 void silence_menu()
 {
-if (move.playing) move.stop();
-if (turn.playing) turn.stop();
-if (enter.playing) enter.stop();
-if (esc.playing) esc.stop();
-if (submenu.playing) submenu.stop();
-if (is_learnmenu and global > -1 and pool.sound_is_playing (global))
+uint8 msl=menu_sounds.length();
+for (uint8 i=0; i<msl; i++)
 {
-pool.destroy_sound (global);
-global=-1;
+int8 msp=pool.get_sound_by_name (menu_sounds[i]);
+if (msp>-1) pool.destroy_sound (msp);
 }
 if (is_custmenu) silence_custmenu();
+if (is_learnmenu) pool.destroy_all();
 }
 
 void wait_menu()
 {
 garbage_collect();
-while (enter.playing or esc.playing) wait(5);
+uint8 msl=menu_sounds.length();
+for (uint8 i=0; i<msl; i++)
+{
+int8 msh=pool.get_sound_by_name (menu_sounds[i]);
+while (msh>-1 and pool.sound_is_playing(msh)) wait(5);
+}
 }
 
 void play_inmenu()
 {
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-if (turn.playing) turn.stop();
-if (move.playing) move.stop();
-if (inmenu.playing) inmenu.stop();
-if (submenu.playing) submenu.stop();
-inmenu.play();
+play_stat ("prompt", false, false, menu_sounds_vol);
 }
 
 void play_submenu()
 {
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-if (submenu.playing) submenu.stop();
-submenu.play();
+play_stat ("sub", false, false, menu_sounds_vol);
+}
+
+void play_edge()
+{
+if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
+silence (true);
+play_stat ("edge", false, false, menu_sounds_vol);
 }
 
 int play_stat (string sound, bool looping=false, bool persistent=false, double thisvol=0)
@@ -355,20 +312,8 @@ void silence_custmenu()
 if (custbeep.playing) custbeep.stop();
 custchanged=false;
 doingsound.close();
-if (custslot > -1 and pool.sound_is_playing (custslot))
-{
-pool.destroy_sound (custslot);
+if (custslot > -1 and pool.sound_is_playing (custslot)) pool.destroy_sound (custslot);
 custslot=-1;
-}
-}
-
-void pan_menu (double new_pan)
-{
-move.pan=new_pan;
-turn.pan=new_pan;
-enter.pan=new_pan;
-esc.pan=new_pan;
-inmenu.pan=new_pan;
 }
 
 void player_position()
@@ -462,4 +407,3 @@ for (uint8 i=0; i<l; i++) mugs[i].vol=mugloop_vol;
 l=barrels.length();
 for (uint8 i=0; i<l; i++) barrels[i].vol=barrelloop_vol;
 }
-

@@ -1,31 +1,25 @@
 #include "instance.nvgt"
 #include "names.nvgt"
+#include "scramble.nvgt"
 
-class navchar
-{
-string nc="", nca="";
-}
-
-string folder=DIRECTORY_LOCAL_APPDATA+"/4Sense Gaming/Beerday", cpl;
+string folder=SCRIPT_MAIN_PATH+"/userdata/";
 instance selftest ("Beertender");
 bool onboarding=false, did_learn_sounds=false, did_stereo_test=false;
 
 void initialize()
 {
-chdir(SCRIPT_MAIN_PATH);
 if (selftest.is_already_running)
 {
-alert ("Chyba!", "Tento program je již spuštěn.");
+alert ("Chyba!", "Hra už je spuštěná.");
 exit();
 }
+chdir(SCRIPT_MAIN_PATH);
+set_application_name (title);
 show_window (title+" "+version);
 if (!directory_exists (folder)) directory_create (folder);
 if (!directory_exists (folder)) can_write=false;
 else
 {
-folder+="/";
-folder=folder.replace("/", "\\", true);
-vocals_path=vocals_path.replace("/", "\\", true);
 string name=folder+"test.dat";
 file test;
 test.open (name, "w");
@@ -34,69 +28,32 @@ test.close();
 if (!file_exists (name)) can_write=false;
 else file_delete (name);
 }
-if (!can_write and question ("Pozor!", "Program nedokáže zapisovat do svojí datové složky. Hrát sice můžeš, ale nebudou se ti ukládat žádná nastavení ani postup ve hře. Zkus tento program spouštět jako správce. Zkratkou alt+enter otevři vlastnosti souboru beerday.exe a na záložce Kompatibilita zaškrtni volbu Spustit tento program jako správce. Pokud to nepomůže, můžeš mě kontaktovat příslušnou funkcí v nabídce Online funkce. Chceš hru spustit i tak?")==2) exit();
-explorer=windir+"explorer.exe";
-if (!file_exists (explorer)) explorer="";
-if (explorer!="")
-{
-cpl=windir;
-if (directory_exists(windir+"SysWow64")) cpl+="SysWow64\\";
-else cpl+="System32\\";
-cpl+="Speech\\SpeechUX\\sapi.cpl";
-}
-else cpl="";
-if (!pack.open ("*pack.dat")) alert ("Error!", "Could not open pack.\r\n"+get_last_error());
+if (!can_write and question ("Pozor!", "Hra nedokáže zapisovat do svojí datové složky. Hrát sice můžeš, ale nebudou se ti ukládat žádná nastavení ani postup ve hře. Chceš hru spustit i tak?")==2) exit();
+pack.open ("*pack.dat");
 set_sound_master_volume (loudness);
-@sound_default_pack = pack;
-if (@sound_default_pack!=@pack) alert ("Error!", "Could not retrieve default pack.\r\n"+get_last_error());
+@sound_default_pack=@pack;
 sound_default_decryption_key = scramble();
-parse_cmd();
 read_help();
-read_navs();
-read_voices();
 read_tips();
 read_tutorial();
 read_credits();
+used_greetings.reserve (greetings.length());
 files=pack.list_files();
 uint l=files.length();
-tracks.reserve (200);
-used_tracks.reserve (200);
-used_this_session.reserve(200);
-tracklist.reserve(200);
-authors.reserve(200);
-playlist.reserve(200);
-used_greetings.reserve (greetings.length());
-const string[] remove={"menu", "move", "sub", "turn", "esc", "enter", "beep", "prompt", "logo", "lose", "gameover", "win", "exit", "start", "ambience", "bought", "nomoney", "timesup"};
-uint8 r=remove.length();
 for (uint x=0; x<l; x++)
 {
 if (instr (files[x], "music")) tracks.insert_last (files[x]);
-if (!instr (files[x], ext))
+else if (!instr (files[x], ext))
 {
 files.remove_at (x);
 x--;
 l--;
 }
-else
-for (uint8 j=0; j<r; j++)
-if (instr (files[x], remove[j]))
-{
-files.remove_at (x);
-x--;
-l--;
-break;
 }
-}
-preloads.reserve(100000);
 available_tracks=tracks.length();
-move.stream ("move"+ext);
-turn.stream ("turn"+ext);
-enter.stream ("enter"+ext);
-esc.stream ("esc"+ext);
-submenu.stream ("sub"+ext);
-inmenu.stream ("prompt"+ext);
 custbeep.stream ("beep"+ext);
 menuloop.stream ("menuloop"+ext);
+menustart.stream ("menustart"+ext);
 customers.reserve (60);
 custpool.reserve (60);
 queue.reserve (60);
@@ -112,14 +69,14 @@ load_profile();
 load_used();
 load_soundtrack();
 create_stats();
-load_player();
 load_stats();
+load_player();
 load_options();
 if (selection==selection_random_keep or selection==selection_manual_keep) load_drinks();
-read_names();
 }
+read_names();
 if (history_entries>0) history.reserve (history_entries);
-else history.reserve (10000);
+else history.reserve (1000);
 checkup();
 if (output==0) changed_output();
 if (play_intro)
@@ -144,7 +101,7 @@ while (start.playing or coin.playing or counter<16)
 wait (5);
 if (key_down (KEY_LALT) and key_pressed (KEY_F4))
 {
-if (can_write and COMMAND_LINE=="")
+if (can_write)
 {
 set_stat ("run_times", 1);
 save_stats();
@@ -185,7 +142,7 @@ for (uint8 i=4; i<14; i++)
 if (counter==i and start.position>=step_time)
 {
 step.close();
-step.load (randomize ("floor")+ext);
+step.stream (randomize ("floor")+ext);
 step.pan=pan;
 if (step.pan<stereo_center)
 {
@@ -226,18 +183,21 @@ if (coin.paused) coin.play();
 }
 if (!interrupted_intro)
 {
+if (play_menu_music and file_exists (folder+"profile.dat"))
+{
+menustart.play();
+played_menu_start=true;
+}
 say (title, true, false);
 wait_delay();
 }
 }
-if (global > -1) pool.destroy_sound (global);
-global=-1;
 if (!file_exists (folder+"profile.dat"))
 {
 onboarding=true;
 say_first ("Tato hra nikdy žádným způsobem neodesílá žádná data mně, vlastnímu serveru ani jakékoli třetí straně. Veškerá uložená nastavení zůstávají pouze na tvém vlastním disku, dají se kdykoli smazat, neobsahují žádné osobní údaje a jsou uložena v nečitelné, zašifrované podobě.");
 say_sleep_mode();
-say_first ("F1 kdykoli zobrazí klávesové zkratky, kterými se ovládá nabídka nebo obrazovka, kde právě jsi. Zároveň pokud v některé nabídce pět vteřin nestiskneš žádnou klávesu, tato nápověda se přečte automaticky.");
+say_first ("F1 kdykoli zobrazí klávesové zkratky, kterými se ovládá nabídka nebo obrazovka, kde právě jsi. Tato nápověda se přečte i automaticky, pokud pět vteřin nestiskneš žádnou klávesu.");
 say_first ("Než se budeš moct pustit do hraní, věnuj prosím chvilku nastavení několika údajů, díky kterým se ti hra přizpůsobí na míru. Každá změna nastavení se hned uloží, takže nemusíš nic potvrzovat a můžeš rovnou každou nabídku zavřít escapem.");
 profile_options();
 profile.set ("name_day", name_day);
@@ -254,7 +214,7 @@ profile.set ("created_month", created_month);
 profile.set ("created_year", created_year);
 profile.set ("created_hour", created_hour);
 profile.set ("created_minute", created_minute);
-say_first ("Díky. Teď si ještě můžeš nastavit ostatní vlastnosti a chování hry, nebo rovnou v následující nabídce vybrat položku Hotovo. Pokud ti nebude jasné, co některé nastavení dělá, můžeš si hru nejdřív trochu osahat a k nastavením se vrátit kdykoli později, klidně i během hry.");
+say_first ("Díky. Teď si ještě můžeš nastavit ostatní vlastnosti a chování hry. Pokud ti nebude jasné, co některé nastavení dělá, můžeš si hru nejdřív trochu osahat a k nastavením se vrátit kdykoli později.");
 options();
 if (!did_stereo_test)
 {
@@ -263,7 +223,7 @@ speakers();
 }
 if (!did_learn_sounds)
 {
-int8 l=ask ("Chceš se rovnou seznámit s nejdůležitějšími zvuky, které budeš pro hru potřebovat?");
+int8 l=ask ("Chceš se rovnou seznámit s nejdůležitějšími zvuky, které budeš při hraní potřebovat?");
 if (l==1) learn();
 else say_first ("Položka Seznámení se zvuky je kdykoli dostupná v hlavním menu, v nabídce nastavení zvuku, anebo přímo během hry jednak v kontextovém menu a jednak po stisknutí klávesy F3.");
 }
@@ -276,6 +236,12 @@ save_options();
 save_profile();
 }
 set_stat ("run_times", 1);
+if (play_menu_music)
+{
+menustart.play();
+played_menu_start=true;
+if (!play_intro) wait_delay();
+}
 }
 
 void say_first (string text)
@@ -296,12 +262,8 @@ if (!silent)
 {
 silence (play_outro);
 pause(false);
-if (play_outro)
-{
-if (menuloop.playing) stop_menu_music();
-leave (false);
-}
-if (menuloop.playing) fadeout (0.5, false);
+if (play_outro) leave (false);
+if (menuloop.playing or menustart.playing) fadeout (0.5, false);
 }
 if (autoplay or freeplay or is_tutorial) clear_earnings();
 if (is_game) make_stats (true);
@@ -319,18 +281,12 @@ if ((save_history or copy_history) and !history.is_empty())
 string history_all="";
 uint l=history.length();
 for (int i=l-1; i>-1; i--) history_all+=history[i]+"\r\n";
-history_all=sanitize (history_all);
-if (strip_diacritics) history_all=fuck_czech (history_all);
 if (copy_history) clipboard_set_text (history_all);
-if (save_history)
-{
-file h;
-h.open (DIRECTORY_HOME+"/beerday_speech_history.txt", "wb");
-h.write (history_all);
-h.close();
+if (save_history) file_put_contents ("speech_history.txt", history_all);
 }
 }
-}
+file_delete (folder+"temp.ogg");
+file_delete (folder+"controls.html");
 exit();
 }
 
@@ -368,14 +324,14 @@ int8 a=askmenu.run (q, 1, true);
 if (cancel and a == 0) a=3;
 if (a == 3)
 {
-if (is_game and paused and !menuloop.playing and !play_menu_sounds) say ("Zrušeno.", true, false);
+if (is_game and paused and !menuloop.playing and !menustart.playing and !play_menu_sounds) say ("Zrušeno.", true, false);
 else silence();
 }
 menu_question=old_question;
 wait_keys();
 if (is_game and !menu.running and !keyhelp)
 {
-if ((!instr (q, "hru") or a==2) and menuloop.playing) menuloop.stop();
+if ((!instr (q, "hru") or a==2) and !play_outro) stop_menu_music();
 if ((!instr (q, "končit") or a==2) and !oldpaused)
 {
 resume();
@@ -386,61 +342,31 @@ if (@last_menu!=null and last_menu.running and !last_menu.speak_item) last_menu.
 return a;
 }
 
-string scramble()
-{
-const string key="Jedno pivooo, dvě pivaaa, tři pivaaa, čtyři pivaaa, pět, šest, sedum, vosum piiiv, devět, deset piiiv.";
-string temp=key.reverse_bytes();
-temp=temp.replace("a", "\0", true);
-string result;
-uint8 l=temp.length();
-for (uint i=0; i<l; i++) result+=string(character_to_ascii (temp[i]) + 46);
-return result;
-}
-
-void read_navs()
-{
-navchars.reserve (200);
-datastream@ nav=pack.get_file ("navchars.dat");
-string[] entries=string_aes_decrypt (nav.read(), scramble()).split ("\r\n", true);
-uint e=entries.length();
-for (uint i=0; i<e; i++)
-{
-navchar new;
-string[] singlenav=entries[i].split ("\t", true);
-new.nc=singlenav[0];
-new.nca=singlenav[1];
-navchars.insert_last (new);
-}
-}
-
 bool instr (string source, string part)
 {
 if (source == "" or part == "") return false;
 return source.find (part) > -1;
 }
 
-string to_lower (string what, bool single_char=false)
+string utf8_first_char(const string &in text)
 {
-uint l=what.length();
-for (uint i=0; i<l; i++)
-{
-int f=upper.find (what[i]);
-if (f > -1) what[i]=lower[f];
-if (single_char) break;
-}
-return what;
+if (text == "") return "";
+int next=utf8next(text, 0);
+if (next <= 0) return "";
+return text.substr(0, next);
 }
 
-string to_upper (string what, bool single_char=false)
+string utf8_first_char_lower(const string &in text)
 {
-uint l=what.length();
-for (uint i=0; i<l; i++)
-{
-int f=lower.find (what[i]);
-if (f > -1) what[i]=upper[f];
-if (single_char) break;
+string ch=utf8_first_char(text);
+if (ch == "") return "";
+return ch.lower();
 }
-return what;
+
+bool is_s_or_z_sound(const string &in text)
+{
+string ch=utf8_first_char_lower(text);
+return ch == "s" or ch == "š" or ch == "z" or ch == "ž";
 }
 
 string convert_symbol (string what)
@@ -450,72 +376,29 @@ if (f > -1) return descriptions[f];
 return what;
 }
 
-string to_letters (string what)
-{
-for (uint i=0; i<what.length(); i++)
-if (lower.find(what[i])==-1 and upper.find(what[i])==-1)
-{
-what=what.replace (what[i], "", true);
-i--;
-}
-return what;
-}
-
-string fuck_czech (string what)
-{
-for (uint8 i=0; i<diacritics_length; i++) what=what.replace (diacritics[i], normal[i], true);
-return what;
-}
-
-string sanitize (string phrase)
-{
-if (phrase=="" or phrase==" " or phrase.length()==1) return phrase;
-int i=0, tl=phrase.length();
-while (i < tl)
-{
-if (i == 0 or (i > 1 and phrase[i-2] == "." and phrase[i-1] == " "))
-{
-phrase[i]=to_upper (phrase[i], true);
-}
-if (i >0 and i < tl -1 and (phrase[i] == "." or phrase[i] == "," or phrase[i] == "!") and phrase[i+1] != " ")
-{
-phrase=phrase.substr (0, i+1)+" "+phrase.substr (i+1);
-tl++;
-}
-i++;
-}
-for (uint8 i=0; i<replacements_length; i++)
-while (instr (phrase, replacements[i]+replacements[i])) phrase=phrase.replace (replacements[i]+replacements[i], replacements[i], true);
-while (instr (phrase, " \r\n")) phrase=phrase.replace (" \r\n", "\r\n", true);
-while (instr (phrase, "\r\n ")) phrase=phrase.replace ("\r\n ", "\r\n", true);
-while (phrase.length()>0 and phrase[0] == " ") phrase=phrase.substr (1);
-while (phrase.length()>0 and phrase[phrase.length()-1] == " ") phrase=phrase.substr (0, phrase.length()-1);
-while (phrase.length()>=2 and phrase.substr (phrase.length()-2)=="\r\n") phrase=phrase.substr (0, phrase.length()-2);
-return phrase;
-}
-
 void copy (string what)
 {
 if (what=="") return;
-if (!is_readmenu) what=sanitize (what);
-if (strip_diacritics) what=fuck_czech (what);
 clipboard_set_text (what);
-if (!is_readmenu) say (history[history_index]+" skopírováno do schránky.", true, false);
+if (!is_readmenu) say (history[history_index]+" zkopírováno do schránky.", true, false);
 else say ("Seznam zkopírován do schránky.", true, false);
 }
 
 void spell (string entry)
 {
 entry=entry.replace ("\r\n", "\n", true);
-uint l=entry.length();
 bool first=true;
-for (uint i=0; i<l; i++)
+int i=0, len=int(entry.length());
+while (i < len)
 {
-string char=entry[i];
+int next=utf8next(entry, i);
+if (next <= i) break;
+string char=entry.substr(i, next-i);
 char=convert_symbol (char);
-if (upper.find (char) >-1) char="velké "+to_lower (char, true);
-say (char, first, false, false, false);
+if (char != char.lower()) char="velké "+char.lower();
+say (char, first, false, false);
 if (first) first=false;
+i=next;
 }
 }
 
@@ -556,15 +439,13 @@ datastream@ creds=pack.get_file ("credits.dat");
 credits=string_aes_decrypt (creds.read(), scramble());
 }
 
-void wait_delay (double delay=600)
+void wait_delay (double delay=2000)
 {
 timer waiter;
 while (waiter.elapsed<delay)
 {
+if (!keys_down().is_empty()) break;
 wait(5);
-if (keys_down().length()>0) break;
 }
-wait_keys();
 silence (true);
 }
-

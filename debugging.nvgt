@@ -322,8 +322,6 @@ void warning (string wtf, bool quit=false)
 bool oldpaused=paused;
 silence();
 if (custbeep.playing) custbeep.stop();
-if (global>-1 and pool.sound_is_playing(global)) pool.destroy_sound(global);
-global=-1;
 if (is_game) pause();
 string warning=get_last_error();
 if (warning!="") warning="Chyba NVGT: "+warning+"\r\n";

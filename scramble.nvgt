@@ -1,0 +1,10 @@
+string scramble()
+{
+const string key="Jedno pivooo, dvě pivaaa, tři pivaaa, čtyři pivaaa, pět, šest, sedum, vosum piiiv, devět, deset piiiv.";
+string temp=key.reverse_bytes();
+temp=temp.replace("a", "\0", true);
+string result;
+uint8 l=temp.length();
+for (uint i=0; i<l; i++) result+=string(character_to_ascii (temp[i]) + 46);
+return result;
+}

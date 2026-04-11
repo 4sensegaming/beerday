@@ -100,11 +100,13 @@ say (rep, false);
 }
 @last_owner=@owner;
 if (makes_sound) clear_item_loops();
+/*
 if (pour>-1 and (owner.state==drinking or owner.state==waiting or owner.state==returning or owner.state==fleeing or owner.state==cleaning or owner.state==disposing or owner.is_chasing or owner.is_roaming or owner.state==giving or owner.state==ordering or owner.state==calming or owner.state==throwing or owner.state==emptiing or owner.state==barreling or owner.state==piping or owner.state==serving or total>=poured_full))
 {
 if (pour>-1) things.destroy_sound (pour);
 pour=-1;
 }
+*/
 if (@owner.seen_mug==@this) @owner.seen_mug=null;
 if (@owner.wanted_mug==@this)
 {

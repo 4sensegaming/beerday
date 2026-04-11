@@ -1,9 +1,0 @@
-/**
-	Returns the name of the current month.
-	const string DATE_MONTH_NAME;
-*/
-
-// example:
-void main() {
-	alert("example", "the month is " + DATE_MONTH_NAME);
-}

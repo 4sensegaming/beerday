@@ -1,3 +1,0 @@
-void main() {
-	alert("test", url_post("https://nvgt.dev/post.php", "arg1=val1&arg2=val2&arg3=val3"));
-}

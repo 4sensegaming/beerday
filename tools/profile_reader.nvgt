@@ -2,7 +2,7 @@ void main()
 {
 chdir(SCRIPT_MAIN_PATH);
 show_window("Profile reader");
-string profile_path=DIRECTORY_LOCAL_APPDATA+"/4Sense Gaming/Beerday/profile.dat";
+string profile_path="../userdata/profile.dat";
 if (!file_exists(profile_path))
 {
 alert("Profile not found.", "");

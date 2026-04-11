@@ -1,4 +1,11 @@
+#if windows
+#pragma stub nc_upx
+#endif
+#if linux
+#pragma stub nc
+#endif
 #pragma embed "pack.dat"
+#pragma bytecode_compression 9
 
 #include "constants.nvgt"
 #include "net.nvgt"
@@ -17,31 +24,29 @@ timer frame, runtime;
 
 void main()
 {
-is_online=check_online();
 initialize();
 read_motd();
+is_online=check_online();
 if (is_online)
 {
 if (get_motd()) say_motd (true);
 if (updates) update();
 }
-cleanup();
-if (file_exists (folder+"profile.dat") and enable_debugging and (lastrun_day!=DATE_DAY or lastrun_month!=DATE_MONTH or lastrun_year!=DATE_YEAR)) say_first ("Happy Beerday je zatím v předběžném přístupu. Je možné, že ještě budeš narážet na  chyby. Jakoukoli případnou chybu mi můžeš nahlásit příslušnou položkou v nabídce Online funkce. Předem díky moc.");
-lastrun_day=DATE_DAY;
-lastrun_month=DATE_MONTH;
-lastrun_year=DATE_YEAR;
-lastrun_hour=TIME_HOUR;
-lastrun_minute=TIME_MINUTE;
 menus();
+double frame_step=frame_ms, frame_bank=0;
 frame.restart();
 while (true)
 {
-wait (5);
 keyboard();
-if (frame.elapsed >= 1000/fps)
-{
+wait (5);
+double delta=frame.elapsed;
+if (delta <= 0) continue;
 frame.restart();
+frame_bank+=delta;
+while (frame_bank >= frame_step)
+{
 if (!paused) game();
+frame_bank-=frame_step;
 }
 }
 }

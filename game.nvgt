@@ -41,6 +41,11 @@ wait_keys();
 if (!play_logo) wait_menu();
 if (output == 0) wait_speech();
 }
+else
+{
+say ("Načítají se zvuky.", true, false);
+wait_menu();
+}
 @top_menu=null;
 switch (difficulty)
 {
@@ -50,19 +55,19 @@ max=12;
 maxfled=4;
 maxstunned=2;
 limit=15*60*fps;
-trip_time=20;
+trip_time=round ((20.0/60.0)*fps, 0);
 spawn_delay=50*fps;
-all_speed=30;
+all_speed=round ((30.0/60.0)*fps, 0);
 aggression=4;
 ceiling=4;
-trance=130;
+trance=round ((130.0/60.0)*fps, 0);
 mug_count=50;
 barrel_count=10;
 beer_count=30;
-hit_interval=120;
+hit_interval=round ((120.0/60.0)*fps, 0);
 max_liquid_mess=14;
 puke_count=3;
-max_drink_time=50;
+max_drink_time=round ((50.0/60.0)*fps, 0);
 min_price=20;
 pay_most_jukebox_once=200;
 serve_interval=180*fps;
@@ -73,19 +78,19 @@ max=15;
 maxfled=6;
 maxstunned=5;
 limit=20*60*fps;
-trip_time=40;
+trip_time=round ((40.0/60.0)*fps, 0);
 spawn_delay=45*fps;
-all_speed=25;
+all_speed=round ((25.0/60.0)*fps, 0);
 aggression=3;
 ceiling=3;
-trance=110;
+trance=round ((110.0/60.0)*fps, 0);
 mug_count=40;
 barrel_count=15;
 beer_count=25;
-hit_interval=90;
+hit_interval=round ((90.0/60.0)*fps, 0);
 max_liquid_mess=12;
 puke_count=6;
-max_drink_time=45;
+max_drink_time=round ((45.0/60.0)*fps, 0);
 min_price=30;
 pay_most_jukebox_once=300;
 serve_interval=150*fps;
@@ -96,19 +101,19 @@ max=20;
 maxfled=9;
 maxstunned=10;
 limit=25*60*fps;
-trip_time=60;
+trip_time=round ((60.0/60.0)*fps, 0);
 spawn_delay=40*fps;
-all_speed=20;
+all_speed=round ((20.0/60.0)*fps, 0);
 aggression=2;
 ceiling=2;
-trance=90;
+trance=round ((90.0/60.0)*fps, 0);
 mug_count=30;
 barrel_count=20;
 beer_count=20;
-hit_interval=60;
+hit_interval=round ((60.0/60.0)*fps, 0);
 max_liquid_mess=10;
 puke_count=8;
-max_drink_time=40;
+max_drink_time=round ((40.0/60.0)*fps, 0);
 min_price=40;
 pay_most_jukebox_once=400;
 serve_interval=120*fps;
@@ -119,19 +124,19 @@ max=30;
 maxfled=13;
 maxstunned=15;
 limit=30*60*fps;
-trip_time=80;
+trip_time=round ((80.0/60.0)*fps, 0);
 spawn_delay=35*fps;
-all_speed=15;
+all_speed=round ((15.0/60.0)*fps, 0);
 aggression=1;
 ceiling=1;
-trance=70;
+trance=round ((70.0/60.0)*fps, 0);
 mug_count=25;
 barrel_count=25;
 beer_count=15;
-hit_interval=30;
+hit_interval=round ((30.0/60.0)*fps, 0);
 max_liquid_mess=8;
 puke_count=12;
-max_drink_time=35;
+max_drink_time=round ((35.0/60.0)*fps, 0);
 min_price=50;
 pay_most_jukebox_once=500;
 serve_interval=90*fps;
@@ -142,25 +147,25 @@ max=40;
 maxfled=15;
 maxstunned=20;
 limit=35*60*fps;
-trip_time=100;
+trip_time=round ((100.0/60.0)*fps, 0);
 spawn_delay=30*fps;
 aggression=0;
 ceiling=0;
-all_speed=10;
-trance=50;
+all_speed=round ((10.0/60.0)*fps, 0);
+trance=round ((50.0/60.0)*fps, 0);
 mug_count=20;
 barrel_count=30;
 beer_count=10;
-hit_interval=20;
+hit_interval=round ((20.0/60.0)*fps, 0);
 max_liquid_mess=6;
 puke_count=20;
-max_drink_time=30;
+max_drink_time=round ((30.0/60.0)*fps, 0);
 min_price=60;
 pay_most_jukebox_once=600;
 serve_interval=75*fps;
 break;
 }
-min_drink_time=25;
+min_drink_time=round ((25.0/60.0)*fps, 0);
 max_price=min_price+20;
 time_since_served=0;
 if (endless) limit=0;
@@ -240,7 +245,6 @@ flusher=0;
 flushed=0;
 toiletslot=-1;
 nearby=-1;
-global=-1;
 steps=0;
 money=0;
 replaced=0;
@@ -288,36 +292,30 @@ enable_idle=free_sleep;
 if (preloads.is_empty()) preload_audio();
 if (play_logo)
 {
-wait_keys();
-global=play_stat ("logo");
-frame.restart();
-while (pool.sound_is_playing (global))
+int8 logo=play_stat ("logo");
+while (pool.sound_is_playing (logo))
 {
 wait (5);
-if (frame.elapsed >= 1000/fps)
-{
-frame.restart();
 closekey();
 if (singlekey (KEY_SPACE) or singlekey (KEY_RETURN) or singlekey (KEY_NUMPAD_ENTER) or singlekey (KEY_ESCAPE)) fadeout();
-else if (menuloop.playing) menuloop.volume=menuloop.volume-0.5;
+else if (menuloop.playing) menuloop.volume-=0.5*(60.0/fps);
+else if (menustart.playing) menustart.volume-=0.5*(60.0/fps);
 }
-}
-if (global > -1) pool.destroy_sound (global);
-if (menuloop.playing) stop_menu_music();
+if (menuloop.playing or menustart.playing) stop_menu_music();
 }
 else
 {
 wait_keys();
-while (output == 0 and sapi.speaking) wait (5);
-if (menuloop.playing) fadeout();
+if (output==0) wait_speech();
+if (menuloop.playing or menustart.playing) fadeout();
 }
-if (menuloop.playing) stop_menu_music();
-menuloop.volume=0;
-global=-1;
+if (menuloop.playing or menustart.playing) stop_menu_music();
+menuloop.volume=menuloop_vol;
+menustart.volume=menuloop_vol;
 player.x=faucet.x;
 player.speed=percent (all_speed, 55);
 player.default_speed=player.speed;
-player.transition=((fps/10)*9)-((fps/10)*difficulty);
+player.transition=((fps/10)*6)-((fps/10)*difficulty);
 mug_path=get_distance(faucet.x,sink.x)*player.speed*2;
 timewarn=false;
 for (uint8 x=0; x<max; x++)
@@ -449,7 +447,7 @@ set_stat (prefix_mode()+"died_mugs", 1);
 }
 if (fled > 0 and !allow_fled)
 {
-cause+="V této hardcore hře nesměl nnikdo nespokojený odejít.\r\n";
+cause+="V této hardcore hře nesměl nikdo nespokojený odejít.\r\n";
 set_stat (prefix_mode()+"died_fled", 1);
 }
 if (stunned > 0 and !allow_stunned)
@@ -1217,9 +1215,8 @@ if (gender==2) cause+="a";
 cause+=" od zákazníků ránu.";
 cause+="\r\n";
 }
-cause=sanitize(cause);
 if (autoplay or freeplay or is_tutorial) clear_earnings();
-while (sapi.speaking) wait(5);
+while (fallback_voice.speaking) wait(5);
 uint p=pool.items.length();
 for (uint i=0; i<p; i++)
 if (@pool.items[i].handle !is null and !pool.items[i].handle.playing)
@@ -1237,32 +1234,30 @@ i--;
 p--;
 }
 string endsound;
-if (limit>0 and elapsed>=limit) endsound="win";
-else endsound="gameover";
+(limit>0 and elapsed>=limit)?endsound="win":endsound="gameover";
 while (door.playing()) wait(5);
 double closing_vol=0;
 if (player.state==closing) closing_vol=0;
 else closing_vol=-30;
 if (player.state==closing) leave (true);
-if (global>-1) pool.destroy_sound (global);
-global=pool.play_stationary_extended (endsound+ext, false, 0, 0, closing_vol, 100, true);
+int8 transition=pool.play_stationary_extended (endsound+ext, false, 0, 0, closing_vol, 100, true);
 frame.restart();
-while (pool.sound_is_playing (global))
+while (pool.sound_is_playing (transition))
 {
-if (frame.elapsed >= 1000/fps)
+if (frame.elapsed >= frame_ms)
 {
 frame.restart();
 for (uint i=0; i<pool.items.length(); i++)
 {
 if (pool.sound_is_playing(i))
 {
-if (i!=global)
+if (i!=transition)
 {
-if (pool.items[i].handle.volume > -100) pool.items[i].handle.volume=pool.items[i].handle.volume-0.1;
+if (pool.items[i].handle.volume > -100) pool.items[i].handle.volume=pool.items[i].handle.volume-(0.1*(60.0/fps));
 }
 else
 {
-if (pool.items[i].handle.volume<0) pool.items[i].handle.volume=pool.items[i].handle.volume+0.1;
+if (pool.items[i].handle.volume<0) pool.items[i].handle.volume=pool.items[i].handle.volume+(0.1*(60.0/fps));
 }
 }
 }
@@ -1270,7 +1265,7 @@ for (uint i=0; i<things.items.length(); i++)
 {
 if (things.sound_is_playing(i))
 {
-if (things.items[i].handle.volume > -100) things.items[i].handle.volume=things.items[i].handle.volume-0.1;
+if (things.items[i].handle.volume > -100) things.items[i].handle.volume=things.items[i].handle.volume-(0.1*(60.0/fps));
 }
 }
 }
@@ -1279,7 +1274,7 @@ wait (5);
 pool.destroy_all();
 things.destroy_all();
 clear_player();
-if (!is_tutorial and play_menu_music)
+if (play_menu_music)
 {
 if (limit>0 and elapsed>=limit) won.stream("winsong"+ext);
 else won.stream("losesong"+ext);
@@ -1530,7 +1525,6 @@ prices.resize (0);
 if (selection == selection_unspecified or selection == selection_manual_change or selection == selection_random_change) clear_drinks();
 elapsed=0;
 faucet.slot=-1;
-global=-1;
 nearby=-1;
 radio=-1;
 toiletslot=-1;
@@ -1649,14 +1643,12 @@ drinks7.remove_at (found);
 }
 if (!speak_menu_prompt) speak_menu_prompt=true;
 drinks.insert_at (0, "Vyber si "+selection_prompts[i]+".");
-pan_menu (selection_pans[i]);
 ss_start();
 int8 drink=make_menu (drinks);
 if (drink < 1)
 {
 if (beers.is_empty())
 {
-pan_menu (0);
 clear_drinks();
 ss_end();
 if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
@@ -1676,7 +1668,6 @@ beers.insert_last (all_drinks[found]);
 beers4.insert_last (all_drinks4[found]);
 beers7.insert_last (all_drinks7[found]);
 }
-pan_menu (0);
 ss_end();
 if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
 return true;
@@ -1760,11 +1751,6 @@ beers7.resize(0);
 void save_player()
 {
 profile.set ("money_total", money_total);
-profile.set ("lastrun_day", lastrun_day);
-profile.set ("lastrun_month", lastrun_month);
-profile.set ("lastrun_year", lastrun_year);
-profile.set ("lastrun_hour", lastrun_hour);
-profile.set ("lastrun_minute", lastrun_minute);
 profile.set ("is_tutorial", is_tutorial);
 profile.set ("gender", gender);
 }
@@ -1772,11 +1758,6 @@ profile.set ("gender", gender);
 void load_player()
 {
 if (profile.exists ("money_total")) profile.get ("money_total", money_total);
-if (profile.exists ("lastrun_day")) profile.get ("lastrun_day", lastrun_day);
-if (profile.exists ("lastrun_month")) profile.get ("lastrun_month", lastrun_month);
-if (profile.exists ("lastrun_year")) profile.get ("lastrun_year", lastrun_year);
-if (profile.exists ("lastrun_hour")) profile.get ("lastrun_hour", lastrun_hour);
-if (profile.exists ("lastrun_minute")) profile.get ("lastrun_minute", lastrun_minute);
 if (profile.exists ("is_tutorial")) profile.get ("is_tutorial", is_tutorial);
 if (profile.exists ("gender")) profile.get ("gender", gender);
 if (profile.exists ("name_day")) profile.get ("name_day", name_day);
@@ -1819,8 +1800,8 @@ uint8 walked=0, paces=random (7, 18);
 double vol=get_sound_master_volume(), volume_step=round (abs(minvol/paces), 0), step_interval=random(40,60)*10;
 int8 x=door.x;
 sound smoke, burp, puke;
-smoke.load ("smoke"+ext);
-puke.load ("puke"+ext);
+smoke.stream ("smoke"+ext);
+puke.stream ("puke"+ext);
 timer closer, pacer;
 if (!from_game)
 {
@@ -1830,9 +1811,9 @@ door.slot=door.play ("doorbell");
 }
 while (walked<paces)
 {
-wait(5);
 if (!from_game)
 {
+if (play_menu_music) menu_music();
 bool wants_skip=singlekey (KEY_RETURN) or singlekey (KEY_NUMPAD_ENTER) or singlekey (KEY_SPACE) or singlekey (KEY_ESCAPE) or (key_down (KEY_LALT) and key_pressed (KEY_F4));
 if (wants_skip)
 {
@@ -1865,22 +1846,24 @@ pacer.restart();
 if (!smoke.playing and random(0,3)==3) smoke.play();
 if (!burp.playing and random(0,6)==6)
 {
-burp.load (randomize ("burp") +ext);
+burp.stream (randomize ("burp") +ext);
 burp.play();
 }
 if (!puke.playing and random(0,10)==10) puke.play();
 }
+wait(5);
 }
 pool.destroy_all();
 things.destroy_all();
-burp.close();
 smoke.close();
+burp.close();
 puke.close();
+stop_menu_music();
 set_sound_master_volume (loudness);
 if (!from_game)
 {
-say ("Tak ahoj a zase příště!", true, false, output==0);
-if (output>0) wait_delay (2000);
+say ("Tak ahoj a zase příště!", true, false);
+wait_delay();
 }
 }
 

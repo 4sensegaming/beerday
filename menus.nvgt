@@ -8,7 +8,6 @@ string menu_question, read_text="";
 int result=1, conresult=1, gameres=1;
 int custslot=-1;
 uint8 custcounter=0;
-navchar[] navchars;
 bool oldpaused=false, custchanged=false, is_learnmenu=false, is_custmenu=false, is_conmenu=false, is_optionsmenu=false, is_readmenu=false, is_statmenu=false, is_gallery=false, is_updatemenu=false, is_namemenu=false, help_read=false;
 timer ui_help_timer;
 
@@ -48,7 +47,7 @@ return 0;
 else if (singlekey (KEY_SPACE))
 {
 silence();
-if (menu_question!="") say (menu_question, true, false, false, !is_updatemenu);
+if (menu_question!="") say (menu_question, true, false, false);
 else
 {
 handle.part=pos;
@@ -154,7 +153,7 @@ custslot=play_stat ("customer", false, true);
 }
 }
 if (custbeep.playing)
-if ((output == 0 and !sapi.speaking) or (output>0 and custcounter>fps))
+if ((output == 0 and !fallback_voice.speaking) or (output>0 and custcounter>fps))
 {
 custcounter=0;
 silence_custmenu();
@@ -169,7 +168,7 @@ copy (read_text);
 if (menu_question=="") nav (handle);
 if (speak_ui_help and foreground)
 {
-if (ui_help_timer.elapsed>=ui_help_delay and down_keys()==0 and !sapi.speaking) ui_help (true);
+if (ui_help_timer.elapsed>=ui_help_delay and down_keys()==0 and !fallback_voice.speaking) ui_help (true);
 if (down_keys()>0 and ui_help_timer.elapsed<ui_help_delay) ui_help_timer.restart();
 }
 return 0;
@@ -180,7 +179,6 @@ uint make_menu (string[]@ which, int start=1, dynamic_menu@ handle=@menu, bool a
 handle.running=false;
 handle.reset (false);
 handle.allow_escape=true;
-if (is_readmenu) handle.allow_escape=true;
 if (is_custmenu or is_readmenu) handle.wrap=false;
 else handle.wrap=menu_wrap;
 handle.set_callback (callback, "");
@@ -272,7 +270,7 @@ while (tempres>0)
 string[] om={"Nabídka online funkcí", "gallery|Hudební síň slávy|Poslechni si všechny legendární a stoprocentně vážně míněné AI songy použité ve hře v naprostém klidu a v původní kvalitě!|1|2|1", "web|Stránka hry|"+browser+"|2", "discord|Discord server 4Sense Gaming|"+browser+"|2", "changelog|Historie změn v jednotlivých verzích|"+browser+"|2", "roadmap|Roadmapa (orientační plán dalšího vývoje)|"+browser+"|2", "contact|Kontaktovat autora|Otevře ve výchozím webovém prohlížeči stránku, kde mi můžeš nahlásit chybu nebo sdělit jakoukoli jinou zpětnou vazbu.|2"};
 if (!postpone_update and update_version!="") om.insert_last ("install_update|Aktualizovat na verzi "+update_version+"| |3");
 else if (!updates and !postpone_update and update_version=="") om.insert_last ("check_update|Vyhledat aktualizace| |3");
-om.insert_last ("redownload|Znovu stáhnout instalační soubor nejnovější verze|Stáhne se pomocí výchozího webového prohlížeče do stejné složky, kam se ukládají i jiné stažené soubory. Stažený soubor pak stačí spustit a hra se přeinstaluje na nejnovější verzi. Výběrem této položky se program ukončí.|3");
+om.insert_last ("redownload|Znovu stáhnout ZIP archiv nejnovější verze|Stáhne se pomocí výchozího webového prohlížeče do stejné složky, kam se standardně ukládají i jiné stažené soubory. Program se ukončí.|3");
 string[] secs={"", "Komunita", "Aktualizace"};
 tempres=make_menu (om, tempres, menu, true, secs, is_rerun);
 is_rerun=true;
@@ -304,7 +302,7 @@ is_rerun=false;
 }
 else if (instr (item, "redownload"))
 {
-if (external (uri+"beerday.zip")) quit(true);
+if (external (uri+update_bundle_name())) quit(true);
 }
 }
 if (update_version!="") update_version="";
@@ -315,7 +313,7 @@ void read_menu (string text, string separators="\r\n")
 read_text=text;
 string[] split=text.split(separators, false);
 split.insert_at (0, "Seznam pro pohodlnější čtení");
-if (!is_readmenu and !instr (read_text, "ásledující") and !instr (read_text, "stereo") and !instr (read_text, "Potvrzení a pokračování") and !instr (read_text, "zadávej")) speak_menu_prompt=true;
+if (!is_readmenu and !instr (read_text, "ásledující") and !instr (read_text, "stereo") and !instr (read_text, "Potvrzení a pokračování") and !instr (read_text, "zadávej") and !is_tutorial) speak_menu_prompt=true;
 else if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
 if (is_custmenu) silence_custmenu();
 ss_start();
@@ -334,8 +332,8 @@ else is_rerun=true;
 }
 is_readmenu=old_read;
 speak_menu_prompt=old_prompt;
-ss_end();
 read_text="";
+ss_end();
 }
 
 void set_difficulty()
@@ -372,33 +370,27 @@ if (!is_optionsmenu and ask ("Prohodit levý a pravý kanál?", false, false)==1
 
 bool wait_speakers()
 {
-uint8 frames=0;
 frame.restart();
-while (frames < fps)
+while (frame.elapsed < 1000)
 {
-wait (5);
-if (frame.elapsed >= 1000/fps)
-{
-frames++;
-frame.restart();
+menu_music();
 closekey();
 if (!onboarding and down_keys() > 0)
 {
-wait_keys();
+frame.restart();
+frame.pause();
 return false;
 }
+wait (5);
 }
-}
+frame.restart();
+frame.pause();
 return true;
 }
 
 bool play_speakers (double panning)
 {
-if (global>-1) pool.destroy_sound (global);
-global=pool.play_1d ("edge"+ext, stereo_center, panning, false);
-bool success=wait_sound (global, false);
-wait_keys();
-return success;
+return wait_sound ("edge", false, true, panning);
 }
 
 void options()
@@ -449,17 +441,21 @@ else if (tempres == 0) break;
 else
 {
 silence();
-if (global > -1) pool.destroy_sound (global);
 string to_play=learn_sounds[tempres-1];
-global=play_stat (to_play, looping_sounds.find(to_play)>-1, true);
-if (pause_music.find(to_play)>-1 and menuloop.playing) menuloop.pause();
+int playing_sound=play_stat (to_play, looping_sounds.find(to_play)>-1, true);
+if (pause_music.find(to_play)>-1 and (menuloop.playing or menustart.playing))
+{
+wait_keys();
+if (menuloop.playing) menuloop.pause();
+else if (menustart.playing) menustart.pause();
+while (playing_sound>-1 and pool.sound_is_playing (playing_sound))
+{
+if (!keys_down().is_empty()) pool.destroy_sound (playing_sound);
+wait(5);
+}
+}
 tempres=menu.run ("", tempres, false, true);
 }
-}
-if (global > -1 and pool.sound_is_playing (global))
-{
-pool.destroy_sound (global);
-global=-1;
 }
 is_learnmenu=false;
 ss_end();
@@ -617,33 +613,32 @@ ss_end();
 void nav (dynamic_menu@ handle)
 {
 if (mod_ctrl() or mod_shift() or mod_alt()) return;
-string char=get_characters();
-if (char.length() == 1 and char != " ")
-{
-int8 letter=-1;
-uint n=navchars.length();
-for (uint i=0; i<n; i++)
-if (navchars[i].nc == char or navchars[i].nca == char)
-{
-letter=i;
-break;
-}
-if (letter > -1)
-{
+string raw=get_characters();
+if (raw == "") return;
+int next=utf8next(raw, 0);
+if (next <= 0 or next != int(raw.length())) return;
+string char=raw.substr(0, next).lower();
+if (char == " " or !char.is_alphabetic()) return;
 uint current=handle.get_position(), m=handle.item_list.length();
 int found=-1;
 for (uint i=current; i<m; i++)
-if (handle.item_list[i].ui_name[0] == navchars[letter].nc or handle.item_list[i].ui_name[0] == navchars[letter].nca)
+{
+string first=utf8_first_char_lower(handle.item_list[i].ui_name);
+if (first!="" and char==first)
 {
 found=i;
 break;
 }
+}
 if (found == -1)
 for (uint i=0; i<current-1; i++)
-if (handle.item_list[i].ui_name[0] == navchars[letter].nc or handle.item_list[i].ui_name[0] == navchars[letter].nca)
+{
+string first=utf8_first_char_lower(handle.item_list[i].ui_name);
+if (first!="" and char==first)
 {
 found=i;
 break;
+}
 }
 if (found == -1)
 {
@@ -663,16 +658,13 @@ handle.speak_item=true;
 silence();
 }
 }
-else error ("Nepovolený znak.", forced_output);
-}
-}
 
 void ss_start()
 {
 if (!is_game or speaking_tutorial or menu.running or @top_menu!=null or keyhelp or is_optionsmenu or is_learnmenu or is_conmenu or is_custmenu or is_readmenu or is_gallery or menu_question!="") return;
 oldpaused=paused;
 pause (false);
-wait_keys();
+//wait_keys();
 }
 
 void ss_end()
@@ -847,7 +839,7 @@ return true;
 
 void wait_answered (bool play_sound=true)
 {
-if (!onboarding and play_sound) play_enter();
+if (!onboarding and play_sound and !is_game) play_enter();
 reset_ui_help();
 }
 
@@ -962,7 +954,6 @@ outputs.reserve (4);
 if (SCREEN_READER_AVAILABLE) outputs.insert_last (1);
 string[] optmenu={""};
 if (tempres == -1 and speak_menu_prompt) optmenu[0]="Nastavení rozhraní";
-optmenu.insert_last ("strip_diacritics|Zobrazovat texty bez diakritiky|bez hacku a carek|1|"+strip_diacritics);
 optmenu.insert_last ("check_updates|Kontrolovat aktualizace při spuštění|Pokud toto nastavení vypneš, budeš muset aktualizovat ručně z hlavního menu a podnabídky Online funkce.|1|"+updates);
 optmenu.insert_last ("pause_on_blur|Zapauzovat hru při přepnutí do jiného okna|Při návratu do okna hry ji budeš muset ručně odpauzovat|1|"+pause_on_blur);
 optmenu.insert_last ("show_empty_stats|Zobrazovat statistiky s nulovou hodnotou|Vypnutím tohoto nastavení skryješ v nabídce Statistiky všechny položky, které ještě nemají žádný záznam. Toto nastavení má vliv i na kopírování statistik do schránky.|1|"+show_empty_stats);
@@ -988,10 +979,10 @@ current_history_size+="| |3|2|1|"+!use_history;
 optmenu.insert_last (current_history_size);
 optmenu.insert_last ("reset_speech_history|Mazat historii při spuštění nové hry| |3|"+reset_history+"|0|"+!use_history);
 optmenu.insert_last ("copy_speech_history|Kopírovat historii do schránky při ukončení programu| |3|"+copy_history+"|0|"+!use_history);
-optmenu.insert_last ("save_speech_history|Ukládat historii do souboru při ukončení programu|Soubor se vždy vytvoří ve tvé složce Dokumenty.|3|"+save_history+"|0|"+!use_history);
+optmenu.insert_last ("save_speech_history|Ukládat historii do souboru při ukončení programu|Soubor s názvem speech_history.txt se vytvoří ve stejné složce, odkud hru spouštíš.|3|"+save_history+"|0|"+!use_history);
 optmenu.insert_last ("speak_confirm_screen_reader_prompt|Slovní výzva k pokračování|Pokud hra mluví prostřednictvím odečítače, není na některých místech možné pokračovat k dalšímu kroku bez potvrzení enterem. V nabídce nastavení zvuku si můžeš ještě zvlášť nastavit zvukové upozornění místo slovního.|4|"+speak_sr_prompt+"|0|"+forced_output);
-if (!outputs.is_empty()) optmenu.insert_last ("force_screen_reader|Číst hlasem Sapi|Pokud je toto nastavení vypnuté, hra bude všechno říkat prostřednictvím odečítače.|4|"+forced_output);
-optmenu.insert_last ("sapi_settings|Nastavení hlasu Sapi|Otevře systémový ovládací panel, kde můžeš nastavit parametry hlasu.|4|2|0|"+!forced_output);
+if (!outputs.is_empty()) optmenu.insert_last ("force_screen_reader|Číst systémovým hlasem|Pokud je toto nastavení vypnuté, hra bude všechno říkat prostřednictvím odečítače.|4|"+forced_output);
+if (system_is_windows) optmenu.insert_last ("sapi_settings|Nastavení systémového hlasu|Otevře systémový ovládací panel, kde můžeš nastavit parametry hlasu.|4|2|0|"+!forced_output);
 optmenu.insert_last ("echo_chars|Hlásit psané znaky| |5|"+input.echo_chars);
 optmenu.insert_last ("echo_words|Hlásit psaná slova| |5|"+input.echo_words);
 optmenu.insert_last ("echo_smart|Chytrá odezva|Pokud je toto nastavení zapnuté, přečte se všechno, co jsi napsal");
@@ -1037,9 +1028,9 @@ checkup();
 if (output==0)
 {
 changed_output();
-say ("Zapnuto", true, false, false, false);
+say ("Zapnuto", true, false, false);
 }
-else if (output==4)
+else if (reader_name=="NVDA")
 {
 say_sleep_mode();
 first=true;
@@ -1050,7 +1041,6 @@ else if (instr (item, "echo_chars")) input.echo_chars=!input.echo_chars;
 else if (instr (item, "echo_words")) input.echo_words=!input.echo_words;
 else if (instr (item, "echo_smart")) input.echo_smart=!input.echo_smart;
 else if (instr (item, "update")) updates=!updates;
-else if (instr (item, "diacritics")) strip_diacritics=!strip_diacritics;
 else if (instr (item, "restore"))
 {
 restore_ui_defaults (false);
@@ -1081,7 +1071,6 @@ show_empty_stats=false;
 input.reset (true);
 speak_submenu=true;
 enable_logging=false;
-strip_diacritics=false;
 updates=true;
 if (!silent) say ("Výchozí nastavení rozhraní obnovena.", true, false, true);
 }
@@ -1416,7 +1405,7 @@ while (tempres==-1 or tempres!=0)
 string[] optmenu={""};
 if (tempres==-1 and speak_menu_prompt) optmenu[0]="Nastavení hry";
 optmenu.insert_last ("opt_set_drink_selection|Jak vybrat piva na čepu");
-if (selection!=selection_unspecified) optmenu[optmenu.length()-1]+=": "+to_lower (selection_menu[selection].substr (selection_menu[selection].find("|")+1));
+if (selection!=selection_unspecified) optmenu[optmenu.length()-1]+=": "+selection_menu[selection].substr (selection_menu[selection].find("|")+1).lower();
 optmenu[optmenu.length()-1]+="|Určuje, jestli se piva, která chceš mít na čepu, budou měnit každou hru a jestli je vybereš ručně, nebo se vyberou náhodně. Toto nastavení nelze měnit během hry.|1|2|1|"+is_game;
 if (!beers.is_empty()) optmenu.insert_last ("opt_clear_drinks|Smazat vybraná piva|Nelze během hry a pokud se vybírají náhodně.|1|2|0|"+(is_game or selection==selection_random_change or selection==selection_manual_change));
 else optmenu.insert_last ("choose_drinks|Vybrat piva|Nelze během hry a pokud se vybírají náhodně.|1|2|1|"+(is_game or selection==selection_random_change or selection==selection_manual_change or selection==selection_unspecified));
@@ -1430,7 +1419,7 @@ optmenu.insert_last ("customers_jukebox|Zákazníci smějí pouštět hudbu|Kdy�
 if (!play_game_music) optmenu[optmenu.length()-1]+=no_jukebox;
 optmenu[optmenu.length()-1]+="|2|"+enable_jukebox+"|0|"+!play_game_music;
 optmenu.insert_last ("speak_impatient|Zákazník brzy ztratí trpělivost| |3|"+say_impatient);
-optmenu.insert_last ("speak_errors|Slovní popisy chyb|Pokud je toto nastavení vypnuté, ozve se vždycky, když se pokusíš udělat něco, co zrovna nejde, jako třeba sebrat další půllitr, když už jich neseš sedm), jen zvuková výstraha. Příslušný zvuk najdeš v nabídce seznámení se zvuky.|3|"+speak_errors);
+optmenu.insert_last ("speak_errors|Slovní popisy chyb|Pokud je toto nastavení vypnuté, ozve se vždycky, když se pokusíš udělat něco, co zrovna nejde - jako třeba sebrat další půllitr, když už jich neseš sedm - jen zvuková výstraha. Příslušný zvuk najdeš v nabídce seznámení se zvuky.|3|"+speak_errors);
 optmenu.insert_last("speak_step|Předměty při chůzi|Když je toto nastavení vypnuté a ty budeš chtít zjistit, jestli jsou na políčku, kde právě stojíš, nějaké půllitry nebo sudy, budeš to muset udělat pokaždé ručně.|3|"+speak_step);
 if (!onboarding)
 {
@@ -1542,7 +1531,7 @@ if (tempres == -1 and speak_menu_prompt) optmenu[0]="Nastavení zvuku";
 optmenu.insert_last ("play_intro|Animace při spuštění programu| |1|"+play_intro);
 optmenu.insert_last ("play_outro|Animace při ukončení programu| |1|"+play_outro);
 optmenu.insert_last ("menu_sounds|Zvuky při pohybu v nabídkách| |1|"+play_menu_sounds);
-optmenu.insert_last ("play_submenu|Zvukové upozornění, že položka má  podnabídku|");
+optmenu.insert_last ("play_submenu|Zvukové upozornění, že položka má podnabídku|");
 if (!play_menu_sounds) optmenu[optmenu.length()-1]+="Nelze přehrávat, když jsou vypnuté všechny zvuky při pohybu v nabídkách.";
 else optmenu[optmenu.length()-1]+=" ";
 optmenu[optmenu.length()-1]+="|1|"+play_submenu_sound+"|0|"+!play_menu_sounds;
@@ -1553,7 +1542,7 @@ optmenu.insert_last ("play_menu_music_in_game|Hudba v nabídkách i během hry|N
 optmenu.insert_last ("play_mug_loop|Půllitry| |1|"+play_mugloop);
 optmenu.insert_last ("play_barrel_loop|Sudy| |1|"+play_barrelloop);
 optmenu.insert_last ("play_single_loop|Více předmětů na stejném místě|Když toto nastavení vypneš a na některém políčku budou například tři půllitry najednou, bude se z něj ozývat pouze jeden zvuk půllitru. Úplně se přestane ozývat, teprve až na tomto políčku nezůstanou žádné půllitry. Vypnutím tohoto nastavení tak můžeš docílit menšího hluku při hře, což může být někdy přehlednější.|1|"+play_all_items+"|0|"+(!play_mugloop and !play_barrelloop));
-optmenu.insert_last ("customer_beep|První zákazník ve frontě nebo sledovaný zákazník|Pokud právě nikoho nesleduješ, bude se zvuk ozývat  vždy jen poblíž toho zákazníka, který je zrovna první ve frontě. Pokud někoho sledovat začneš, bude se zvuk ozývat vždy jen z pozice sledovaného zákazníka.|1|"+cue);
+optmenu.insert_last ("customer_beep|První zákazník ve frontě nebo sledovaný zákazník|Pokud právě nikoho nesleduješ, bude se zvuk ozývat vždy jen poblíž toho zákazníka, který je zrovna první ve frontě. Pokud někoho sledovat začneš, bude se zvuk ozývat vždy jen z pozice sledovaného zákazníka.|1|"+cue);
 optmenu.insert_last ("play_sr_prompt|Zvuková výzva k pokračování|Pokud hra mluví prostřednictvím odečítače, není na některých místech možné pokračovat k dalšímu kroku bez potvrzení enterem. V nabídce nastavení rozhraní si můžeš ještě zvlášť nastavit slovní upozornění místo zvukového.|1|"+play_sr_prompt+"|0|"+forced_output);
 optmenu.insert_last ("play_utterance|Zvuk nové promluvy v historii řeči|Když je toto nastavení zapnuté, ozve se zvuk vždycky, když program vysloví některou hlášku, která se dá zopakovat v historii řeči. Dostaneš tak upozornění, že hra řekla něco, co by bylo dobré nepřeslechnout. To se může hodit v náročnějších, rychlejších a hlučnějších hrách. Příslušný zvuk najdeš v nabídce Seznámení se zvuky.|1|"+play_say);
 optmenu.insert_last ("steps_overall|Všechny kroky celkově| |2|"+play_steps);
@@ -1775,13 +1764,6 @@ first=true;
 }
 else if (instr (item, "menu_vol"))
 {
-menu_sounds_vol=set_volume (menu_sounds_vol);
-enter.volume=menu_sounds_vol;
-esc.volume=menu_sounds_vol;
-move.volume=menu_sounds_vol;
-turn.volume=menu_sounds_vol;
-inmenu.volume=menu_sounds_vol;
-submenu.volume=menu_sounds_vol;
 custbeep.volume=menu_sounds_vol;
 doingsound.volume=menu_sounds_vol;
 first=true;
@@ -1839,7 +1821,7 @@ void restore_volumes (bool silent)
 {
 loudness=defvol;
 set_sound_master_volume (loudness);
-menuloop_vol=-4;
+menuloop_vol=0;
 mugloop_vol=0;
 barrelloop_vol=0;
 gamemusic_vol=-4;

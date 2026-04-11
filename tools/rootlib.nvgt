@@ -1,0 +1,5 @@
+string get_project_root()
+{
+spec::path root(SCRIPT_MAIN_PATH);
+return root.parent.to_string();
+}

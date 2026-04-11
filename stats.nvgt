@@ -142,7 +142,7 @@ stat mix;
 mix.content=0;
 mix.name="mixed_"+all_beers[i]+"_"+all_beers[j];
 string mixed_name=all_beers7[j];
-if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="Se "+mixed_name;
+if (is_s_or_z_sound(mixed_name)) mixed_name="Se "+mixed_name;
 else mixed_name="S "+mixed_name;
 mix.ui_name=mixed_name;
 mix.category=category;
@@ -155,7 +155,7 @@ stat mix;
 mix.content=0;
 mix.name="mixed_"+all_beers[i]+"_"+non_alco[k];
 string mixed_name=non_alco7[k];
-if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="Se "+mixed_name;
+if (is_s_or_z_sound(mixed_name)) mixed_name="Se "+mixed_name;
 else mixed_name="S "+mixed_name;
 mix.ui_name=mixed_name;
 mix.category=category;
@@ -180,7 +180,7 @@ stat mix;
 mix.content=0;
 mix.name="mixed_"+non_alco[i]+"_"+all_beers[j];
 string mixed_name=all_beers7[j];
-if (mixed_name[0]=="S" or mixed_name[0]=="Š" or mixed_name[0]=="Z" or mixed_name[0]=="ž") mixed_name="Se "+mixed_name;
+if (is_s_or_z_sound(mixed_name)) mixed_name="Se "+mixed_name;
 else mixed_name="S "+mixed_name;
 mix.ui_name=mixed_name;
 mix.category=category;
@@ -416,7 +416,6 @@ if (section_index>=0 and section_index<int(sections.length()) and sections[secti
 }
 parsed+=stats[i].render(true)+"\r\n";
 }
-if (strip_diacritics) parsed=fuck_czech(parsed);
 if (parsed.length()>=2) parsed=parsed.substr(0, parsed.length()-2);
 clipboard_set_text(parsed);
 say("Statistiky zkopírovány.", true, false, true);

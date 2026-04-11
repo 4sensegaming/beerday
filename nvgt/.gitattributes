@@ -1,3 +1,0 @@
-*.nvgt linguist-language=angelscript
-_SConscript linguist-language=python
-test/data/** binary

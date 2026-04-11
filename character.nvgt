@@ -120,28 +120,6 @@ vocal_slot=-1;
 vocal_interval=0;
 vocal_elapsed=0;
 voice="";
-if (use_vocals)
-{
-uint l=known_voices.length(), count=0;
-while(voice=="" and !supported_voices.is_empty() and count<l)
-{
-voice=known_voices[random(0, known_voices.length()-1)];
-if ((sex==1 and instr (voice, "\tf")) or (sex==2 and !instr (voice, "\tf")))
-{
-count++;
-continue;
-}
-int8 found_voice=supported_voices.find (voice.split ("\t", true)[0]);
-if (found_voice==-1)
-{
-count++;
-continue;
-}
-voice=supported_voices[found_voice];
-break;
-}
-if (voice=="") use_vocals=false;
-}
 }
 
 bool move()
@@ -266,7 +244,7 @@ if (h.is_roaming or h.is_chasing or (h.state == fleeing and  h.health >= h.attac
 else if (h.state!=idle)
 {
 slot=play ("customer", false, true);
-if (is_tutorial and !find_tutorial("customer").said) say_tutorial ("customer");
+if (is_tutorial and !find_tutorial("customer").said and (nearby==-1 or !pool.sound_is_playing(nearby))) say_tutorial ("customer");
 }
 break;
 }
@@ -440,7 +418,7 @@ is_chasing=false;
 prev_state=state;
 state=idle;
 unqueue (true);
-once_transition=random (7, fps);
+once_transition=random (round ((7.0/60.0)*fps, 0), fps);
 }
 else
 {
@@ -536,7 +514,7 @@ return true;
 target.trip();
 frozen=1;
 frames=0;
-once_transition=random (14, 28);
+once_transition=random (round ((14.0/60.0)*fps, 0), round ((28.0/60.0)*fps, 0));
 if (target.punched or target.state==idle)
 {
 target.has_drink=false;
@@ -710,7 +688,7 @@ void set_prepend()
 {
 if (name!="")
 {
-prepend=sanitize(name)+" ";
+prepend=name+" ";
 return;
 }
 int8 ql=queue.length(), l=10, q=queue.find(this);
@@ -742,8 +720,8 @@ prepend+=" ";
 }
 else
 {
-if (sex==2) prepend="Pomocnice, která "+to_lower (statedesc[help_state])+", ";
-else prepend="Pomocník, který "+to_lower (statedesc[help_state])+", ";
+if (sex==2) prepend="Pomocnice, která "+statedesc[help_state].lower()+", ";
+else prepend="Pomocník, který "+statedesc[help_state].lower()+", ";
 }
 }
 else if (is_roaming) prepend="Ožrala ";
@@ -771,8 +749,8 @@ else prepend="Poslední zákazník ve frontě ";
 }
 else if (q>=l)
 {
-if (sex==2) prepend=(q+1)+". zákaznice ve frontě";
-else prepend=(q+1)+". zákazník ve frontě";
+if (sex==2) prepend=(q+1)+". zákaznice ve frontě ";
+else prepend=(q+1)+". zákazník ve frontě ";
 }
 }
 else if (state==led)
@@ -853,7 +831,7 @@ if (@handle==null) return;
 append="";
 if (handle.name4!="")
 {
-append=sanitize (handle.name4);
+append=handle.name4;
 return;
 }
 int8 ql=queue.length(), l=10, q=queue.find(handle);
@@ -894,8 +872,8 @@ else append+="vyhazovače";
 }
 else
 {
-if (handle.sex==2) append+="pomocnici, která "+to_lower (statedesc[handle.help_state]);
-else append+="pomocníka, který "+to_lower (statedesc[handle.help_state]);
+if (handle.sex==2) append+="pomocnici, která "+statedesc[handle.help_state].lower();
+else append+="pomocníka, který "+statedesc[handle.help_state].lower();
 }
 }
 else if (handle.is_roaming or handle.state==led) append+="ožralu";
@@ -1324,7 +1302,7 @@ if (played_jukebox_songs<max_jukebox_songs and !is_player and paid_jukebox_once<
 
 void state_falldown()
 {
-if (frames >= 6)
+if (frames >= 12)
 {
 y-=2;
 if (is_player)
@@ -1410,7 +1388,7 @@ clean();
 door.open (this);
 }
 if (door.closed) return;
-if (!is_player and once_transition==0 and door.frames<3)
+if (!is_player and once_transition==0 and door.frames<round ((3.0/60.0)*fps, 0))
 {
 frames=0;
 frozen=1;
@@ -1548,7 +1526,7 @@ if (patience<base_patience) patience=base_patience;
 
 void state_ordering()
 {
-if ((output == 0 and !sapi.speaking) or output > 0)
+if ((output == 0 and !fallback_voice.speaking) or output > 0)
 {
 if (drink == -1 or (count_barrels(drink) ==0 and faucet.amounts[drink] < poured_undermeasure))
 {
@@ -1586,7 +1564,7 @@ return;
 }
 }
 }
-if (output == 0 and sapi.speaking) return;
+if (output == 0 and fallback_voice.speaking) return;
 set_state (returning);
 if (spawner == 0) spawner++;
 }
@@ -1769,7 +1747,7 @@ else if (enable_idle and decide == 1)
 frames=speed+transition;
 hand.frames=speed+transition;
 if (@hand!=null) hand.drop();
-once_transition=random (transition, 150);
+once_transition=random (transition, round ((150.0/60.0)*fps, 0));
 set_state (idle);
 return;
 }
@@ -2272,7 +2250,7 @@ rep+=" "+append+".";
 say (rep, false);
 frozen=1;
 frames=0;
-once_transition=(fps*3)+10;
+once_transition=(fps*3)+round ((10.0/60.0)*fps, 0);
 @leading=null;
 }
 else if (leading.x != x or leading.y != y)
@@ -2914,7 +2892,7 @@ if (@hand!=null and help_state==serving) found_mug=true;
 return;
 }
 int8 old_holding=holding;
-once_transition=fps-(10*difficulty);
+once_transition=fps-round ((((10.0*difficulty))/60.0)*fps, 0);
 @hand=@handle;
 holding=carrying.find (hand);
 frozen=1;
@@ -3307,11 +3285,7 @@ else if (inc and faucet.pipe == beers.length() -1)
 if (is_player) error (beers[beers.length()-1]+" je poslední kohout.");
 return;
 }
-if (frozen > 0 and (transition>0 or once_transition>0 or state == tripped))
-{
-if (is_player) error ("Takhle rychle to nestíháš.");
-return;
-}
+if (frozen > 0 and (transition>0 or once_transition>0 or state == tripped)) return;
 if (inc) faucet.pipe++;
 else faucet.pipe--;
 if (is_player) say (say_pipe (true, false), true, false);
@@ -3359,7 +3333,7 @@ if (drink==-1) return "";
 string order=beers4[drink];
 if (second_drink > -1)
 {
-if (beers7[second_drink][0]=="S" or beers7[second_drink][0]=="Z" or beers7[second_drink][0]=="ž" or beers7[second_drink][0]=="Š") order+=" se ";
+if (is_s_or_z_sound(beers7[second_drink])) order+=" se ";
 else order+=" s ";
 order+=beers7[second_drink];
 }
@@ -3777,7 +3751,12 @@ log_player_state();
 return;
 }
 }
-if (@leading==null and (say_dirty (false) > 0 or has_dirty_mugs()) and count_state(cleaning).length() == 0 and @has_barrel==null and @wanted_barrel==null and (missing==-1 or faucet.amounts[missing]>-1) and state != cleaning and @faucet.owner != @this and count_clean_mugs() == 0 and (carrying.is_empty() or has_dirty_mugs()))
+character@[] cleaning_now=count_state(cleaning), serving_now=count_state(serving), giving_now=count_state(giving);
+bool has_cleaning=!cleaning_now.is_empty(), has_serving=!serving_now.is_empty(), has_giving=!giving_now.is_empty();
+uint clean_mugs=count_clean_mugs(), dirty_count=say_dirty(false);
+bool dirty_on_hand=has_dirty_mugs(), carrying_empty=carrying.is_empty(), no_barrel_job=@has_barrel==null and @wanted_barrel==null;
+bool pipe_ready=missing==-1 or faucet.amounts[missing]>-1, faucet_free=@faucet.owner != @this, no_target=@leading==null;
+if (no_target and (dirty_count > 0 or dirty_on_hand) and !has_cleaning and no_barrel_job and pipe_ready and state != cleaning and faucet_free and clean_mugs == 0 and (carrying_empty or dirty_on_hand))
 {
 found_mug=false;
 chose_drink=false;
@@ -3788,9 +3767,9 @@ set_state (cleaning);
 log_player_state();
 return;
 }
-if (!count_state(serving).is_empty() and @leading == null and @has_barrel==null and @wanted_barrel==null and @wanted_mug==null and @faucet.owner!=@this and (missing==-1 or faucet.amounts[missing]>-1) and state!=emptiing)
+if (has_serving and no_target and no_barrel_job and @wanted_mug==null and faucet_free and pipe_ready and state!=emptiing)
 {
-if (carrying.is_empty() and state!=giving and count_state(giving).is_empty() and (count_clean_mugs()>0 or !count_state(serving)[0].carrying.is_empty()))
+if (carrying_empty and state!=giving and !has_giving and (clean_mugs>0 or !serving_now[0].carrying.is_empty()))
 {
 found_mug=false;
 chose_drink=false;
@@ -3800,7 +3779,7 @@ set_state (giving);
 // Debugging:
 log_player_state();
 }
-else if (!carrying.is_empty() and state!=disposing and state!=cleaning)
+else if (!carrying_empty and state!=disposing and state!=cleaning)
 {
 found_mug=false;
 chose_drink=false;
@@ -3812,7 +3791,7 @@ log_player_state();
 }
 return;
 }
-if ((state==-1 and count_state(serving).is_empty()) or (count_state(serving).is_empty() and state!=mugging and state!=serving and state!=piping and (state!=giving or @leading==null) and (state!=calming or @leading==null) and (state!=cleaning or count_clean_mugs()>0 or say_dirty(false)==0 or !count_state(cleaning).is_empty()) and @has_barrel==null and @wanted_barrel==null and (missing==-1 or faucet.amounts[missing]>-1) and (count_clean_mugs()>0 or !carrying.is_empty()) and @faucet.owner!=@this and (state!=disposing or carrying.is_empty()) and !has_dirty_mugs()))
+if ((state==-1 and !has_serving) or (!has_serving and state!=mugging and state!=serving and state!=piping and (state!=giving or no_target) and (state!=calming or no_target) and (state!=cleaning or clean_mugs>0 or dirty_count==0 or has_cleaning) and no_barrel_job and pipe_ready and (clean_mugs>0 or !carrying_empty) and faucet_free and (state!=disposing or carrying_empty) and !dirty_on_hand))
 {
 found_mug=false;
 chose_drink=false;
@@ -3831,9 +3810,9 @@ string say_health()
 {
 string rep;
 if (health == 100) rep="vůbec";
-else if (health > 75) rep="jen minimálně";
+else if (health > 75) rep="minimálně";
 else if (health > 50) rep="lehce";
-else if (health > 25) rep="už docela dost";
+else if (health > 25) rep="poměrně dost";
 else if (health > 15) rep="těžce";
 else if (health > difficulty) rep="velmi těžce";
 else
@@ -4037,7 +4016,6 @@ void speak (string vocal="", uint8 interrupt=0)
 if (!use_vocals) return;
 if (interrupt==1 and vocal_slot>-1 and pool.sound_is_playing (vocal_slot)) return;
 if (interrupt==0) speech.resize(0);
-string true_vocal=vocals_path+voice+"_";
 int index=-1;
 if (vocal=="")
 {
@@ -4056,18 +4034,17 @@ if (state==fleeing)
 if (health<=attack) vocal+="2";
 else if (leaving==1 or leaving==3) vocal+=""+leaving;
 }
-true_vocal+=state+"_"+index;
 all_vocals.set ("used_"+state+"_"+index, 1);
 used++;
 all_vocals.set ("used_"+state, used);
 }
-true_vocal+=".wav";
+vocal+=".wav";
 if (vocal_slot>-1 and pool.sound_is_playing (vocal_slot)) pool.destroy_sound (vocal_slot);
 vocal_slot=-1;
 string utterance="";
 if (vocal=="") all_vocals.get (state+"_"+index, utterance);
 else all_vocals.get (vocal, utterance);
-speech.insert_last (true_vocal+"\t"+utterance);
+speech.insert_last (vocal+"\t"+utterance);
 if (interrupt==0)
 {
 vocal_interval=0;

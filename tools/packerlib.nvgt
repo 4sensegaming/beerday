@@ -1,0 +1,62 @@
+﻿#include "../scramble.nvgt"
+bool encrypt=true;
+string pack_name, pack_folder;
+string[] encrypt_as_string={"help.dat", "tutorial.dat", "objectives.dat", "tips.dat", "credits.dat", "stats.dat", "soundtrack.dat", "names.dat"};
+pack_file pack;
+
+void build_pack (bool silent, string root)
+{
+pack_name=root+"/pack.dat";
+pack_folder=root+"/pack/";
+if (!silent) show_window("Packer");
+if (pack_folder[pack_folder.length()-1] != "/" and pack_folder[pack_folder.length()-1] != "\\") pack_folder+="/";
+if (!pack.create(pack_name)) error ("The pack file could not be created.");
+string[] names=find_files(pack_folder+"*.*");
+uint l=names.length();
+for (uint x=0; x<l; x++)
+if (!add(names[x])) error ("The file "+names[x]+" could not be packed.");
+if (!silent) alert("The pack contains "+pack.file_count+" files.", "");
+pack.close();
+}
+
+bool add(string file)
+{
+if (encrypt)
+{
+if (encrypt_as_string.find(file) > -1) return eas(file);
+return add_encrypted_file(file);
+}
+return pack.add_file(pack_folder+file, file);
+}
+
+bool eas(string file)
+{
+string raw=file_get_contents(pack_folder+file);
+if (raw=="") return false;
+string encrypted=string_aes_encrypt(raw, scramble());
+if (encrypted=="" or get_last_error()!=0) return false;
+return pack.add_memory(file, encrypted);
+}
+
+bool add_encrypted_file(string file)
+{
+string raw=file_get_contents (pack_folder+file);
+if (raw=="") return false;
+datastream buffer;
+buffer.binary=true;
+asset_encryptor enc;
+enc.binary=true;
+string obfuscated_key=scramble();
+if (!enc.open(buffer, obfuscated_key)) return false;
+if (raw.length() > 0 and enc.write(raw) == 0) return false;
+enc.close();
+return pack.add_memory(file, buffer.str());
+}
+
+void error (string msg)
+{
+alert ("Error!", msg+"\r\nError code: "+get_last_error());
+pack.close();
+file_delete(pack_name);
+exit();
+}

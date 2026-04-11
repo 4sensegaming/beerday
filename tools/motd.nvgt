@@ -1,18 +1,8 @@
-#include "../build_constants.nvgt"
+#include "motdlib.nvgt"
+#include "rootlib.nvgt"
 
 void main()
 {
-chdir(SCRIPT_MAIN_PATH);
-show_window("Beerday MOTD");
-string motd=input_box("Message of the day", "");
-if (motd == "") return;
-motd=DATE_DAY+"\t"+DATE_MONTH+"\t"+DATE_YEAR+"\t"+TIME_HOUR+"\t"+TIME_MINUTE+"\t"+motd;
-file f;
-f.open("bin/motd.dat", "wb");
-f.write(string_aes_encrypt(motd, scramble_update()));
-if (question("Uploadnout zprávu?", "") == 1)
-{
-run("C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe", "", false, false);
-wait(1000);
-}
+chdir (get_project_root());
+build_motd (false);
 }

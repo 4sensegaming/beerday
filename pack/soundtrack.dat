@@ -4,9 +4,9 @@ music11.ogg	239830	Ententýky	Slávek	a
 music12.ogg	144938	Hovno, prdel, kamení	Slávek	a
 music13.ogg	194345	Hudry	Diana
 music14.ogg	292492	Išel Jano	Slávek	a
-music15.ogg	8426	Jingle 1 (Hospodský rádio Blej. Poctivá muzika. Pro radost a pro fajnšmekry.)	Hosnedlik	j
-music16.ogg	9002	Jingle 2 (Hospodský rádio Blej. Poctivá muzika. Pro radost a pro fajnšmekry.)	Hosnedlik	j
-music17.ogg	16896	Jingle 3 (Hospodský rádio Blej. Poctivá muzika. Pro radost a pro fajnšmekry.)	Hosnedlik	j
+music15.ogg	10773	Jingle 1 (Hospodský rádio Blej. Poctivá muzika. Pro radost a pro fajnšmekry.)	Hosnedlik	j
+music16.ogg	14383	Jingle 2 (Hospodský rádio Blej. Poctivá muzika. Pro radost a pro fajnšmekry.)	Hosnedlik	j
+music17.ogg	19136	Jingle 3 (Hospodský rádio Blej. Poctivá muzika. Pro radost a pro fajnšmekry.)	Hosnedlik	j
 music18.ogg	119159	Jó, český Vánoce	Slávek	x
 music19.ogg	197653	Když jde malý bobr spát (soutěžní cover)	Hosnedlik	c
 music2.ogg	342035	Ajťáci	Hosnedlik
@@ -114,6 +114,7 @@ music113.ogg	145453	Tak probuď se, kámo	Slávek
 music114.ogg	236101	Trable draka Sedmiptáka	Hosnedlik
 music115.ogg	195037	Tři punkový sudičky	Slávek
 music116.ogg	141109	Zelená	Slávek
-menuloop.ogg	116280	Menu	Hosnedlik
-winsong.ogg	213589	Výhra	Hosnedlik
-losesong.ogg	240000	Prohra	Hosnedlik
+menustart.ogg	13013	Začátek menu (spuštění)	Hosnedlik
+menuloop.ogg	89109	Smyčka v menu	Hosnedlik
+winsong.ogg	161920	Výhra	Hosnedlik
+losesong.ogg	206432	Prohra	Hosnedlik

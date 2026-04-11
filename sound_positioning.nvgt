@@ -3,12 +3,7 @@ float absolute_value(float n)
 return n<0 ? -n : n;
 }
 
-void position_sound_1d(sound@ handle, int listener_x, int source_x, float pan_step, float volume_step)
-{
-position_sound_custom_1d(handle, listener_x, source_x, pan_step, volume_step, 0.0, 0.0);
-}
-
-void position_sound_custom_1d(sound@ handle, int listener_x, int source_x, float pan_step, float volume_step, float start_pan, float start_volume)
+void position_sound_custom_1d(sound@ handle, int listener_x, int source_x, float pan_step, float start_pan)
 {
 int delta=0;
 float final_pan=start_pan;

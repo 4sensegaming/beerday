@@ -1,0 +1,10 @@
+#include "../build_constants.nvgt"
+
+void build_motd (bool silent)
+{
+show_window("Beerday MOTD builder");
+string motd=input_box("Message of the day", "");
+if (motd == "") return;
+file_put_contents ("bin/motd.dat", string(DATE_DAY+"\t"+DATE_MONTH+"\t"+DATE_YEAR+"\t"+TIME_HOUR+"\t"+TIME_MINUTE+"\t"+motd));
+if (!silent and question("Uploadnout?", "") == 1) run("C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe", "", false, false);
+}

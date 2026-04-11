@@ -58,7 +58,7 @@ handle.frozen=1;
 handle.frames=0;
 @owner=null;
 state=0;
-if (spill>-1 and things.sound_is_playing (spill)) things.destroy_sound (spill);
+if (spill>-1 and things.sound_is_active (spill)) things.destroy_sound (spill);
 spill=-1;
 if (@active_mug != null and active_mug.pour > -1 and things.sound_is_playing (active_mug.pour)) things.pause_sound (active_mug.pour);
 if (@active_mug!=null and active_mug.total>=poured_undermeasure) time_since_served=0;
@@ -84,7 +84,11 @@ stop (owner, false);
 return;
 }
 bool lost_active_mug=@owner != null and @active_mug != null and (@owner.hand != @active_mug or owner.x!=x or owner.y!=y);
-if (lost_active_mug) @active_mug=null;
+if (lost_active_mug)
+{
+if (@active_mug!=null and active_mug.pour>-1 and things.sound_is_playing (active_mug.pour)) things.pause_sound (active_mug.pour);
+@active_mug=null;
+}
 amounts[pipe]--;
 if (@owner!=null and (owner.x != x or owner.y != y or @active_mug == null or active_mug.total >= full_mug))
 {
@@ -176,4 +180,3 @@ said_running_out=true;
 }
 }
 }
-

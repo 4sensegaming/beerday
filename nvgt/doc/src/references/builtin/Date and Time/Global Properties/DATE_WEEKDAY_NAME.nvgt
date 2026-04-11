@@ -1,9 +1,0 @@
-/**
-	Returns the name of the current day.
-	const string DATE_WEEKDAY_NAME;
-*/
-
-// example:
-void main() {
-	alert("example", "It is " + DATE_WEEKDAY_NAME + " today");
-}

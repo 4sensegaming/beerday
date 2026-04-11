@@ -144,7 +144,7 @@ if (!allow_fallen) lose();
 
 void state_falling()
 {
-if (frames >= 3 and y>bottom)
+if (frames >= 12 and y>bottom)
 {
 y-=2;
 frames=0;

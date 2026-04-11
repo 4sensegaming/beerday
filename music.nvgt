@@ -1,34 +1,37 @@
+string czech_sort_key(string text)
+{
+text=text.lower();
+text=text.replace("á", "a", true);
+text=text.replace("č", "c", true);
+text=text.replace("ď", "d", true);
+text=text.replace("é", "e", true);
+text=text.replace("ě", "e", true);
+text=text.replace("í", "i", true);
+text=text.replace("ň", "n", true);
+text=text.replace("ó", "o", true);
+text=text.replace("ř", "r", true);
+text=text.replace("š", "s", true);
+text=text.replace("ť", "t", true);
+text=text.replace("ú", "u", true);
+text=text.replace("ů", "u", true);
+text=text.replace("ý", "y", true);
+text=text.replace("ž", "z", true);
+return text;
+}
+
 class song
 {
 string filename="", name="", author="";
 double length=0;
 uint8 price=0;
 bool disabled=false, is_jingle=false, is_xmas=false, is_competition=false, is_adult=false;
-sound masterpiece;
 
-int opCmp(song@ other)
+int opCmp (song@ other)
 {
-string me=to_letters(to_lower(name+author)), you=to_letters(to_lower(other.name+other.author));
-if (author==other.author)
-{
-uint author_length=author.length();
-if (author_length<=me.length()) me=me.substr(0, me.length()-author_length);
-else me="";
-if (author_length<=you.length()) you=you.substr(0, you.length()-author_length);
-else you="";
-}
-uint ml=me.length(), yl=you.length();
-int result=0;
-for (uint i=0; i<ml; i++)
-{
-if (i>=yl) break;
-int8 letter1=lower.find(me[i]), letter2=lower.find(you[i]);
-if (letter1>letter2) result=1;
-else if (letter1==letter2) result=0;
-else result=-1;
-if (result!=0) break;
-}
-return result;
+string mine=czech_sort_key(name), theirs=czech_sort_key(other.name);
+int cmp=mine.opCmp(theirs);
+if (cmp != 0) return cmp;
+return name.lower().opCmp(other.name.lower());
 }
 }
 
@@ -50,12 +53,12 @@ else if (name=="Diana") name2="Diany";
 else if (name=="Foxter") name2="Foxtera";
 }
 
-int opCmp(author@ other)
+int opCmp (author@ other)
 {
-string me=to_lower(name[0]), you=to_lower(other.name[0]);
-if (me>you) return 1;
-else if (me==you) return 0;
-else return -1;
+string mine=czech_sort_key(name), theirs=czech_sort_key(other.name);
+int cmp=mine.opCmp(theirs);
+if (cmp != 0) return cmp;
+return name.lower().opCmp(other.name.lower());
 }
 }
 
@@ -64,16 +67,17 @@ author@[] authors;
 uint8 total_count=0, between_jingles=0, playing=0, available_tracks=0;
 double total_length=0;
 int music=-1, radio;
-bool repeat_playlist=false;
+bool repeat_playlist=false, played_menu_start=false;
 string[] tracks, used_tracks, playlist, used_this_session;
 string last_track="";
 uint earned_jukebox, earned_jukebox_most_customer, played_jukebox, played_jukebox_player, played_jukebox_customers, pay_most_jukebox_once, use_jukebox;
-sound menuloop;
+sound menuloop, menustart;
 
 void stop_menu_music()
 {
 garbage_collect();
 if (menuloop.playing) menuloop.stop();
+if (menustart.playing) menustart.stop();
 }
 
 void menu_music()
@@ -83,13 +87,20 @@ if (won.active or !play_menu_music or (is_game and !play_menu_music_in_game) or 
 stop_menu_music();
 return;
 }
-if (!menuloop.playing and (!menuloop.paused or !is_learnmenu or global==-1 or !pool.sound_is_playing(global))) menuloop.play_looped();
-if ((is_game or is_learnmenu or is_readmenu or is_statmenu) and menuloop.volume!=menuloop_vol-10 and menuloop_vol!=min_music_vol)
+if ((is_learnmenu or is_readmenu or is_statmenu) and ((menuloop.volume!=menuloop_vol-10 and menuloop_vol!=min_music_vol) or (menustart.volume!=menuloop_vol-10 and menuloop_vol!=min_music_vol)))
 {
+menustart.volume=menuloop_vol-10;
 menuloop.volume=menuloop_vol-10;
 if (menuloop.volume<min_music_vol) menuloop.volume=min_music_vol;
+if (menustart.volume<min_music_vol) menustart.volume=min_music_vol;
 }
-else if (!is_game and !is_learnmenu and !is_readmenu and !is_statmenu and menuloop.volume!=menuloop_vol) menuloop.volume=menuloop_vol;
+else if (!is_learnmenu and !is_readmenu and !is_statmenu)
+{
+if (menuloop.volume!=menuloop_vol) menuloop.volume=menuloop_vol;
+if (menustart.volume!=menuloop_vol) menustart.volume=menuloop_vol;
+}
+if (played_menu_start and menustart.paused) menustart.play();
+else if (played_menu_start and !menustart.playing and !menustart.paused and !menuloop.playing) menuloop.play_looped();
 }
 
 void purge_music()
@@ -114,7 +125,7 @@ play_menu_music=!play_menu_music;
 void soundtrack()
 {
 if (menuloop.playing) stop_menu_music();
-if (!play_game_music or player.state==closing or (music>-1 and pool.sound_is_playing(music))) return;
+if (!play_game_music or player.state==closing or (music>-1 and (pool.sound_is_playing(music) or pool.sound_is_paused(music)))) return;
 if (music>-1) pool.destroy_sound(music);
 music=-1;
 if (!playlist.is_empty())
@@ -202,10 +213,9 @@ if ((el<4 or el>5 or !instr(entry[0], ".ogg") or !entry[1].is_digits()))
 warning("Nesprávná definice hudby "+entry[0]+":\r\n"+split[i]);
 continue;
 }
-double entry_length=parse_double(entry[1]);
 song new;
 new.filename=entry[0];
-new.length=entry_length;
+new.length=parse_double (entry[1]);
 new.name=entry[2];
 new.author=entry[3];
 author@ current_author=null;
@@ -229,11 +239,11 @@ if (instr(entry[4], "c")) new.is_competition=true;
 if (instr(entry[4], "x")) new.is_xmas=true;
 if (instr(entry[4], "a")) new.is_adult=true;
 }
-if ((used_tracks.find(new.filename)==-1 or (new.is_xmas and DATE_MONTH!=12) or (new.is_adult and TIME_HOUR>5 and TIME_HOUR<22)) and !instr(new.filename, "menu") and !instr(new.filename, "win") and !instr(new.filename, "lose") and !instr(new.filename, "15") and !instr(new.filename, "16") and !instr(new.filename, "17")) new.disabled=true;
+if ((used_tracks.find(new.filename)==-1 or (new.is_xmas and DATE_MONTH!=12) or (new.is_adult and TIME_HOUR>5 and TIME_HOUR<22)) and !instr(new.filename, "menu") and !instr(new.filename, "win") and !instr(new.filename, "lose") and !new.is_jingle) new.disabled=true;
 total_count++;
 current_author.count++;
-total_length+=entry_length;
-current_author.duration+=entry_length;
+total_length+=new.length;
+current_author.duration+=new.length;
 uint8 cost=round(new.length/1000/60, 0)*10;
 string number=new.filename;
 if (number.length()>5) number=number.substr(5);
@@ -248,7 +258,7 @@ if (new.is_competition) cost*=2;
 if (new.is_xmas) cost*=3;
 if (new.is_adult) cost*=5;
 new.price=cost;
-if (instr(new.filename, "menu")) tracklist.sort_ascending();
+if (instr(new.filename, "menustart")) tracklist.sort_ascending();
 tracklist.insert_last(new);
 }
 authors.sort_ascending();
@@ -303,7 +313,7 @@ author_names.insert_last("repeat_playlist|Opakovat playlist"+count+"| |2|"+repea
 author_names.insert_last("view_playlist|Zobrazit playlist"+count+"| |2|2|1");
 author_names.insert_last("clear_playlist|Smazat playlist"+count+"| |2");
 }
-if (is_jukebox and music>-1 and pool.sound_is_playing(music)) author_names.insert_last("stop_playing|Zastavit právě hrající písničku| |2|"+stop_playing);
+if (is_jukebox and music>-1 and (pool.sound_is_playing(music) or pool.sound_is_paused(music))) author_names.insert_last("stop_playing|Zastavit právě hrající písničku| |2|"+stop_playing);
 tempres=make_menu(author_names, tempres, tempmenu, true, null, checked);
 if (tempres>0)
 {
@@ -380,11 +390,7 @@ if (found>-1)
 entry+="je v playlistu";
 said=true;
 }
-if (said)
-{
-entry=sanitize(entry);
-entry+=": ";
-}
+if (said) entry+=": ";
 }
 entry+=tracklist[i].name;
 if (@artist==null)
@@ -430,52 +436,40 @@ if (tracklist[i].filename==fn)
 break;
 }
 if (@index==null) continue;
-if (!index.masterpiece.active)
+string data=download ("music/"+fn);
+if (data=="") continue;
+string temp_track_path=folder+"temp.ogg";
+if (!file_put_contents (temp_track_path, data))
 {
-string path=fn;
-if (instr(fn, "music")) path="music/"+fn;
-if (instr(path, "/"))
-{
-string data=download(path);
-if (data=="")
-{
-warning("Nepodařilo se stáhnout "+path+". Reason:\r\n"+get_last_error());
+if (enable_debugging) warning ("Nepodařilo se uložit dočasný soubor "+temp_track_path+".");
 continue;
 }
-data=string_aes_decrypt(data, scramble());
-if (data=="")
+data="";
+sound masterpiece;
+if (!masterpiece.stream (temp_track_path, null))
 {
-warning("Nepodařilo se rozšifrovat "+path+". Reason:\r\n"+get_last_error());
+if (enable_debugging) warning ("Nepodařilo se streamovat dočasný soubor "+temp_track_path+".");
+file_delete (temp_track_path);
 continue;
 }
-index.masterpiece.load_memory(data);
-}
-else index.masterpiece.load(path);
-garbage_collect();
-}
-if (index.masterpiece.active and !index.masterpiece.playing)
-{
 silence(true);
 set_sound_master_volume(0);
-index.masterpiece.play();
+masterpiece.play();
 wait_keys();
-frame.restart();
-while (index.masterpiece.playing or index.masterpiece.paused)
+while (masterpiece.playing or masterpiece.paused)
 {
 wait(5);
-if (frame.elapsed>=1000/fps)
-{
-frame.restart();
 closekey();
 if (singlekey(KEY_RETURN) or singlekey(KEY_NUMPAD_ENTER) or singlekey(KEY_SPACE) or singlekey(KEY_ESCAPE))
 {
 fadeout();
-index.masterpiece.stop();
+masterpiece.stop();
 }
 }
-}
-}
+masterpiece.close();
+file_delete (temp_track_path);
 set_sound_master_volume(loudness);
+garbage_collect();
 }
 }
 }
@@ -604,7 +598,7 @@ return rep;
 
 void stop_jukebox()
 {
-if (music>-1 and pool.sound_is_playing(music))
+if (music>-1 and (pool.sound_is_playing(music) or pool.sound_is_paused(music)))
 {
 pool.destroy_sound(music);
 music=-1;

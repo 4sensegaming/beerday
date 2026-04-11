@@ -36,17 +36,7 @@ void say_tutorial(string which, bool force=false)
 {
 tutorial@ tut=find_tutorial(which);
 if (@tut is null or (!force and tut.said)) return;
-if (output==0 and sapi.speaking) wait_speech();
-if (faucet.state==1)
-{
-if (faucet.spill>-1 and pool.sound_is_playing(faucet.spill)) pool.pause_sound(faucet.spill);
-else if (@faucet.active_mug!=null and faucet.active_mug.pour>-1) pool.pause_sound(faucet.active_mug.pour);
-}
-if (nearby>-1 and pool.sound_is_playing(nearby))
-{
-pool.destroy_sound(nearby);
-nearby=-1;
-}
+if (output==0 and fallback_voice.speaking) wait_speech();
 double vol=loudness-10;
 if (vol<minvol) vol=minvol;
 set_sound_master_volume(vol);
@@ -54,8 +44,14 @@ speaking_tutorial=true;
 read_menu(tut.message, ".?!:;");
 tut.said=true;
 set_sound_master_volume(loudness);
-if (faucet.spill>-1 and pool.sound_is_active(faucet.spill)) pool.resume_sound(faucet.spill);
 speaking_tutorial=false;
+if (use_history)
+{
+history.insert_at (0, tut.message);
+if (history_entries>0 and history.length()>history_entries) history.resize (history_entries);
+history_index=0;
+history_old_index=0;
+}
 }
 
 tutorial@ find_tutorial(string which)
@@ -70,6 +66,7 @@ return handle;
 
 void run_tutorial()
 {
+if (elapsed<fps/4) return;
 if (player.x==faucet.x and player.y==faucet.y and !find_tutorial("intro").said)
 {
 say_tutorial("intro");
@@ -84,7 +81,7 @@ else if (helpers>0 and !find_tutorial("helpers").said) say_tutorial("helpers");
 if (pourers>0 and !find_tutorial("server").said) say_tutorial("server");
 else if (givers>0 and !find_tutorial("giver").said) say_tutorial("giver");
 else if ((barrelers>0 or emptiers>0) and !find_tutorial("barreler").said) say_tutorial("barreler");
-else if (pool.sound_is_playing(nearby) and !find_tutorial("nearby").said) say_tutorial("nearby");
+else if (nearby>-1 and pool.sound_is_playing(nearby) and !queue.is_empty() and queue[0].state==waiting and queue[0].once_transition==0 and queue[0].frozen==0 and queue[0].frames>=fps and !find_tutorial("nearby").said) say_tutorial("nearby");
 else if ((count_mess(1)>0 or count_mess(2)>0 or count_mess(3)>0) and !find_tutorial("mess").said)
 {
 say_tutorial("mess");
@@ -92,7 +89,7 @@ teach_sound("tidy");
 }
 else if (player.prev_state==tripped and player.fell_from==bottom and !find_tutorial("trip").said) say_tutorial("trip");
 else if (player.state==tripped and player.fell_from>bottom and find_tutorial("trip").said and !find_tutorial("fall").said) say_tutorial("fall");
-if (@mission!=null and is_window_active() and player.state!=tripped and player.state!=falldown and player.state!=fleeing and player.state!=opening and player.state!=closing and @faucet.owner!=@player and player.frames%(fps*10)==0) say(mission.message, false, false);
+if (@mission!=null and foreground and !speaking_tutorial and get_sound_master_volume()==loudness and player.state!=tripped and player.state!=falldown and player.state!=fleeing and player.state!=opening and player.state!=closing and @faucet.owner!=@player and player.frames%(fps*10)==0) say(mission.message, false, false);
 if (replaced==0 and served>0 and customers.length()>0 and queue.is_empty() and faucet.amounts[0]>0 and @player.barrel_here(faucet.x, faucet.y)==null and player.count_state(roaming).is_empty() and faucet.state==0 and @faucet.owner==null and !find_tutorial("empty").said)
 {
 character@[]@ drinkers=player.count_state(drinking);
@@ -175,7 +172,7 @@ else if (player.state==opening and !find_tutorial("left").said) say_tutorial("le
 else if (broken==mug_count and !find_tutorial("nomugs").said) say_tutorial("nomugs");
 else if (player.health<1 and !find_tutorial("died").said) say_tutorial("died");
 else if (player.y==bottom and player.state!=tripped and player.state!=falldown and !find_tutorial("cellar").said) say_tutorial("cellar");
-if (find_tutorial("drop").said and !player.carrying.is_empty() and !player.count_state(arriving).is_empty() and !find_tutorial("spawn").said)
+if (find_tutorial("drop").said and !player.carrying.is_empty() and !queue.is_empty() and (queue[0].state==returning or queue[0].state==waiting) and queue[0].frozen==0 and queue[0].once_transition==0 and queue[0].frames>queue[0].speed and !find_tutorial("spawn").said)
 {
 say_tutorial("spawn");
 new_mission();
@@ -276,7 +273,7 @@ if (current_objectives.is_empty()) return;
 current_objectives.remove_at(0);
 if (current_objectives.is_empty()) return;
 @mission=current_objectives[0];
-if (output==0 and sapi.speaking) wait(5);
+if (output==0 and fallback_voice.speaking) wait(5);
 play_stat("alert");
 say("Nový úkol: "+mission.message);
 }
@@ -284,10 +281,8 @@ say("Nový úkol: "+mission.message);
 void teach_sound(string name)
 {
 pool.pause_all();
-int8 teach=play_stat(name, false, true);
-if (wait_sound(teach, false)) pool.destroy_sound(teach);
-uint l=pool.items.length();
-for (uint i=0; i<l; i++)
-if (@pool.items[i].handle!=null and !instr(pool.items[i].filename, "pour")) pool.resume_sound(i);
+things.pause_all();
+wait_sound (name);
+pool.resume_all();
+things.resume_all();
 }
-

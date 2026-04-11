@@ -178,10 +178,11 @@ if (!foreground and foreground!=old_foreground)
 {
 if (pause_on_blur)
 {
-if (output==0 and sapi.speaking) silence();
+if (output==0 and fallback_voice.speaking) silence();
 if (is_custmenu) silence_custmenu();
 if (!paused and is_game) pause();
-if (menuloop.playing) stop_menu_music();
+if (menustart.playing) menustart.pause();
+else if (menuloop.playing) stop_menu_music();
 else if (won.playing) won.pause();
 }
 else
@@ -196,8 +197,18 @@ else if (foreground and foreground!=old_foreground)
 {
 if (pause_on_blur)
 {
-if (menuloop.paused) menuloop.play_looped();
+if (menustart.paused)
+{
+menustart.seek(0);
+menustart.play();
+}
+else if (menuloop.paused) menuloop.play_looped();
 else if (won.paused) won.play();
+if (is_game)
+{
+if (output>0) wait(300);
+say ("Odpauzuj hru.", true, false);
+}
 }
 else set_sound_master_volume(loudness);
 }
@@ -206,7 +217,11 @@ if (output_check_frames >= 3) checkup();
 if (foreground and foreground!=old_foreground and (menu.running or menu_question!="" or is_optionsmenu or is_learnmenu or is_conmenu or is_custmenu or is_statmenu or is_readmenu))
 {
 wait_keys();
-if (output>0) silence();
+if (output>0)
+{
+wait(250);
+silence();
+}
 if (@top_menu!=null)
 {
 if (menu_question!="") say (menu_question, true, false);
@@ -224,15 +239,27 @@ if (is_custmenu) silence_custmenu();
 
 void closekey()
 {
+if (menu_question!="") return;
 modifiers();
 if (!foreground) return;
-bool ctrl=mod_ctrl(), shift=mod_shift(), alt=mod_alt();
-if (alt and lone (KEY_F4) and !ctrl and !shift)
+uint8 system=0;
+if (PLATFORM.lower().find ("Darwin") >-1) system=2;
+else if (!system_is_windows) system=1;
+bool wants_close=false;
+if (system<2 and !wants_close)
+{
+if (((keyboard_modifiers & KEYMOD_LALT)>0 and key_down (KEY_F4)) or ((keyboard_modifiers & KEYMOD_CTRL)>0 and key_down (KEY_Q)) and down_keys()==2) wants_close=true;
+}
+else if (!wants_close)
+{
+if ((keyboard_modifiers & KEYMOD_LGUI)>0 and key_down (KEY_Q) and down_keys()==2) wants_close=true;
+}
+if (wants_close)
 {
 if (menu_question == "Ukončit program?") return;
 if (ask ("Ukončit program?", false, !is_game) == 1)
 {
-stop_menu_music();
+if (!play_outro) stop_menu_music();
 silence (true);
 if (!onboarding) quit();
 else exit();
@@ -273,8 +300,8 @@ bool ctrl=mod_ctrl(), shift=mod_shift(), alt=mod_alt();
 if (alt or down_keys() > 3) return;
 if (lone (KEY_W, 3))
 {
-if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false, false);
-else if (!ctrl and !shift) say (history[history_index], true, false, false, false);
+if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false);
+else if (!ctrl and !shift) say (history[history_index], true, false, false);
 else if (ctrl and !shift) copy (history[history_index]);
 else if (!ctrl and shift) spell (history[history_index]);
 else if (ctrl and shift) read_menu (history[history_index]);
@@ -283,7 +310,7 @@ bool pressed=false;
 if (singlekey (KEY_HOME))
 {
 silence();
-if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false, false);
+if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false);
 else if (down_keys() == 1 and history_index != 0)
 {
 history_index=0;
@@ -294,7 +321,7 @@ else history_edge();
 else if (singlekey (KEY_END))
 {
 silence();
-if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false, false);
+if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false);
 if (down_keys() == 1 and history_index != history.length()-1)
 {
 history_index=history.length()-1;
@@ -305,7 +332,7 @@ else history_edge();
 else if (singlekey (KEY_PAGEUP))
 {
 silence();
-if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false, false);
+if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false);
 if (history_index > 0)
 {
 pressed=true;
@@ -316,7 +343,7 @@ else history_edge();
 else if (singlekey (KEY_PAGEDOWN))
 {
 silence();
-if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false, false);
+if (history.is_empty()) say ("Dosud nic neřečeno.", true, false, false);
 if (history_index < history.length()-1)
 {
 history_index++;
@@ -330,15 +357,15 @@ history_old_index=history_index;
 bool first=true;
 if (history_index == 0)
 {
-say ("Nejnovější.", true, false, false, false);
+say ("Nejnovější.", true, false, false);
 first=false;
 }
 else if (history_index == history.length() -1)
 {
-say ("Nejstarší.", true, false, false, false);
+say ("Nejstarší.", true, false, false);
 first=false;
 }
-say (history[history_index], first, false, false, false);
+say (history[history_index], first, false, false);
 }
 }
 

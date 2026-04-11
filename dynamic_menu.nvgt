@@ -99,7 +99,7 @@ if (item.checked<2)
 string msg;
 if (item.checked==1) msg="Zapnuto";
 else msg="Vypnuto";
-say (msg, false, false, false, false);
+say (msg, false, false, false);
 }
 }
 
@@ -115,7 +115,7 @@ int stick_aim=0;
 int stick_last_aim=0;
 if (intro!="" and (speak_menu_prompt or menu_question!="") and !rerun)
 {
-say (intro, true, false, false, false);
+say (intro, true, false, false);
 if (speak_menu_position)
 {
 uint items=get_item_count();
@@ -139,7 +139,7 @@ else summary+=" v "+sections+" záložkách";
 }
 }
 summary+=".";
-say (summary, false, false, false, false);
+say (summary, false, false, false);
 }
 }
 else if (!speak_menu_prompt and !rerun and !is_custmenu) silence();
@@ -157,9 +157,6 @@ if (!rerun) reset_ui_help();
 frame.restart();
 while(true)
 {
-if (frame.elapsed>=1000/fps)
-{
-frame.restart();
 // Invoke the user callback.
 if(@callback_handle!=null)
 {
@@ -171,6 +168,9 @@ return callback_result;
 }
 }
 
+if (frame.elapsed>=frame_ms)
+{
+frame.restart();
 // Check to see if there's an item that needs to be spoken.
 if(speak_item)
 {
@@ -191,14 +191,14 @@ if (count==1) section_name+="jednu položku.";
 else if (count<5) section_name+=count+" položky.";
 else section_name+=count+" položek.";
 }
-if (section_name!="" and section_name!=" ") say (section_name, false, false, false, false);
+if (section_name!="" and section_name!=" ") say (section_name, false, false, false);
 }
-if (item_list[menu_position-1].ui_name!="") say (item_list[menu_position-1].ui_name, false, false, false, false);
-if (item_list[menu_position-1].disabled) say ("Zamčeno", false, false, false, false);
-if (speak_menu_position) say (get_position()+" z "+get_item_count(), false, false, false, false);
+if (item_list[menu_position-1].ui_name!="") say (item_list[menu_position-1].ui_name, false, false, false);
+if (item_list[menu_position-1].disabled) say ("Zamčeno", false, false, false);
+if (speak_menu_position) say (get_position()+" z "+get_item_count(), false, false, false);
 say_checked (item_list[menu_position-1]);
-if (item_list[menu_position-1].description!="") say (item_list[menu_position-1].description, false, false, false, false);
-if (item_list[menu_position-1].is_submenu and speak_submenu) say ("podnabídka", false, false, false, false);
+if (item_list[menu_position-1].description!="") say (item_list[menu_position-1].description, false, false, false);
+if (item_list[menu_position-1].is_submenu and speak_submenu) say ("podnabídka", false, false, false);
 speak_item=false;
 if (part!=old_part)
 {
@@ -294,7 +294,7 @@ continue;
 }
 else
 {
-if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
+play_edge();
 continue;
 }
 }
@@ -328,7 +328,7 @@ continue;
 }
 else
 {
-if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
+play_edge();
 continue;
 }
 }
@@ -354,7 +354,7 @@ silence();
 if (is_custmenu) custchanged=true;
 continue;
 }
-else if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
+else play_edge();
 }
 if(singlekey (KEY_END))
 {
@@ -368,7 +368,7 @@ silence();
 if (is_custmenu) custchanged=true;
 continue;
 }
-else if (play_menu_sounds) play_stat ("edge", false, false, menu_sounds_vol);
+else play_edge();
 }
 }
 }
@@ -430,7 +430,7 @@ void skip_section (bool inc)
 {
 if (has_sections()<2)
 {
-play_stat ("edge", false, false, menu_sounds_vol);
+play_edge();
 return;
 }
 uint l=item_list.length();
@@ -474,8 +474,7 @@ return;
 }
 }
 }
-//wait_keys();
-play_stat ("edge", false, false, menu_sounds_vol);
+play_edge();
 }
 
 uint has_sections()
