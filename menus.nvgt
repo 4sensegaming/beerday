@@ -440,7 +440,7 @@ tempres=make_menu (lm, 1, menu, true, secs);
 else if (tempres == 0) break;
 else
 {
-silence();
+silence (true);
 string to_play=learn_sounds[tempres-1];
 int playing_sound=play_stat (to_play, looping_sounds.find(to_play)>-1, true);
 if (pause_music.find(to_play)>-1 and (menuloop.playing or menustart.playing))

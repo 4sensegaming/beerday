@@ -1,11 +1,10 @@
 #if windows
-#pragma stub nc_upx
+#pragma stub nc
 #endif
 #if linux
 #pragma stub nc
 #endif
 #pragma embed "pack.dat"
-#pragma bytecode_compression 9
 
 #include "constants.nvgt"
 #include "net.nvgt"
