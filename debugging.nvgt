@@ -1,4 +1,4 @@
-bool enable_debugging=false, enable_logging=false, enable_lose_check=true, enable_chasing=true, enable_roaming=true, enable_fleeing=true, enable_idle=true, enable_infinite_patience=false, enable_new_customers=true, debug_speech=false;
+bool enable_debugging=true, enable_logging=false, enable_lose_check=true, enable_chasing=true, enable_roaming=true, enable_fleeing=true, enable_idle=true, enable_infinite_patience=false, enable_new_customers=true, debug_speech=false;
 int debugging_key=KEY_F5;
 
 string get_state (character@ handle=player, bool speak=true)

@@ -1,83 +1,15 @@
-const string source="beerday.nvgt", exec=read_environment_variable("windir")+"/explorer.exe", winscp_path="C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe";
+const string source="beerday.nvgt", exec=read_environment_variable("windir")+"/explorer.exe", winscp_path="C:/Users/lukas/AppData/Local/Microsoft/WindowsApps/WinSCP.exe", nvgt="c:/nvgt/nvgt.exe";
 #include "../build_constants.nvgt"
 #include "rootlib.nvgt"
 #include "motdlib.nvgt"
 #include "packerlib.nvgt"
 
-string get_nvgt_root()
-{
-string current=SCRIPT_EXECUTABLE;
-string lowered=current.lower();
-if (lowered.ends_with("nvgt.exe") and file_exists(current))
-{
-spec::path root(current);
-return root.parent.to_string();
-}
-if (file_exists("c:/nvgt/nvgt.exe")) return "c:/nvgt";
-return "";
-}
-
-string get_hidden_library_path(string nvgt_root, string name)
-{
-return nvgt_root+"/beerday_hidden/"+name;
-}
-
-void restore_hidden_phonon(string nvgt_root)
-{
-if (nvgt_root=="") return;
-string[] libraries={
-nvgt_root+"/lib/phonon.dll",
-nvgt_root+"/lib_linux/libphonon.so",
-nvgt_root+"/lib_mac/libphonon.dylib"
-};
-string[] hidden={
-get_hidden_library_path(nvgt_root, "phonon.dll"),
-get_hidden_library_path(nvgt_root, "libphonon.so"),
-get_hidden_library_path(nvgt_root, "libphonon.dylib")
-};
-for (uint i=0; i<libraries.length(); i++)
-{
-if (file_exists(hidden[i]))
-{
-if (file_exists(libraries[i])) file_delete(libraries[i]);
-file_move(hidden[i], libraries[i]);
-}
-}
-}
-
-bool disable_phonon(string nvgt_root)
-{
-if (nvgt_root=="") return false;
-restore_hidden_phonon(nvgt_root);
-string[] libraries={
-nvgt_root+"/lib/phonon.dll",
-nvgt_root+"/lib_linux/libphonon.so",
-nvgt_root+"/lib_mac/libphonon.dylib"
-};
-string[] hidden={
-get_hidden_library_path(nvgt_root, "phonon.dll"),
-get_hidden_library_path(nvgt_root, "libphonon.so"),
-get_hidden_library_path(nvgt_root, "libphonon.dylib")
-};
-directory_create(nvgt_root+"/beerday_hidden");
-for (uint i=0; i<libraries.length(); i++)
-{
-if (!file_exists(libraries[i])) continue;
-if (!file_move(libraries[i], hidden[i]))
-{
-restore_hidden_phonon(nvgt_root);
-return false;
-}
-}
-return true;
-}
-
-bool compile_target(string nvgt_path, string mode, string target, string output_file, string destination)
+bool compile_target(string mode, string target, string output_file, string destination)
 {
 if (file_exists(output_file)) file_delete(output_file);
 if (file_exists(destination)) file_delete(destination);
 string args="-p"+target+" "+mode+" "+source;
-if (!run(nvgt_path, args, true, false) or !file_exists(output_file)) return false;
+if (!run(nvgt, args, true, false) or !file_exists(output_file)) return false;
 if (!file_copy(output_file, destination, false)) return false;
 file_delete(output_file);
 return true;
@@ -88,7 +20,6 @@ void main()
 chdir(get_project_root());
 show_window("Beerday Update Builder");
 if (question("Build", "Verze: "+version+"\r\nDatum: "+build_day+". "+build_month+". "+build_year+", "+build_hour+":"+build_minute+"\r\nPokračovat?") == 2) return;
-string nvgt_path=get_nvgt_path();
 if (question("Zadat zprávu dne?", "") == 1)
 {
 build_motd (true);
@@ -102,20 +33,10 @@ string compile=question("Release build?", "") == 1 ? "-c -q" : "-C -q";
 string[] targets={"windows", "linux", "mac"};
 string[] produced={"beerday.zip", "beerday.tar.gz", "beerday.iso"};
 string[] staged={"bin/beerday.zip", "bin/beerday.tar.gz", "bin/beerday.iso"};
-string nvgt_root=get_nvgt_root();
-bool phonon_disabled=disable_phonon(nvgt_root);
-for (uint i=0; i<targets.length(); i++) compile_target(nvgt_path, compile, targets[i], produced[i], staged[i]);
-if (phonon_disabled) restore_hidden_phonon(nvgt_root);
-directory_delete (nvgt_root+"/beerday_hidden");
+string debug=file_get_contents ("debugging.nvgt");
+debug.replace ("enable_debugging=true", "enable_debugging=false", true);
+file_put_contents ("debugging.nvgt", debug);
+for (uint i=0; i<targets.length(); i++) compile_target(compile, targets[i], produced[i], staged[i]);
 if (question("Uploadnout?", "") == 1) run(winscp_path, "", false, false);
 if (question ("Vytvořit GitHub release?", "")==1) urlopen ("https://github.com/4sensegaming/beerday/releases/new");
-}
-
-string get_nvgt_path()
-{
-string current=SCRIPT_EXECUTABLE;
-string lowered=current.lower();
-if (lowered.ends_with("nvgt.exe") and file_exists(current)) return current;
-if (file_exists("c:/nvgt/nvgt.exe")) return "c:/nvgt/nvgt.exe";
-return "nvgt.exe";
 }
