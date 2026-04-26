@@ -165,7 +165,8 @@ pay_most_jukebox_once=600;
 serve_interval=75*fps;
 break;
 }
-min_drink_time=round ((25.0/60.0)*fps, 0);
+min_drink_time=round (((25.0/60.0)*fps)/2, 0);
+max_drink_time=round (max_drink_time/2, 0);
 max_price=min_price+20;
 time_since_served=0;
 if (endless) limit=0;
@@ -336,6 +337,8 @@ barrels.insert_last (new);
 }
 pool.destroy_all();
 things.destroy_all();
+custbeep.pan=0;
+custbeep.volume=0;
 set_sound_master_volume (minvol);
 faucet.slot=faucet.play ("faucet", true);
 spawner=spawn_delay-(5*fps);

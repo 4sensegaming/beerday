@@ -51,9 +51,10 @@ l--;
 }
 }
 available_tracks=tracks.length();
-custbeep.stream ("beep"+ext);
-menuloop.stream ("menuloop"+ext);
-menustart.stream ("menustart"+ext);
+custbeep.load ("beep"+ext);
+menuloop.load ("menuloop"+ext);
+menustart.load ("menustart"+ext);
+customer_here.load ("customer"+ext);
 customers.reserve (60);
 custpool.reserve (60);
 queue.reserve (60);

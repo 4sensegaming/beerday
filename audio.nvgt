@@ -11,7 +11,7 @@ int8 output=0;
 bool hooked=false;
 string[] files;
 string last_text="", reader_name="";
-sound won, custbeep, doingsound;
+sound won, custbeep, doingsound, customer_here;
 string[] menu_sounds={"enter", "esc", "move", "turn", "prompt", "sub", "edge", "error"};
 
 string randomize (string file)
@@ -212,7 +212,7 @@ quit (true);
 
 void preload_audio()
 {
-string[] skip={"turn", "move", "enter", "esc", "prompt", "sub", "beep", "error", "edge", "achievement", "bought", "nomoney", "start", "logo", "gameover", "lose", "win", "winsong", "menustart", "menuloop", "minleft", "timesup"};
+string[] skip={"beep", "achievement", "bought", "nomoney", "start", "logo", "gameover", "lose", "win", "winsong", "menustart", "menuloop", "minleft", "timesup", "customer"};
 timer loader;
 uint l=files.length();
 preloads.reserve(l);
@@ -234,15 +234,15 @@ exit();
 
 void play_move()
 {
+silence_menu();
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-silence (true);
 play_stat ("move", false, false, menu_sounds_vol);
 }
 
 void play_turn()
 {
+silence_menu();
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-silence (true);
 play_stat ("turn", false, false, menu_sounds_vol);
 }
 
@@ -262,11 +262,12 @@ play_stat ("esc", false, false, menu_sounds_vol);
 
 void silence_menu()
 {
+silence();
 uint8 msl=menu_sounds.length();
 for (uint8 i=0; i<msl; i++)
 {
 int8 msp=pool.get_sound_by_name (menu_sounds[i]);
-if (msp>-1) pool.destroy_sound (msp);
+if (msp>-1 and pool.sound_is_playing(msp)) pool.destroy_sound (msp);
 }
 if (is_custmenu) silence_custmenu();
 if (is_learnmenu) pool.destroy_all();
@@ -298,7 +299,7 @@ play_stat ("sub", false, false, menu_sounds_vol);
 void play_edge()
 {
 if (!play_menu_sounds or (is_gallery and menu_question!="")) return;
-silence (true);
+silence_menu();
 play_stat ("edge", false, false, menu_sounds_vol);
 }
 
@@ -312,17 +313,15 @@ void silence_custmenu()
 if (custbeep.playing) custbeep.stop();
 custchanged=false;
 doingsound.close();
-if (custslot > -1 and pool.sound_is_playing (custslot)) pool.destroy_sound (custslot);
-custslot=-1;
+if (customer_here.playing) customer_here.stop();
 }
 
-void player_position()
+void character_position (character@ handle, bool looping)
 {
-if (custbeep.playing) custbeep.stop();
-position_sound_2d (custbeep, 0, 0, player.x, player.y, pool.pan_step, pool.volume_step, pool.behind_pitch_decrease);
+position_sound_2d (custbeep, player.x, player.y, handle.x, handle.y, pool.pan_step, pool.volume_step, pool.behind_pitch_decrease);
 custbeep.pitch=100 -abs(player.y/2);
-custbeep.volume=0;
-custbeep.play();
+handle.is_player?custbeep.volume=0:custbeep.volume=menu_sounds_vol;
+looping?custbeep.play_looped():custbeep.play();
 }
 
 void clear_item_loops()

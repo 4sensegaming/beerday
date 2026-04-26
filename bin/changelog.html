@@ -17,6 +17,23 @@
 </nav>
 </header>
 <main>
+<article aria-labelledby="096">
+<h2 id="096">Verze 0.9.6</h2>
+<p>21. dubna 2026</p>
+<ul aria-labelledby="096">
+<li>Opravena chyba v NVGT, kvůli které si hra vytvářela podsložku pro svoje data v kořenovém adresáři místo ve vlastní složce (díky Trychtýřovi).</li>
+<li>Opravena chyba v NVGT, kvůli které nefungovalo (ne)přerušování řeči pod Linuxem (díky Trychtýřovi).</li>
+<li>Opravena chyba v NVGT, kvůli které nefungovala podpora VoiceOveru na macOS.</li>
+<li>Opraven pád hry pod Linuxem a macOS kvůli chybějící knihovně Phonon (díky Trychtýřovi a Hammetovi).</li>
+<li>Změněn způsob kompilace a komprimace binárky pod Windows a Linuxem, takže už by snad antiviry neměly mít se hrou problém (díky Míše).</li>
+<li>Opraveno nepřerušování stávajících zvuků a tím pádem možné vrstvení zvuků přes sebe v menu Seznámení se zvuky (díky Chipotlovi).</li>
+<li>Opravena chyba způsobená změnou výpočtu časových intervalů během portování, kdy zákazníci pili dvakrát delší dobu, než měli (díky Míše a Trychtýřovi).</li>
+<li>Opravena chyba, kdy zavření přehledu všech zákazníků umlčelo hudbu, ambientní ruch (hovor zákazníků) v pozadí, zvuk pípy, zvuky půllitrů a další zvuky.</li>
+<li>V přehledu všech zákazníků se teď pípání znázorňující pozici zákazníka ozývá relativně vzhledem k pozici hráče, už ne ke středu hospody jakoby při pohledu shora (díky Trychtýřovi). Zároveň opraveno chybné přehrávání zvuku dechu pro zákazníka, který je zrovna na stejné pozici jako hráč, což vedlo k tomu, že se pro takového zákazníka někdy přehrál jen ten dech, ale už ne to poziční pípání.</li>
+<li>Optimalizováno a vylepšeno řazení zákazníků v přehledu a změněno pořadí a kategorizace záložek, do kterých se při zobrazení přehledu zákazníci rozdělí. Teď jsou to záložky: Nebezpeční zákazníci, Fronta, Pomocníci, Odcházející zákazníci, Pijící zákazníci, Zákazníci bez objednávky a Ostatní zákazníci. Jinými slovy přibyla záložka Pijící zákazníci (předtím se řadili k ostatním) a pomocníci se teď zobrazí před těmi, kteří odcházejí. Zároveň jsem opravil potenciální chybu, kdy se do zákazníků bez objednávky nemuseli zařazovat ti, kteří čekají na místě, protože hráč je zrovna moc daleko od pípy, než aby si mohli jít objednat, a další, kdy mohli být špatně zařazeni zákazníci, kteří zrovna zakopli, padají ze schodů nebo je vyvádí vyhazovač, například do ostatních zákazníků, přestože by správně patřili do těch bez objednávky, atd. A konečně se teď zákazníci řadí zleva doprava (podle vzdálenosti ode dveří) v každé kategorii zvlášť a až poté, co byli do kategorií rozřazeni, ne předtím. Takže prostě když si teď budete procházet přehled a budete mít v každé kategorii někoho, tak vždycky ten zákazník, který je v dané kategorii nejvíc vlevo, nejblíž ke dveřím, se v ní zobrazí jako první.</li>
+</ul>
+</article>
+<hr>
 <article aria-labelledby="095">
 <h2 id="095">Verze 0.9.5</h2>
 <p>11. dubna 2026</p>

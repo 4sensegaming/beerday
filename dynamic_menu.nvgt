@@ -157,6 +157,9 @@ if (!rerun) reset_ui_help();
 frame.restart();
 while(true)
 {
+if (frame.elapsed>=frame_ms)
+{
+frame.restart();
 // Invoke the user callback.
 if(@callback_handle!=null)
 {
@@ -168,9 +171,6 @@ return callback_result;
 }
 }
 
-if (frame.elapsed>=frame_ms)
-{
-frame.restart();
 // Check to see if there's an item that needs to be spoken.
 if(speak_item)
 {

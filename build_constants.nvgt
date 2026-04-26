@@ -1,2 +1,2 @@
-const string version="0.9.5";
+const string version="0.9.6";
 const uint build_day=11, build_month=4, build_year=2026, build_hour=21, build_minute=0;

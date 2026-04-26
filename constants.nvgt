@@ -2,7 +2,7 @@
 string credits;
 const uint pour_length=16430;
 const uint8 fps=120;
-const double frame_ms=1000.0/fps, left_edge=-30, right_edge=30, step_size=1, full_mug=round ((pour_length/1000.0)*fps, 0), min_music_vol=-40;
+const double frame_ms=1000/fps, left_edge=-30, right_edge=30, step_size=1, full_mug=round ((pour_length/1000.0)*fps, 0), min_music_vol=-40;
 const uint poured_full=percent (full_mug, 95), poured_undermeasure=percent (full_mug, 85), poured_bigger_half=percent (full_mug, 60), poured_half=percent (full_mug, 40), poured_almost_empty=percent (full_mug, 20), poured_bottom=percent (full_mug, 1);
 const string ext=".ogg", title="Happy Beerday", stereo_test_description="Umožňuje zkontrolovat, jak zní přehrávání ve stereu s aktuálním nastavením okrajů a středu stereopole, a také jestli máš správně umístěné reproduktory či sluchátka.", clear_profile_description="Přijdeš úplně o všechno a celá hra začne znovu od prvního spuštění! Tento krok nemůžeš odvolat!", browser="Otevře se ve výchozím webovém prohlížeči.";
 enum char_states

@@ -730,27 +730,49 @@ return;
 }
 ss_start();
 int8 custresult=1;
-string[] sections={"Nebezpeční zákazníci", "Fronta", "Zákazníci bez objednávky", "Odcházející zákazníci", "Pomocníci", "Ostatní zákazníci"};
+string[] sections={"Nebezpeční zákazníci", "Fronta", "Pomocníci", "Odcházející zákazníci", "Pijící zákazníci", "Zákazníci bez objednávky", "Ostatní zákazníci"};
 while (true)
 {
-is_custmenu=true;
 string[] cust;
-cust.reserve (l);
-character@[] custmenu=customers;
-custmenu.sort_ascending();
+cust.reserve (l+1);
+character@[] dangerous, ordered, helpers, leaving, drinkers, unordered, others;
+dangerous.reserve (l);
+ordered.reserve (l);
+helpers.reserve (l);
+leaving.reserve (l);
+drinkers.reserve (l);
+unordered.reserve (l);
+others.reserve (l);
 for (uint8 i=0; i<l; i++)
 {
-string result=custmenu[i].id+"|"+say_customer (custmenu[i], true, false)+"| |";
-if (custmenu[i].is_roaming or custmenu[i].state==chasing) cust.insert_last (result+"1");
-else if (queue.find(custmenu[i])>-1) cust.insert_last (result+"2");
-else if (custmenu[i].state==arriving or custmenu[i].state==ordering or custmenu[i].state==waiting or custmenu[i].state==returning) cust.insert_last (result+"3");
-else if (custmenu[i].leaving>0) cust.insert_last (result+"4");
-else if (custmenu[i].help_state>-1) cust.insert_last (result+"5");
-else cust.insert_last (result+"6");
+character@ h=customers[i];
+if (h.state==roaming or h.state==chasing) dangerous.insert_last (h);
+else if (queue.find(h)>-1) ordered.insert_last (h);
+else if (h.help_state>-1) helpers.insert_last (h);
+else if (h.leaving>0) leaving.insert_last (h);
+else if (h.state==drinking) drinkers.insert_last (h);
+else if ((h.drink==-1 or queue.find(h)==-1) and h.state!=idle and h.state!=opening and h.state!=closing and h.state!=drinking and h.state!=led) unordered.insert_last (h);
+else others.insert_last (h);
 }
-cust.insert_at (0, rep);
+dangerous.sort_ascending();
+ordered.sort_ascending();
+helpers.sort_ascending();
+leaving.sort_ascending();
+drinkers.sort_ascending();
+unordered.sort_ascending();
+others.sort_ascending();
+cust.insert_last (rep);
+build_section (cust, dangerous, 1);
+build_section (cust, ordered, 2);
+build_section (cust, helpers, 3);
+build_section (cust, leaving, 4);
+build_section (cust, drinkers, 5);
+build_section (cust, unordered, 6);
+build_section (cust, others, 7);
 speak_menu_prompt=true;
-custresult=make_menu (cust, custresult, menu, true, sections);
+is_custmenu=true;
+dynamic_menu tempmenu;
+custresult=make_menu (cust, custresult, tempmenu, true, sections);
 if (speak_menu_prompt!=old_prompt) speak_menu_prompt=old_prompt;
 if (custresult == 0)
 {
@@ -758,12 +780,17 @@ if (is_game and paused and !menuloop.playing and !play_menu_sounds) say ("Zruše
 is_custmenu=false;
 break;
 }
-customer_menu (get_customer (menu.get_item_name (custresult)));
+else customer_menu (get_customer (menu.get_item_name (custresult)));
 }
-silence();
-silence_custmenu();
 is_custmenu=false;
 ss_end();
+}
+
+void build_section (string[]@ result, character@[]@ source, uint8 section)
+{
+if (@source is null or source.is_empty()) return;
+uint8 l=source.length();
+for (uint8 i=0; i<l; i++) result.insert_last (source[i].id+"|"+say_customer (source[i], true, false)+"| |"+section);
 }
 
 void customer_menu (character@ h)
@@ -784,21 +811,11 @@ items.insert_last ("rename_manually|Přejmenovat "+player.append+" ručně");
 items.insert_last ("remove|Smazat jméno "+h.name+"|Zůstane beze jména, ale půjde to kdykoli změnit.");
 }
 dynamic_menu tempmenu;
-tempmenu.set_callback (callback, "");
+is_custmenu=false;
 int8 tempres=make_menu (items, 1, tempmenu);
 string item=tempmenu.get_item_name (tempres);
-if (instr (item, "start"))
-{
-is_custmenu=true;
-start_tracking(h);
-is_custmenu=false;
-}
-else if (instr (item, "untrack"))
-{
-is_custmenu=true;
-untrack();
-is_custmenu=false;
-}
+if (instr (item, "start")) start_tracking(h);
+else if (instr (item, "untrack")) untrack();
 else if (instr (item, "name_randomly")) name_customer_randomly(h);
 else if (instr (item, "name_manually")) name_customer_manually(h);
 else if (instr (item, "remove"))

@@ -6,7 +6,6 @@ dynamic_menu menu;
 text input;
 string menu_question, read_text="";
 int result=1, conresult=1, gameres=1;
-int custslot=-1;
 uint8 custcounter=0;
 bool oldpaused=false, custchanged=false, is_learnmenu=false, is_custmenu=false, is_conmenu=false, is_optionsmenu=false, is_readmenu=false, is_statmenu=false, is_gallery=false, is_updatemenu=false, is_namemenu=false, help_read=false;
 timer ui_help_timer;
@@ -89,7 +88,7 @@ else play_stat ("edge");
 }
 if (pos != oldpos)
 {
-if (is_custmenu and !is_readmenu and @handle==@menu and menu_question=="")
+if (is_custmenu and !is_readmenu and @handle!=@menu and menu_question=="")
 {
 custchanged=true;
 custcounter=0;
@@ -100,19 +99,14 @@ handle.part=handle.item_list[handle.menu_position-1].section;
 handle.speak_item=true;
 }
 }
-if (is_custmenu and !is_readmenu and @handle==@menu and menu_question=="")
+if (is_custmenu and !is_readmenu and @handle!=@menu and menu_question=="")
 {
 if (custchanged)
 {
 custchanged=false;
 custcounter=0;
-silence_custmenu();
 character@h =get_customer (handle.get_item_name (pos));
-if (custbeep.playing) custbeep.stop();
-position_sound_2d (custbeep, 0, 0, h.x, h.y, pool.pan_step, pool.volume_step, pool.behind_pitch_decrease);
-custbeep.pitch=100 -abs(h.y/2);
-custbeep.volume=menu_sounds_vol;
-custbeep.play_looped();
+character_position (h, true);
 string doing;
 switch (h.state)
 {
@@ -140,16 +134,15 @@ else doing="creak1";
 else if (h.state == barreling or h.state == emptiing) doing="barrel";
 else if (h.state == throwing or h.state == calming) doing="hit1";
 else if (h.health <= h.attack) doing="beat";
-doingsound.close();
 doingsound.load (doing+ext);
-position_sound_2d (doingsound, 0, 0, h.x, h.y, pool.pan_step, pool.volume_step, pool.behind_pitch_decrease);
+position_sound_2d (doingsound, player.x, player.y, h.x, h.y, pool.pan_step, pool.volume_step, pool.behind_pitch_decrease);
 doingsound.pitch=100 -abs(h.y/2);
 doingsound.volume=menu_sounds_vol;
 doingsound.play();
 if (h.x == player.x and h.y == player.y)
 {
-if (custslot>-1) pool.destroy_sound (custslot);
-custslot=play_stat ("customer", false, true);
+customer_here.stop();
+customer_here.play();
 }
 }
 if (custbeep.playing)
@@ -586,7 +579,7 @@ else if (instr (item, "broken_mugs")) say_broken_mugs();
 else if (instr (item, "broken_barrels")) say_broken_barrels();
 else if (instr (item, "replaced")) say_replaced_barrels();
 else if (instr (item, "misplaced")) say_misplaced_barrels();
-else if (instr (item, "position")) player_position();
+else if (instr (item, "position")) character_position (player, false);
 else if (instr (item, "history_repeat")) say (history[history_index], true, false);
 else if (instr (item, "copy")) copy (history[history_index]);
 else if (instr (item, "spell")) spell (history[history_index]);
